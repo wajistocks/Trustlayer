@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -836,17 +837,18 @@ export default function Home() {
               onMouseLeave={e => e.target.style.color = C.textSecondary}
             >{item}</a>
           ))}
-          <button style={{
+          <Link href="/request-access" style={{
             padding: '8px 20px', borderRadius: '6px',
             border: `1px solid ${C.borderGold}`,
             background: C.goldGlow2,
             color: C.gold, fontSize: '13px',
             cursor: 'pointer', letterSpacing: '0.04em',
-            transition: 'all 0.2s',
+            transition: 'all 0.2s', textDecoration: 'none',
+            display: 'inline-block',
           }}
             onMouseEnter={e => { e.currentTarget.style.background = C.goldGlow; e.currentTarget.style.borderColor = C.gold }}
             onMouseLeave={e => { e.currentTarget.style.background = C.goldGlow2; e.currentTarget.style.borderColor = C.borderGold }}
-          >Request Access</button>
+          >Request Access</Link>
         </div>
       </nav>
 
@@ -1410,6 +1412,7 @@ export default function Home() {
                 desc: 'For individuals exploring AI legal verification.',
                 features: ['10 verifications/month', 'Basic claim analysis', 'Standard accuracy model', 'Community support'],
                 cta: 'Get Started',
+                href: '/request-access',
                 featured: false,
               },
               {
@@ -1419,6 +1422,7 @@ export default function Home() {
                 desc: 'For legal professionals and small practices.',
                 features: ['500 verifications/month', 'Advanced hallucination detection', 'Temporal accuracy checks', 'API access', 'Priority support', 'Audit trail & reports'],
                 cta: 'Start Free Trial',
+                href: '/request-access',
                 featured: true,
               },
               {
@@ -1428,6 +1432,7 @@ export default function Home() {
                 desc: 'For large firms, banks, and compliance teams.',
                 features: ['Unlimited verifications', 'Custom AI model fine-tuning', 'On-premise deployment', 'SOC 2 Type II compliance', 'Dedicated account manager', 'SLA guarantee'],
                 cta: 'Contact Sales',
+                href: null,
                 featured: false,
               },
             ].map((tier, i) => (
@@ -1473,32 +1478,48 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-                <button style={{
-                  width: '100%', padding: '13px',
-                  borderRadius: '6px',
-                  background: tier.featured
-                    ? `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`
-                    : 'transparent',
-                  border: tier.featured ? 'none' : `1px solid ${C.border}`,
-                  color: tier.featured ? '#0a0800' : C.textSecondary,
-                  fontSize: '13px', fontWeight: '700',
-                  letterSpacing: '0.06em', textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-                  onMouseEnter={e => {
-                    if (!tier.featured) {
-                      e.currentTarget.style.borderColor = C.borderGold
-                      e.currentTarget.style.color = C.gold
-                    }
+                {tier.href ? (
+                  <Link href={tier.href} style={{
+                    display: 'block', width: '100%', padding: '13px',
+                    borderRadius: '6px', boxSizing: 'border-box',
+                    background: tier.featured
+                      ? `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`
+                      : 'transparent',
+                    border: tier.featured ? 'none' : `1px solid ${C.border}`,
+                    color: tier.featured ? '#0a0800' : C.textSecondary,
+                    fontSize: '13px', fontWeight: '700',
+                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                    cursor: 'pointer', textDecoration: 'none',
+                    textAlign: 'center', transition: 'all 0.2s',
                   }}
-                  onMouseLeave={e => {
-                    if (!tier.featured) {
-                      e.currentTarget.style.borderColor = C.border
-                      e.currentTarget.style.color = C.textSecondary
-                    }
+                    onMouseEnter={e => {
+                      if (!tier.featured) {
+                        e.currentTarget.style.borderColor = C.borderGold
+                        e.currentTarget.style.color = C.gold
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (!tier.featured) {
+                        e.currentTarget.style.borderColor = C.border
+                        e.currentTarget.style.color = C.textSecondary
+                      }
+                    }}
+                  >{tier.cta}</Link>
+                ) : (
+                  <button style={{
+                    width: '100%', padding: '13px',
+                    borderRadius: '6px',
+                    background: 'transparent',
+                    border: `1px solid ${C.border}`,
+                    color: C.textSecondary,
+                    fontSize: '13px', fontWeight: '700',
+                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                    cursor: 'pointer', transition: 'all 0.2s',
                   }}
-                >{tier.cta}</button>
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary }}
+                  >{tier.cta}</button>
+                )}
               </div>
             ))}
           </div>
