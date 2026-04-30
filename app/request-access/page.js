@@ -228,15 +228,22 @@ export default function RequestAccess() {
             Trust<span style={{ color: C.gold }}>Layer</span>
           </span>
         </Link>
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <span style={{
-            fontSize: '13px', color: C.textSecondary,
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <Link href="/" style={{
+            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
             letterSpacing: '0.04em', transition: 'color 0.2s',
           }}
             onMouseEnter={e => e.target.style.color = C.gold}
             onMouseLeave={e => e.target.style.color = C.textSecondary}
-          >← Back to TrustLayer</span>
-        </Link>
+          >Verify</Link>
+          <Link href="/research" style={{
+            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
+            letterSpacing: '0.04em', transition: 'color 0.2s',
+          }}
+            onMouseEnter={e => e.target.style.color = C.gold}
+            onMouseLeave={e => e.target.style.color = C.textSecondary}
+          >Research</Link>
+        </div>
       </nav>
 
       {/* ── Two-column layout ── */}

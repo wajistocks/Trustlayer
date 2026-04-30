@@ -828,7 +828,14 @@ export default function Home() {
           </span>
         </div>
         <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-          {['Platform', 'Enterprise', 'Research'].map(item => (
+          <Link href="/research" style={{
+            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
+            letterSpacing: '0.04em', transition: 'color 0.2s',
+          }}
+            onMouseEnter={e => e.target.style.color = C.gold}
+            onMouseLeave={e => e.target.style.color = C.textSecondary}
+          >Research</Link>
+          {['Platform', 'Enterprise'].map(item => (
             <a key={item} href="#" style={{
               fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
               letterSpacing: '0.04em', transition: 'color 0.2s',
