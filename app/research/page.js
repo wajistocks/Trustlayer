@@ -28,6 +28,16 @@ const SERIF = '"Cormorant Garamond", "Playfair Display", Georgia, "Times New Rom
 const SANS  = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
 const MONO  = '"SF Mono", "Fira Code", "Courier New", monospace'
 
+const TOOLS_NAV = [
+  { path:'/tools/plain-english',         name:'Plain English Translator',  icon:'📖' },
+  { path:'/tools/deadlines',             name:'Deadline Calculator',        icon:'⏰' },
+  { path:'/tools/red-flags',             name:'Contract Red Flag Scanner',  icon:'🔍' },
+  { path:'/tools/letter-response',       name:'Letter Response Generator',  icon:'✉'  },
+  { path:'/tools/statute-of-limitations',name:'Statute of Limitations',     icon:'⏳' },
+  { path:'/tools/ethics',                name:'Ethics Checker',             icon:'⚖' },
+  { path:'/tools/pro-se',                name:'Pro Se Assistant',           icon:'🏛' },
+]
+
 // ─── Research modes ────────────────────────────────────────────────────────────
 const MODES = [
   {
@@ -371,7 +381,8 @@ function SkeletonCard() {
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
 export default function ResearchPage() {
-  const [mode, setMode]         = useState('case_law')
+  const [toolsOpen, setToolsOpen] = useState(false)
+  const [mode, setMode]           = useState('case_law')
   const [query, setQuery]       = useState('')
   const [jurisdiction, setJurisdiction] = useState('all')
   const [loading, setLoading]   = useState(false)
@@ -515,6 +526,50 @@ export default function ResearchPage() {
             letterSpacing: '0.04em', borderBottom: `1px solid ${C.gold}`,
             paddingBottom: '2px',
           }}>Research</Link>
+
+          <div style={{ position: 'relative' }}
+            onMouseEnter={() => setToolsOpen(true)}
+            onMouseLeave={() => setToolsOpen(false)}
+          >
+            <Link href="/tools" style={{
+              fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
+              letterSpacing: '0.04em', transition: 'color 0.2s',
+              display: 'flex', alignItems: 'center', gap: '3px',
+            }}
+              onMouseEnter={e => e.currentTarget.style.color = C.gold}
+              onMouseLeave={e => e.currentTarget.style.color = C.textSecondary}
+            >Tools <span style={{ fontSize: '9px', opacity: 0.7 }}>▾</span></Link>
+            {toolsOpen && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 10px)', left: '-10px',
+                background: C.bgCard, border: `1px solid ${C.borderGold}`,
+                borderRadius: '10px', padding: '8px 6px', minWidth: '236px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.5)', zIndex: 200,
+                animation: 'fadeIn 0.15s ease',
+              }}>
+                {TOOLS_NAV.map(t => (
+                  <Link key={t.path} href={t.path} style={{
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    padding: '8px 10px', borderRadius: '6px', textDecoration: 'none',
+                    transition: 'background 0.15s',
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = C.goldGlow2}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <span style={{ fontSize: '14px', width: '20px', textAlign: 'center' }}>{t.icon}</span>
+                    <span style={{ fontSize: '12px', color: C.textSecondary }}>{t.name}</span>
+                  </Link>
+                ))}
+                <div style={{ borderTop: `1px solid ${C.border}`, margin: '5px 4px' }} />
+                <Link href="/tools" style={{
+                  display: 'block', textAlign: 'center', padding: '7px 10px',
+                  borderRadius: '6px', textDecoration: 'none', fontSize: '11px',
+                  color: C.gold, fontWeight: '600', background: C.goldGlow2,
+                  border: `1px solid ${C.borderGold}`,
+                }}>View All Tools →</Link>
+              </div>
+            )}
+          </div>
 
           <Link href="/enterprise" style={{
             fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
