@@ -3,28 +3,30 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
-  bg:        '#05070d',
-  bgCard:    '#0a0d1a',
-  bgInput:   '#080b14',
-  border:    '#1a2035',
-  borderGold:'rgba(212,168,83,0.25)',
-  gold:      '#d4a853',
-  goldDim:   '#a07835',
-  goldGlow:  'rgba(212,168,83,0.12)',
-  goldGlow2: 'rgba(212,168,83,0.06)',
-  textPrimary:   '#e8e0d0',
-  textSecondary: '#8a8070',
-  textMuted:     '#3a3530',
-  verified:  '#22c55e',
-  unverified:'#f59e0b',
-  hallucination: '#ef4444',
-  outdated:  '#8b5cf6',
+  bg:           '#000000',
+  bgCard:       '#111111',
+  bgSecondary:  '#0a0a0a',
+  border:       '#222222',
+  borderLight:  '#333333',
+  textPrimary:  '#ffffff',
+  textSecondary:'#888888',
+  textMuted:    '#444444',
+  blue:         '#2563eb',
+  blueHover:    '#1d4ed8',
+  blueGlow:     'rgba(37,99,235,0.15)',
+  blueGlow2:    'rgba(37,99,235,0.08)',
+  verified:     '#22c55e',
+  verifiedBg:   'rgba(34,197,94,0.08)',
+  error:        '#ef4444',
+  errorBg:      'rgba(239,68,68,0.08)',
+  warning:      '#f59e0b',
+  warningBg:    'rgba(245,158,11,0.08)',
 }
 
-const SERIF = '"Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif'
-const SANS  = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+const SERIF = 'Georgia, "Times New Roman", serif'
+const SANS  = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+const MONO  = '"JetBrains Mono", "SF Mono", "Fira Code", "Courier New", monospace'
 
 const TOOLS_NAV = [
   { path:'/tools/plain-english',         name:'Plain English Translator',  icon:'📖' },
@@ -36,7 +38,6 @@ const TOOLS_NAV = [
   { path:'/tools/pro-se',                name:'Pro Se Assistant',           icon:'🏛' },
 ]
 
-// ─── Animated counter ─────────────────────────────────────────────────────────
 function Counter({ target, suffix = '', duration = 1800 }) {
   const [val, setVal] = useState(0)
   const ref = useRef(null)
@@ -59,7 +60,6 @@ function Counter({ target, suffix = '', duration = 1800 }) {
   return <span ref={ref}>{val.toLocaleString()}{suffix}</span>
 }
 
-// ─── Trust score ring ─────────────────────────────────────────────────────────
 function TrustRing({ score, animated = true }) {
   const [displayed, setDisplayed] = useState(animated ? 0 : score)
   useEffect(() => {
@@ -77,7 +77,7 @@ function TrustRing({ score, animated = true }) {
   const radius = 58
   const circ = 2 * Math.PI * radius
   const offset = circ - (displayed / 100) * circ
-  const color = displayed >= 70 ? C.verified : displayed >= 40 ? C.unverified : C.hallucination
+  const color = displayed >= 70 ? C.verified : displayed >= 40 ? C.warning : C.error
   const label = displayed >= 70 ? 'Trustworthy' : displayed >= 40 ? 'Uncertain' : 'High Risk'
 
   return (
@@ -108,13 +108,12 @@ function TrustRing({ score, animated = true }) {
   )
 }
 
-// ─── Claim card ───────────────────────────────────────────────────────────────
 function ClaimCard({ claim }) {
   const map = {
-    Verified:      { color: C.verified,      bg: 'rgba(34,197,94,0.08)',    border: 'rgba(34,197,94,0.2)',    icon: '✓' },
-    Unverified:    { color: C.unverified,     bg: 'rgba(245,158,11,0.08)',   border: 'rgba(245,158,11,0.2)',   icon: '?' },
-    Hallucination: { color: C.hallucination,  bg: 'rgba(239,68,68,0.08)',    border: 'rgba(239,68,68,0.2)',    icon: '✗' },
-    Outdated:      { color: C.outdated,       bg: 'rgba(139,92,246,0.08)',   border: 'rgba(139,92,246,0.2)',   icon: '↻' },
+    Verified:      { color: C.verified,  bg: 'rgba(34,197,94,0.08)',   border: 'rgba(34,197,94,0.2)',   icon: '✓' },
+    Unverified:    { color: C.warning,   bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.2)',  icon: '?' },
+    Hallucination: { color: C.error,     bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.2)',   icon: '✗' },
+    Outdated:      { color: '#8b5cf6',   bg: 'rgba(139,92,246,0.08)',  border: 'rgba(139,92,246,0.2)',  icon: '↻' },
   }
   const typeLabels = {
     statute: 'Statute',
@@ -129,7 +128,6 @@ function ClaimCard({ claim }) {
   return (
     <div style={{
       padding: '16px 18px',
-      borderRadius: '10px',
       background: s.bg,
       border: `1px solid ${s.border}`,
       marginBottom: '10px',
@@ -154,22 +152,22 @@ function ClaimCard({ claim }) {
                 fontSize: '10px', fontWeight: '600', letterSpacing: '0.05em',
                 textTransform: 'uppercase', color: C.textSecondary,
                 padding: '2px 7px', borderRadius: '4px',
-                background: C.goldGlow2, border: `1px solid ${C.border}`,
+                background: C.blueGlow2, border: `1px solid ${C.border}`,
               }}>{typeLabels[claim.type] ?? claim.type}</span>
             )}
             {claim.confidence != null && (
               <span style={{
                 fontSize: '10px', fontWeight: '600', color: C.textSecondary,
                 padding: '2px 7px', borderRadius: '4px',
-                background: C.goldGlow2, border: `1px solid ${C.border}`,
+                background: C.blueGlow2, border: `1px solid ${C.border}`,
               }}>{claim.confidence}% confidence</span>
             )}
             {claim.severity === 'high' && (
               <span style={{
                 fontSize: '10px', fontWeight: '600', letterSpacing: '0.06em',
-                textTransform: 'uppercase', color: C.hallucination,
+                textTransform: 'uppercase', color: C.error,
                 padding: '2px 6px', borderRadius: '4px',
-                background: 'rgba(239,68,68,0.1)',
+                background: C.errorBg,
               }}>HIGH SEVERITY</span>
             )}
           </div>
@@ -182,7 +180,7 @@ function ClaimCard({ claim }) {
           </p>
           {claim.correction && (
             <div style={{
-              padding: '8px 12px', borderRadius: '6px',
+              padding: '8px 12px',
               background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.18)',
               marginBottom: '6px',
             }}>
@@ -192,24 +190,24 @@ function ClaimCard({ claim }) {
           )}
           {claim.closestRealCase && (
             <div style={{
-              padding: '8px 12px', borderRadius: '6px',
+              padding: '8px 12px',
               background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.18)',
               marginBottom: '6px',
             }}>
-              <span style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase', color: C.unverified }}>Closest Real Case: </span>
+              <span style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase', color: C.warning }}>Closest Real Case: </span>
               <span style={{ fontSize: '12px', color: C.textSecondary, lineHeight: '1.5' }}>{claim.closestRealCase}</span>
             </div>
           )}
           {claim.courtListenerUrl && (
             <a href={claim.courtListenerUrl} target="_blank" rel="noopener noreferrer" style={{
               display: 'inline-flex', alignItems: 'center', gap: '4px',
-              fontSize: '11px', color: C.gold, textDecoration: 'none',
+              fontSize: '11px', color: C.blue, textDecoration: 'none',
               padding: '3px 9px', borderRadius: '4px',
-              background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
+              background: C.blueGlow2, border: `1px solid rgba(37,99,235,0.3)`,
               transition: 'background 0.15s',
             }}
-              onMouseEnter={e => e.currentTarget.style.background = C.goldGlow}
-              onMouseLeave={e => e.currentTarget.style.background = C.goldGlow2}
+              onMouseEnter={e => e.currentTarget.style.background = C.blueGlow}
+              onMouseLeave={e => e.currentTarget.style.background = C.blueGlow2}
             >↗ View on CourtListener</a>
           )}
         </div>
@@ -218,7 +216,6 @@ function ClaimCard({ claim }) {
   )
 }
 
-// ─── Interactive demo modal ───────────────────────────────────────────────────
 const DEMO_DOC = `VENDOR DATA PROCESSING AGREEMENT — COMPLIANCE REVIEW
 Re: Preliminary Legal Analysis for Execution Approval
 
@@ -285,13 +282,11 @@ const DEMO_RESULTS = [
 ]
 
 function DemoModal({ onClose }) {
-  // step 0 = idle, 1-4 = steps running, 5 = results shown
   const [step, setStep]           = useState(0)
   const [score, setScore]         = useState(0)
   const [email, setEmail]         = useState('')
   const [submitted, setSubmitted] = useState(false)
 
-  // Single effect drives the whole sequence — no cascading useEffects
   useEffect(() => {
     const t0 = setTimeout(() => setStep(1), 150)
     const t1 = setTimeout(() => setStep(2), 1150)
@@ -301,7 +296,6 @@ function DemoModal({ onClose }) {
     return () => [t0, t1, t2, t3, t4].forEach(clearTimeout)
   }, [])
 
-  // Animate score ring once results appear
   useEffect(() => {
     if (step !== 5) return
     const start = performance.now()
@@ -328,8 +322,7 @@ function DemoModal({ onClose }) {
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
       style={{
         position: 'fixed', inset: 0, zIndex: 1000,
-        background: 'rgba(2,4,10,0.92)',
-        backdropFilter: 'blur(14px)',
+        background: 'rgba(0,0,0,0.85)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '20px',
       }}
@@ -339,26 +332,24 @@ function DemoModal({ onClose }) {
         maxHeight: '92vh',
         background: C.bgCard,
         border: `1px solid ${C.border}`,
-        borderRadius: '16px',
         display: 'flex', flexDirection: 'column',
         overflow: 'hidden',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.75), 0 0 0 1px rgba(212,168,83,0.12)',
+        boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
       }}>
 
-        {/* ── Header ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '16px 24px', borderBottom: `1px solid ${C.border}`,
-          background: 'rgba(212,168,83,0.03)', flexShrink: 0,
+          flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontFamily: SERIF, fontSize: '18px', fontWeight: '700', color: C.textPrimary }}>
-              Trust<span style={{ color: C.gold }}>Layer</span>
+              TrustLayer
             </span>
             <span style={{
               fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase',
-              color: C.gold, padding: '2px 9px', borderRadius: '999px',
-              background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
+              color: C.blue, padding: '2px 9px', borderRadius: '4px',
+              background: C.blueGlow2, border: `1px solid rgba(37,99,235,0.3)`,
             }}>Live Demo</span>
           </div>
           <button
@@ -370,17 +361,15 @@ function DemoModal({ onClose }) {
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all 0.15s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.textPrimary }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary }}
           >×</button>
         </div>
 
-        {/* ── Scrollable body ── */}
         <div style={{ overflowY: 'auto', flex: 1, padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-          {/* Document preview */}
           <div style={{
-            background: C.bgInput, border: `1px solid ${C.border}`, borderRadius: '10px', overflow: 'hidden',
+            background: C.bgSecondary, border: `1px solid ${C.border}`, overflow: 'hidden',
           }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: '6px',
@@ -389,21 +378,20 @@ function DemoModal({ onClose }) {
               {['#ff5f57','#febc2e','#28c840'].map(c => (
                 <div key={c} style={{ width: '9px', height: '9px', borderRadius: '50%', background: c }} />
               ))}
-              <span style={{ marginLeft: '8px', fontSize: '11px', color: C.textMuted, fontFamily: '"SF Mono", monospace' }}>
+              <span style={{ marginLeft: '8px', fontSize: '11px', color: C.textMuted, fontFamily: MONO }}>
                 compliance_review.txt
               </span>
             </div>
             <p style={{
-              fontSize: '12.5px', fontFamily: '"SF Mono", "Fira Code", monospace',
+              fontSize: '12.5px', fontFamily: MONO,
               color: C.textSecondary, lineHeight: '1.95', margin: 0,
               padding: '16px 20px', whiteSpace: 'pre-wrap',
             }}>{DEMO_DOC}</p>
           </div>
 
-          {/* ── Progress steps ── */}
           <div style={{
             background: C.bg, border: `1px solid ${C.border}`,
-            borderRadius: '12px', padding: '20px 24px',
+            padding: '20px 24px',
             display: 'flex', flexDirection: 'column', gap: '16px',
           }}>
             <p style={{
@@ -418,15 +406,14 @@ function DemoModal({ onClose }) {
               return (
                 <div key={id}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
-                    {/* Status indicator */}
                     <div style={{
                       width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       background: done    ? 'rgba(34,197,94,0.15)'
-                                : active  ? C.goldGlow
+                                : active  ? C.blueGlow
                                 : 'transparent',
                       border: done    ? '1px solid rgba(34,197,94,0.4)'
-                            : active  ? `1px solid ${C.borderGold}`
+                            : active  ? `1px solid rgba(37,99,235,0.5)`
                             : `1px solid ${C.border}`,
                       transition: 'all 0.3s',
                     }}>
@@ -435,18 +422,17 @@ function DemoModal({ onClose }) {
                       ) : active ? (
                         <span style={{
                           width: '9px', height: '9px', borderRadius: '50%',
-                          border: `2px solid ${C.gold}`, borderTopColor: 'transparent',
+                          border: `2px solid ${C.blue}`, borderTopColor: 'transparent',
                           display: 'block', animation: 'spin 0.6s linear infinite',
                         }} />
                       ) : (
                         <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: C.border, display: 'block' }} />
                       )}
                     </div>
-                    {/* Label + detail */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{
                         fontSize: '13px', fontWeight: '600',
-                        color: done ? C.textPrimary : active ? C.gold : C.textMuted,
+                        color: done ? C.textPrimary : active ? C.textPrimary : C.textMuted,
                         transition: 'color 0.3s',
                       }}>{s.label}</span>
                       {(done || active) && (
@@ -462,14 +448,13 @@ function DemoModal({ onClose }) {
                       <span style={{ fontSize: '11px', color: C.textMuted, flexShrink: 0 }}>—</span>
                     )}
                   </div>
-                  {/* Progress bar */}
                   <div style={{
-                    height: '3px', borderRadius: '2px',
+                    height: '3px',
                     background: C.border, marginLeft: '34px', overflow: 'hidden',
                   }}>
                     <div style={{
-                      height: '100%', borderRadius: '2px',
-                      background: done ? '#22c55e' : active ? C.gold : 'transparent',
+                      height: '100%',
+                      background: done ? '#22c55e' : active ? C.blue : 'transparent',
                       width: done ? '100%' : '0%',
                       animation: active ? 'barFill 0.95s linear forwards' : 'none',
                     }} />
@@ -479,18 +464,15 @@ function DemoModal({ onClose }) {
             })}
           </div>
 
-          {/* ── Results ── */}
           {step >= 5 && (
             <div style={{ animation: 'slideUp 0.4s ease-out' }}>
 
-              {/* Score + summary row */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '24px',
-                padding: '22px 24px', borderRadius: '12px',
-                background: 'rgba(212,168,83,0.04)', border: `1px solid ${C.borderGold}`,
+                padding: '22px 24px',
+                background: C.blueGlow2, border: `1px solid rgba(37,99,235,0.25)`,
                 marginBottom: '16px', flexWrap: 'wrap',
               }}>
-                {/* Ring */}
                 <div style={{ position: 'relative', width: 104, height: 104, flexShrink: 0 }}>
                   <svg width={104} height={104} style={{ transform: 'rotate(-90deg)' }}>
                     <circle cx={52} cy={52} r={50} fill="none" stroke={C.border} strokeWidth={6} />
@@ -509,7 +491,6 @@ function DemoModal({ onClose }) {
                     <span style={{ fontSize: '9px', color: C.textSecondary, marginTop: '2px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Uncertain</span>
                   </div>
                 </div>
-                {/* Summary */}
                 <div style={{ flex: 1, minWidth: '200px' }}>
                   <h3 style={{ fontFamily: SERIF, fontSize: '19px', fontWeight: '600', color: C.textPrimary, margin: '0 0 6px' }}>
                     Analysis Complete
@@ -532,14 +513,13 @@ function DemoModal({ onClose }) {
                 </div>
               </div>
 
-              {/* Claim cards */}
               <p style={{
                 fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em',
                 textTransform: 'uppercase', color: C.textMuted, margin: '0 0 10px',
               }}>Claim-by-Claim Breakdown</p>
               {DEMO_RESULTS.map((r, i) => (
                 <div key={i} style={{
-                  padding: '13px 16px', borderRadius: '9px',
+                  padding: '13px 16px',
                   background: r.bg, border: `1px solid ${r.border}`,
                   marginBottom: '8px',
                   animation: `slideUp 0.3s ease-out ${i * 60}ms both`,
@@ -579,18 +559,16 @@ function DemoModal({ onClose }) {
             </div>
           )}
 
-          {/* ── Email capture ── */}
           {step >= 5 && !submitted && (
             <div style={{
-              padding: '28px', borderRadius: '12px',
-              background: 'linear-gradient(135deg, rgba(212,168,83,0.07) 0%, rgba(212,168,83,0.02) 100%)',
-              border: `1px solid ${C.gold}`,
-              boxShadow: '0 0 40px rgba(212,168,83,0.07)',
+              padding: '28px',
+              background: C.blueGlow2,
+              border: `1px solid rgba(37,99,235,0.3)`,
               animation: 'slideUp 0.45s 0.2s ease-out both',
             }}>
               <p style={{
                 fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: C.gold, margin: '0 0 10px',
+                color: C.blue, margin: '0 0 10px',
               }}>Limited Offer</p>
               <h3 style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary, margin: '0 0 8px' }}>
                 Get 3 free verifications — no credit card required
@@ -603,25 +581,24 @@ function DemoModal({ onClose }) {
                   type="email" value={email} onChange={e => setEmail(e.target.value)}
                   placeholder="you@yourfirm.com" required
                   style={{
-                    flex: 1, minWidth: '200px', padding: '13px 16px', borderRadius: '6px',
-                    background: C.bgInput, border: `1px solid ${C.border}`,
+                    flex: 1, minWidth: '200px', padding: '13px 16px', borderRadius: '4px',
+                    background: C.bgSecondary, border: `1px solid ${C.borderLight}`,
                     color: C.textPrimary, fontSize: '14px', outline: 'none', fontFamily: SANS,
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={e => e.target.style.borderColor = C.borderGold}
-                  onBlur={e => e.target.style.borderColor = C.border}
+                  onFocus={e => e.target.style.borderColor = C.blue}
+                  onBlur={e => e.target.style.borderColor = C.borderLight}
                 />
                 <button type="submit" style={{
                   padding: '13px 28px', borderRadius: '6px',
-                  background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-                  border: 'none', color: '#0a0800',
+                  background: C.blue,
+                  border: 'none', color: '#fff',
                   fontSize: '13px', fontWeight: '700', letterSpacing: '0.06em', textTransform: 'uppercase',
                   cursor: 'pointer', whiteSpace: 'nowrap',
-                  boxShadow: '0 4px 20px rgba(212,168,83,0.3)',
-                  transition: 'transform 0.15s, box-shadow 0.15s',
+                  transition: 'background 0.15s',
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 28px rgba(212,168,83,0.45)' }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(212,168,83,0.3)' }}
+                  onMouseEnter={e => e.currentTarget.style.background = C.blueHover}
+                  onMouseLeave={e => e.currentTarget.style.background = C.blue}
                 >Claim Free Access</button>
               </form>
               <p style={{ fontSize: '11px', color: C.textMuted, margin: '10px 0 0' }}>
@@ -630,10 +607,9 @@ function DemoModal({ onClose }) {
             </div>
           )}
 
-          {/* ── Confirmed ── */}
           {submitted && (
             <div style={{
-              padding: '36px', borderRadius: '12px', textAlign: 'center',
+              padding: '36px', textAlign: 'center',
               background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.22)',
               animation: 'slideUp 0.3s ease-out',
             }}>
@@ -659,7 +635,6 @@ function DemoModal({ onClose }) {
   )
 }
 
-// ─── Sample documents (contain deliberate errors for demo) ────────────────────
 const SAMPLES = {
   Brief: `MEMORANDUM OF LAW IN SUPPORT OF PLAINTIFF'S MOTION FOR SPECIFIC PERFORMANCE
 
@@ -769,16 +744,16 @@ RESALE RESTRICTIONS: Securities are restricted and may not be resold absent regi
 ANTI-FRAUD: All statements are true and complete. False statements in connection with a securities offering violate Section 10(b) of the Securities Exchange Act of 1934 and Rule 10b-5, as applied in SEC v. Steadfast Capital Group, 389 F.3d 244 (2d Cir. 2004), which established liability for material misstatements in private placement offering documents.`,
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
 export default function Home() {
-  const [text, setText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState(null)
-  const [error, setError] = useState(null)
-  const [focused, setFocused] = useState(false)
-  const [activeTab, setActiveTab] = useState('claims')
-  const [demoOpen, setDemoOpen]     = useState(false)
-  const [toolsOpen, setToolsOpen]   = useState(false)
+  const [text, setText]               = useState('')
+  const [loading, setLoading]         = useState(false)
+  const [result, setResult]           = useState(null)
+  const [error, setError]             = useState(null)
+  const [focused, setFocused]         = useState(false)
+  const [activeTab, setActiveTab]     = useState('claims')
+  const [demoOpen, setDemoOpen]       = useState(false)
+  const [toolsOpen, setToolsOpen]     = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const resultsRef = useRef(null)
 
   async function handleVerify() {
@@ -816,191 +791,148 @@ export default function Home() {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, color: C.textPrimary, fontFamily: SANS }}>
 
-      {/* ── Nav ── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 40px', height: '68px',
-        background: 'rgba(5,7,13,0.92)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: `1px solid ${C.border}`,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            width: '36px', height: '36px', borderRadius: '8px',
-            background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: `0 0 16px ${C.goldGlow}`,
-          }}>
-            <span style={{ fontSize: '18px', fontFamily: SERIF, fontWeight: '700', color: '#0a0800' }}>T</span>
-          </div>
-          <span style={{ fontSize: '20px', fontFamily: SERIF, fontWeight: '700', letterSpacing: '0.02em', color: C.textPrimary }}>
-            Trust<span style={{ color: C.gold }}>Layer</span>
-          </span>
-        </div>
-        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
-          <Link href="/research" style={{
-            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-            letterSpacing: '0.04em', transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
+      <style>{`
+        * { box-sizing: border-box; }
+        @media (max-width: 768px) {
+          .tl-nav-links { display: none !important; }
+          .tl-hamburger { display: flex !important; align-items: center; }
+          .tl-2col { grid-template-columns: 1fr !important; }
+          .tl-3col { grid-template-columns: 1fr !important; }
+          .tl-hero-title { font-size: 36px !important; line-height: 1.15 !important; }
+          .tl-section-pad { padding-left: 20px !important; padding-right: 20px !important; padding-top: 56px !important; padding-bottom: 56px !important; }
+          .tl-card-pad { padding: 20px !important; }
+          .tl-btn-full { width: 100% !important; }
+          .tl-hide-mobile { display: none !important; }
+          .tl-nav { padding: 0 20px !important; }
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes spin { to { transform: rotate(360deg) } }
+        @keyframes pulse { 0%,100% { opacity:0.3 } 50% { opacity:0.7 } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes slideIn { from { opacity:0; transform:translateX(20px) } to { opacity:1; transform:translateX(0) } }
+        @keyframes barFill { from { width: 0%; } to { width: 100%; } }
+        ::selection { background: rgba(37,99,235,0.4); color: #fff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        body { margin: 0; background: #000; }
+        textarea::placeholder { color: #444; }
+        textarea::-webkit-scrollbar { width: 5px; }
+        textarea::-webkit-scrollbar-track { background: transparent; }
+        textarea::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+      `}</style>
+
+      <nav className="tl-nav" style={{ position:'sticky', top:0, zIndex:100, background:'#000', borderBottom:'1px solid #222', height:'64px', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 40px' }}>
+        <Link href="/" style={{ textDecoration:'none', fontSize:'22px', fontFamily:SERIF, fontWeight:'700', color:'#fff', letterSpacing:'-0.02em' }}>TrustLayer</Link>
+
+        <div className="tl-nav-links" style={{ display:'flex', gap:'32px', alignItems:'center' }}>
+          <Link href="/research" style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.color = C.blue}
+            onMouseLeave={e => e.currentTarget.style.color = '#fff'}
           >Research</Link>
 
-          {/* Tools dropdown */}
-          <div style={{ position: 'relative' }}
+          <div style={{ position:'relative' }}
             onMouseEnter={() => setToolsOpen(true)}
             onMouseLeave={() => setToolsOpen(false)}
           >
-            <Link href="/tools" style={{
-              fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-              letterSpacing: '0.04em', transition: 'color 0.2s',
-              display: 'flex', alignItems: 'center', gap: '3px',
-            }}
-              onMouseEnter={e => e.currentTarget.style.color = C.gold}
-              onMouseLeave={e => e.currentTarget.style.color = C.textSecondary}
-            >Tools <span style={{ fontSize: '9px', opacity: 0.7 }}>▾</span></Link>
+            <Link href="/tools" style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s', display:'flex', alignItems:'center', gap:'4px' }}
+              onMouseEnter={e => e.currentTarget.style.color = C.blue}
+              onMouseLeave={e => e.currentTarget.style.color = '#fff'}
+            >Tools <span style={{ fontSize:'9px', opacity:0.7 }}>▾</span></Link>
             {toolsOpen && (
-              <div style={{
-                position: 'absolute', top: 'calc(100% + 10px)', left: '-10px',
-                background: C.bgCard, border: `1px solid ${C.borderGold}`,
-                borderRadius: '10px', padding: '8px 6px', minWidth: '236px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.5)', zIndex: 200,
-                animation: 'fadeIn 0.15s ease',
-              }}>
+              <div style={{ position:'absolute', top:'calc(100% + 10px)', left:'-10px', background:'#111', border:'1px solid #222', borderRadius:'6px', padding:'8px 6px', minWidth:'240px', boxShadow:'0 8px 32px rgba(0,0,0,0.8)', zIndex:200, animation:'fadeIn 0.15s ease' }}>
                 {TOOLS_NAV.map(t => (
-                  <Link key={t.path} href={t.path} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '8px 10px', borderRadius: '6px', textDecoration: 'none',
-                    transition: 'background 0.15s',
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = C.goldGlow2}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  <Link key={t.path} href={t.path} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'9px 10px', borderRadius:'4px', textDecoration:'none' }}
+                    onMouseEnter={e => e.currentTarget.style.background='rgba(37,99,235,0.1)'}
+                    onMouseLeave={e => e.currentTarget.style.background='transparent'}
                   >
-                    <span style={{ fontSize: '14px', width: '20px', textAlign: 'center' }}>{t.icon}</span>
-                    <span style={{ fontSize: '12px', color: C.textSecondary }}>{t.name}</span>
+                    <span style={{ fontSize:'14px', width:'20px', textAlign:'center' }}>{t.icon}</span>
+                    <span style={{ fontSize:'13px', color:'#888' }}>{t.name}</span>
                   </Link>
                 ))}
-                <div style={{ borderTop: `1px solid ${C.border}`, margin: '5px 4px' }} />
-                <Link href="/tools" style={{
-                  display: 'block', textAlign: 'center', padding: '7px 10px',
-                  borderRadius: '6px', textDecoration: 'none', fontSize: '11px',
-                  color: C.gold, fontWeight: '600', background: C.goldGlow2,
-                  border: `1px solid ${C.borderGold}`,
-                }}>View All Tools →</Link>
+                <div style={{ borderTop:'1px solid #222', margin:'5px 4px' }} />
+                <Link href="/tools" style={{ display:'block', textAlign:'center', padding:'8px 10px', borderRadius:'4px', fontSize:'12px', color:'#2563eb', fontWeight:'600', textDecoration:'none' }}
+                  onMouseEnter={e=>e.currentTarget.style.background='rgba(37,99,235,0.1)'}
+                  onMouseLeave={e=>e.currentTarget.style.background='transparent'}
+                >View All Tools →</Link>
               </div>
             )}
           </div>
 
-          <Link href="/enterprise" style={{
-            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-            letterSpacing: '0.04em', transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
+          <Link href="/enterprise" style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.color = C.blue}
+            onMouseLeave={e => e.currentTarget.style.color = '#fff'}
           >Enterprise</Link>
-          <Link href="/request-access" style={{
-            padding: '8px 20px', borderRadius: '6px',
-            border: `1px solid ${C.borderGold}`,
-            background: C.goldGlow2,
-            color: C.gold, fontSize: '13px',
-            cursor: 'pointer', letterSpacing: '0.04em',
-            transition: 'all 0.2s', textDecoration: 'none',
-            display: 'inline-block',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = C.goldGlow; e.currentTarget.style.borderColor = C.gold }}
-            onMouseLeave={e => { e.currentTarget.style.background = C.goldGlow2; e.currentTarget.style.borderColor = C.borderGold }}
+
+          <Link href="/request-access" style={{ background:'#2563eb', color:'#fff', padding:'9px 22px', borderRadius:'6px', fontSize:'14px', fontWeight:'600', textDecoration:'none', transition:'background 0.15s' }}
+            onMouseEnter={e=>e.currentTarget.style.background='#1d4ed8'}
+            onMouseLeave={e=>e.currentTarget.style.background='#2563eb'}
           >Request Access</Link>
         </div>
+
+        <button className="tl-hamburger" style={{ display:'none', background:'none', border:'none', color:'#fff', fontSize:'22px', cursor:'pointer', padding:'8px', lineHeight:1 }} onClick={() => setMobileMenuOpen(v => !v)}>
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
       </nav>
 
-      {/* ── Hero ── */}
-      <section style={{
-        textAlign: 'center',
-        padding: '110px 24px 80px',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-          width: '800px', height: '400px',
-          background: `radial-gradient(ellipse, rgba(212,168,83,0.06) 0%, transparent 65%)`,
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '8px',
-          padding: '7px 16px', borderRadius: '999px',
-          background: C.goldGlow2,
-          border: `1px solid ${C.borderGold}`,
-          fontSize: '11px', color: C.gold, fontWeight: '600',
-          letterSpacing: '0.1em', textTransform: 'uppercase',
-          marginBottom: '32px',
-        }}>
-          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: C.gold, boxShadow: `0 0 6px ${C.gold}` }} />
-          Institutional-grade AI Verification
+      {mobileMenuOpen && <div style={{ position:'fixed', inset:0, zIndex:149, background:'rgba(0,0,0,0.6)' }} onClick={() => setMobileMenuOpen(false)} />}
+
+      <div style={{ position:'fixed', top:0, right:0, width:'280px', height:'100vh', background:'#000', borderLeft:'1px solid #222', zIndex:150, transform:mobileMenuOpen?'translateX(0)':'translateX(100%)', transition:'transform 0.25s ease', display:'flex', flexDirection:'column', padding:'72px 24px 40px', gap:'8px' }}>
+        <Link href="/research" style={{ display:'flex', alignItems:'center', height:'48px', fontSize:'16px', color:'#fff', textDecoration:'none', transition:'color 0.15s', borderBottom:'1px solid #222' }}
+          onMouseEnter={e=>e.currentTarget.style.color=C.blue}
+          onMouseLeave={e=>e.currentTarget.style.color='#fff'}
+          onClick={()=>setMobileMenuOpen(false)}
+        >Research</Link>
+        <div style={{ borderBottom:'1px solid #222', paddingBottom:'8px' }}>
+          <div style={{ display:'flex', alignItems:'center', height:'48px', fontSize:'16px', color:'#888' }}>Tools</div>
+          {TOOLS_NAV.map(t => (
+            <Link key={t.path} href={t.path} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'10px 0 10px 12px', fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+              onMouseEnter={e=>e.currentTarget.style.color=C.blue}
+              onMouseLeave={e=>e.currentTarget.style.color='#fff'}
+              onClick={()=>setMobileMenuOpen(false)}
+            >
+              <span style={{ fontSize:'14px', width:'20px', textAlign:'center' }}>{t.icon}</span>
+              {t.name}
+            </Link>
+          ))}
         </div>
-        <h1 style={{
-          fontSize: 'clamp(40px, 6.5vw, 72px)',
-          fontFamily: SERIF,
-          fontWeight: '700',
-          letterSpacing: '-0.01em',
-          lineHeight: '1.08',
-          margin: '0 auto 24px',
-          maxWidth: '860px',
-          color: C.textPrimary,
-        }}>
-          The World's Most Advanced<br />
-          <span style={{ color: C.gold }}>AI Legal Verification</span>
+        <Link href="/enterprise" style={{ display:'flex', alignItems:'center', height:'48px', fontSize:'16px', color:'#fff', textDecoration:'none', transition:'color 0.15s', borderBottom:'1px solid #222' }}
+          onMouseEnter={e=>e.currentTarget.style.color=C.blue}
+          onMouseLeave={e=>e.currentTarget.style.color='#fff'}
+          onClick={()=>setMobileMenuOpen(false)}
+        >Enterprise</Link>
+        <Link href="/request-access" style={{ marginTop:'auto', background:'#2563eb', color:'#fff', padding:'14px 20px', borderRadius:'6px', textDecoration:'none', fontSize:'15px', fontWeight:'600', textAlign:'center' }}
+          onClick={()=>setMobileMenuOpen(false)}
+        >Request Access</Link>
+      </div>
+
+      <div style={{ background:'linear-gradient(180deg, #0a0a0a 0%, #000 100%)', borderBottom:'1px solid #222', padding:'100px 40px 80px', textAlign:'center' }}>
+        <div style={{ display:'inline-block', background:'rgba(37,99,235,0.1)', border:'1px solid rgba(37,99,235,0.3)', color:'#2563eb', fontSize:'12px', fontWeight:'600', letterSpacing:'0.1em', padding:'5px 14px', borderRadius:'4px', marginBottom:'28px', textTransform:'uppercase' }}>
+          AI Legal Verification
+        </div>
+        <h1 className="tl-hero-title" style={{ fontFamily:SERIF, fontSize:'clamp(40px,6vw,72px)', fontWeight:'700', color:'#fff', margin:'0 0 24px', lineHeight:1.1, letterSpacing:'-0.02em', maxWidth:'800px', marginLeft:'auto', marginRight:'auto' }}>
+          The World Standard For<br/>AI Legal Verification
         </h1>
-        <p style={{
-          fontSize: '18px', fontFamily: SERIF, fontStyle: 'italic',
-          color: C.textSecondary, maxWidth: '560px',
-          margin: '0 auto 48px', lineHeight: '1.65',
-        }}>
+        <p style={{ fontSize:'18px', color:'#888', margin:'0 auto 44px', maxWidth:'560px', lineHeight:1.7, fontFamily:SERIF, fontStyle:'italic' }}>
           Trusted by the world's leading law firms and compliance teams to surface hallucinations, verify claims, and protect legal integrity.
         </p>
-        <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display:'flex', gap:'16px', justifyContent:'center', flexWrap:'wrap' }}>
           <button
             onClick={() => document.getElementById('analyzer').scrollIntoView({ behavior: 'smooth' })}
-            style={{
-              padding: '16px 36px',
-              borderRadius: '6px',
-              border: 'none',
-              background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-              color: '#0a0800',
-              fontSize: '14px', fontWeight: '700',
-              letterSpacing: '0.06em', textTransform: 'uppercase',
-              cursor: 'pointer',
-              boxShadow: `0 4px 24px rgba(212,168,83,0.3)`,
-              transition: 'transform 0.15s, box-shadow 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = `0 8px 32px rgba(212,168,83,0.4)` }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 24px rgba(212,168,83,0.3)` }}
-          >Analyze a Document</button>
+            style={{ background:'#2563eb', color:'#fff', padding:'14px 32px', borderRadius:'6px', fontSize:'15px', fontWeight:'600', border:'none', cursor:'pointer', transition:'background 0.15s' }}
+            onMouseEnter={e=>e.currentTarget.style.background='#1d4ed8'}
+            onMouseLeave={e=>e.currentTarget.style.background='#2563eb'}
+          >Verify A Document</button>
           <button
             onClick={() => setDemoOpen(true)}
-            style={{
-              padding: '16px 36px', borderRadius: '6px',
-              border: `1px solid ${C.border}`,
-              background: 'transparent',
-              color: C.textSecondary,
-              fontSize: '14px', letterSpacing: '0.06em', textTransform: 'uppercase',
-              cursor: 'pointer',
-              transition: 'border-color 0.2s, color 0.2s, background 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold; e.currentTarget.style.background = C.goldGlow2 }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary; e.currentTarget.style.background = 'transparent' }}
-          >Watch Demo</button>
+            style={{ background:'transparent', color:'#fff', padding:'14px 32px', borderRadius:'6px', fontSize:'15px', fontWeight:'600', border:'1px solid #fff', cursor:'pointer', transition:'all 0.15s' }}
+            onMouseEnter={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor='#fff' }}
+            onMouseLeave={e=>{ e.currentTarget.style.background='transparent'; e.currentTarget.style.borderColor='#fff' }}
+          >See How It Works</button>
         </div>
-      </section>
+      </div>
 
-      {/* ── Stats bar ── */}
-      <div style={{
-        borderTop: `1px solid ${C.border}`,
-        borderBottom: `1px solid ${C.border}`,
-        background: C.bgCard,
-        display: 'flex', justifyContent: 'center', flexWrap: 'wrap',
-      }}>
+      <div style={{ background:'#0a0a0a', borderBottom:'1px solid #222', padding:'28px 40px', display:'flex', gap:'0', justifyContent:'center', flexWrap:'wrap' }}>
         {[
           { value: 94,    suffix: '%',  label: 'Claim Accuracy Rate' },
           { value: 28,    suffix: 's',  label: 'Average Analysis Time' },
@@ -1008,42 +940,35 @@ export default function Home() {
           { value: 340,   suffix: '+',  label: 'Law Firms & Enterprises' },
         ].map((s, i) => (
           <div key={i} style={{
-            padding: '28px 48px', textAlign: 'center',
+            padding: '20px 48px', textAlign: 'center',
             borderRight: i < 3 ? `1px solid ${C.border}` : 'none',
             minWidth: '180px',
           }}>
-            <div style={{
-              fontSize: '32px', fontFamily: SERIF, fontWeight: '700',
-              color: C.gold, lineHeight: 1,
-            }}>
+            <div style={{ fontSize: '32px', fontFamily: SERIF, fontWeight: '700', color: C.textPrimary, lineHeight: 1 }}>
               <Counter target={s.value} suffix={s.suffix} />
             </div>
-            <div style={{ fontSize: '12px', color: C.textSecondary, marginTop: '6px', letterSpacing: '0.04em' }}>
+            <div style={{ fontSize: '13px', color: C.textSecondary, marginTop: '6px', letterSpacing: '0.04em' }}>
               {s.label}
             </div>
           </div>
         ))}
       </div>
 
-      {/* ── Analyzer ── */}
-      <section id="analyzer" style={{ padding: '90px 24px', maxWidth: '960px', margin: '0 auto' }}>
+      <section id="analyzer" className="tl-section-pad" style={{ padding: '80px 40px', maxWidth: '960px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-          <h2 style={{
-            fontSize: '36px', fontFamily: SERIF, fontWeight: '700',
-            letterSpacing: '-0.01em', marginBottom: '14px', color: C.textPrimary,
-          }}>Verify Legal Content</h2>
-          <p style={{ fontSize: '16px', fontFamily: SERIF, fontStyle: 'italic', color: C.textSecondary, maxWidth: '480px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '38px', fontFamily: SERIF, fontWeight: '700', letterSpacing: '-0.01em', marginBottom: '14px', color: C.textPrimary, margin: '0 0 14px' }}>
+            Verify Legal Content
+          </h2>
+          <p style={{ fontSize: '16px', fontFamily: SERIF, fontStyle: 'italic', color: C.textSecondary, maxWidth: '480px', margin: '0 auto', lineHeight: 1.7 }}>
             Paste any AI-generated contract, brief, clause, or legal document. Our model will identify and score every verifiable claim.
           </p>
         </div>
 
-        {/* Input card */}
         <div style={{
           background: C.bgCard,
-          border: `1px solid ${focused ? C.borderGold : C.border}`,
-          borderRadius: '12px',
+          border: `1px solid ${focused ? C.blue : C.border}`,
           overflow: 'hidden',
-          boxShadow: focused ? `0 0 0 2px ${C.goldGlow}` : 'none',
+          boxShadow: focused ? `0 0 0 2px ${C.blueGlow}` : 'none',
           transition: 'border-color 0.2s, box-shadow 0.2s',
         }}>
           <div style={{
@@ -1069,15 +994,15 @@ export default function Home() {
               placeholder="Paste AI-generated legal text here — contracts, terms of service, briefs, NDAs, regulatory filings, or any legal document you want verified..."
               style={{
                 width: '100%', minHeight: '220px',
-                background: C.bgInput,
-                border: `1px solid ${C.border}`,
-                borderRadius: '8px',
+                background: C.bgSecondary,
+                border: `1px solid ${C.borderLight}`,
+                borderRadius: '4px',
                 color: C.textPrimary,
-                fontSize: '14px', lineHeight: '1.75',
+                fontSize: '16px', lineHeight: '1.75',
                 padding: '16px',
                 resize: 'vertical',
                 outline: 'none',
-                fontFamily: `"SF Mono", "Fira Code", "Courier New", monospace`,
+                fontFamily: MONO,
                 boxSizing: 'border-box',
                 transition: 'border-color 0.2s',
               }}
@@ -1092,17 +1017,17 @@ export default function Home() {
                 {['Brief', 'Contract', 'NDA', 'ToS', 'Filing'].map(tag => (
                   <button key={tag} onClick={() => { setText(SAMPLES[tag]); setResult(null); setError(null) }} style={{
                     fontSize: '11px', padding: '4px 10px', borderRadius: '4px',
-                    background: text === SAMPLES[tag] ? C.goldGlow : C.goldGlow2,
-                    border: `1px solid ${text === SAMPLES[tag] ? C.gold : C.borderGold}`,
-                    color: C.gold, letterSpacing: '0.04em',
+                    background: text === SAMPLES[tag] ? C.blueGlow : C.blueGlow2,
+                    border: `1px solid ${text === SAMPLES[tag] ? 'rgba(37,99,235,0.5)' : 'rgba(37,99,235,0.2)'}`,
+                    color: C.blue, letterSpacing: '0.04em',
                     cursor: 'pointer', transition: 'all 0.15s',
                     fontFamily: SANS,
                   }}
-                    onMouseEnter={e => { e.currentTarget.style.background = C.goldGlow; e.currentTarget.style.borderColor = C.gold }}
+                    onMouseEnter={e => { e.currentTarget.style.background = C.blueGlow; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.5)' }}
                     onMouseLeave={e => {
                       if (text !== SAMPLES[tag]) {
-                        e.currentTarget.style.background = C.goldGlow2
-                        e.currentTarget.style.borderColor = C.borderGold
+                        e.currentTarget.style.background = C.blueGlow2
+                        e.currentTarget.style.borderColor = 'rgba(37,99,235,0.2)'
                       }
                     }}
                   >{tag}</button>
@@ -1113,22 +1038,19 @@ export default function Home() {
                 disabled={!text.trim() || loading}
                 style={{
                   padding: '13px 32px', borderRadius: '6px', border: 'none',
-                  background: text.trim() && !loading
-                    ? `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`
-                    : C.border,
-                  color: text.trim() && !loading ? '#0a0800' : C.textMuted,
-                  fontSize: '13px', fontWeight: '700',
-                  letterSpacing: '0.06em', textTransform: 'uppercase',
+                  background: text.trim() && !loading ? C.blue : C.border,
+                  color: text.trim() && !loading ? '#fff' : C.textMuted,
+                  fontSize: '14px', fontWeight: '700',
+                  letterSpacing: '0.04em',
                   cursor: text.trim() && !loading ? 'pointer' : 'not-allowed',
                   transition: 'all 0.2s',
                   display: 'flex', alignItems: 'center', gap: '8px',
-                  boxShadow: text.trim() && !loading ? `0 4px 20px rgba(212,168,83,0.25)` : 'none',
                 }}>
                 {loading ? (
                   <>
                     <span style={{
                       width: '13px', height: '13px', borderRadius: '50%',
-                      border: '2px solid rgba(0,0,0,0.2)', borderTopColor: '#0a0800',
+                      border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#fff',
                       display: 'inline-block', animation: 'spin 0.7s linear infinite',
                     }} />
                     Analyzing...
@@ -1141,48 +1063,38 @@ export default function Home() {
 
         {error && (
           <div style={{
-            marginTop: '16px', padding: '14px 18px', borderRadius: '8px',
-            background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
+            marginTop: '16px', padding: '14px 18px',
+            background: C.errorBg, border: '1px solid rgba(239,68,68,0.25)',
             color: '#f87171', fontSize: '14px',
           }}>
             {error}
           </div>
         )}
 
-        {/* Results */}
         {result && (
           <div ref={resultsRef} style={{
             marginTop: '28px',
             background: C.bgCard,
             border: `1px solid ${C.border}`,
-            borderRadius: '12px',
             overflow: 'hidden',
           }}>
-            {/* Results header */}
             <div style={{
               padding: '20px 28px',
               borderBottom: `1px solid ${C.border}`,
-              background: 'rgba(212,168,83,0.04)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               flexWrap: 'wrap', gap: '12px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{
-                    width: '8px', height: '8px', borderRadius: '50%',
-                    background: C.gold, boxShadow: `0 0 8px ${C.gold}`,
-                  }} />
-                  <span style={{
-                    fontFamily: SERIF, fontSize: '18px', fontWeight: '600',
-                    color: C.textPrimary,
-                  }}>Verification Report</span>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: C.verified, boxShadow: `0 0 8px ${C.verified}` }} />
+                  <span style={{ fontFamily: SERIF, fontSize: '18px', fontWeight: '600', color: C.textPrimary }}>Verification Report</span>
                 </div>
                 {result.jurisdiction && (
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: '5px',
                     padding: '3px 10px', borderRadius: '4px',
-                    background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
-                    fontSize: '11px', color: C.gold, fontWeight: '600', letterSpacing: '0.05em',
+                    background: C.blueGlow2, border: `1px solid rgba(37,99,235,0.3)`,
+                    fontSize: '11px', color: C.blue, fontWeight: '600', letterSpacing: '0.05em',
                   }}>
                     ⚖ {result.jurisdiction}
                   </div>
@@ -1191,9 +1103,9 @@ export default function Home() {
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                 {[
                   { label: 'Verified', count: verdictCounts.Verified, color: C.verified },
-                  { label: 'Unverified', count: verdictCounts.Unverified, color: C.unverified },
-                  { label: 'Hallucination', count: verdictCounts.Hallucination, color: C.hallucination },
-                  { label: 'Outdated', count: verdictCounts.Outdated, color: C.outdated },
+                  { label: 'Unverified', count: verdictCounts.Unverified, color: C.warning },
+                  { label: 'Hallucination', count: verdictCounts.Hallucination, color: C.error },
+                  { label: 'Outdated', count: verdictCounts.Outdated, color: '#8b5cf6' },
                 ].filter(v => v.count > 0).map(v => (
                   <div key={v.label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: v.color }} />
@@ -1203,7 +1115,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Score + summary */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'auto 1fr',
@@ -1222,27 +1133,21 @@ export default function Home() {
                 </span>
               </div>
               <div style={{ padding: '36px 32px' }}>
-                <h3 style={{
-                  fontFamily: SERIF, fontSize: '20px', fontWeight: '600',
-                  marginBottom: '12px', color: C.textPrimary,
-                }}>Executive Summary</h3>
-                <p style={{
-                  fontSize: '15px', fontFamily: SERIF, fontStyle: 'italic',
-                  color: C.textSecondary, lineHeight: '1.7', margin: '0 0 20px',
-                }}>{result.summary}</p>
-
+                <h3 style={{ fontFamily: SERIF, fontSize: '20px', fontWeight: '600', marginBottom: '12px', color: C.textPrimary }}>
+                  Executive Summary
+                </h3>
+                <p style={{ fontSize: '15px', fontFamily: SERIF, fontStyle: 'italic', color: C.textSecondary, lineHeight: '1.7', margin: '0 0 20px' }}>
+                  {result.summary}
+                </p>
                 {result.riskFlags?.length > 0 && (
                   <div>
-                    <p style={{ fontSize: '11px', color: C.gold, fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
+                    <p style={{ fontSize: '11px', color: C.blue, fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>
                       Risk Flags
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {result.riskFlags.map((flag, i) => (
-                        <div key={i} style={{
-                          display: 'flex', alignItems: 'flex-start', gap: '8px',
-                          fontSize: '13px', color: C.textSecondary, lineHeight: '1.5',
-                        }}>
-                          <span style={{ color: C.gold, flexShrink: 0, marginTop: '1px' }}>▸</span>
+                        <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13px', color: C.textSecondary, lineHeight: '1.5' }}>
+                          <span style={{ color: C.blue, flexShrink: 0, marginTop: '1px' }}>▸</span>
                           {flag}
                         </div>
                       ))}
@@ -1252,7 +1157,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Tabs */}
             <div style={{ borderBottom: `1px solid ${C.border}`, display: 'flex', padding: '0 28px' }}>
               {[
                 { id: 'claims',      label: `Claims (${result.claims?.length ?? 0})` },
@@ -1261,8 +1165,8 @@ export default function Home() {
               ].map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
                   padding: '14px 20px', background: 'none', border: 'none',
-                  borderBottom: activeTab === tab.id ? `2px solid ${C.gold}` : '2px solid transparent',
-                  color: activeTab === tab.id ? C.gold : C.textSecondary,
+                  borderBottom: activeTab === tab.id ? `2px solid ${C.blue}` : '2px solid transparent',
+                  color: activeTab === tab.id ? C.blue : C.textSecondary,
                   fontSize: '13px', fontWeight: '600', cursor: 'pointer',
                   letterSpacing: '0.04em',
                   marginBottom: '-1px',
@@ -1272,7 +1176,6 @@ export default function Home() {
             </div>
 
             <div style={{ padding: '28px' }}>
-              {/* Claims tab */}
               {activeTab === 'claims' && (
                 <div>
                   {result.claims?.length > 0 ? result.claims.map((claim, i) => (
@@ -1283,16 +1186,12 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Corrections tab */}
               {activeTab === 'corrections' && (
                 <div>
                   {correctionsClaims.length > 0 ? correctionsClaims.map((claim, i) => (
                     <ClaimCard key={i} claim={claim} />
                   )) : (
-                    <div style={{
-                      textAlign: 'center', padding: '48px 24px',
-                      color: C.verified, fontFamily: SERIF, fontStyle: 'italic',
-                    }}>
+                    <div style={{ textAlign: 'center', padding: '48px 24px', color: C.verified, fontFamily: SERIF, fontStyle: 'italic' }}>
                       <div style={{ fontSize: '40px', marginBottom: '12px' }}>✓</div>
                       <p style={{ fontSize: '16px', margin: 0 }}>No corrections needed — all claims appear accurate.</p>
                     </div>
@@ -1300,7 +1199,6 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Actions tab */}
               {activeTab === 'actions' && (
                 <div>
                   {result.recommendedActions?.length > 0 ? (
@@ -1308,20 +1206,17 @@ export default function Home() {
                       {result.recommendedActions.map((action, i) => (
                         <div key={i} style={{
                           display: 'flex', alignItems: 'flex-start', gap: '14px',
-                          padding: '16px 20px', borderRadius: '10px',
-                          background: C.goldGlow2,
-                          border: `1px solid ${C.borderGold}`,
+                          padding: '16px 20px',
+                          background: C.blueGlow2,
+                          border: `1px solid rgba(37,99,235,0.2)`,
                         }}>
                           <span style={{
                             width: '26px', height: '26px', borderRadius: '50%',
-                            background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-                            color: '#0a0800', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: C.blue,
+                            color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '12px', fontWeight: '700', flexShrink: 0,
                           }}>{i + 1}</span>
-                          <p style={{
-                            margin: 0, fontSize: '14px', color: C.textPrimary,
-                            lineHeight: '1.6', fontFamily: SERIF,
-                          }}>{action}</p>
+                          <p style={{ margin: 0, fontSize: '14px', color: C.textPrimary, lineHeight: '1.6', fontFamily: SERIF }}>{action}</p>
                         </div>
                       ))}
                     </div>
@@ -1335,23 +1230,22 @@ export default function Home() {
         )}
       </section>
 
-      {/* ── Feature cards ── */}
-      <section style={{
-        padding: '80px 24px',
+      <section className="tl-section-pad" style={{
+        padding: '80px 40px',
         borderTop: `1px solid ${C.border}`,
         borderBottom: `1px solid ${C.border}`,
         background: C.bgCard,
       }}>
         <div style={{ maxWidth: '960px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-            <h2 style={{ fontFamily: SERIF, fontSize: '34px', fontWeight: '700', color: C.textPrimary, marginBottom: '12px' }}>
-              Built for the <span style={{ color: C.gold }}>Legal Profession</span>
+            <h2 style={{ fontFamily: SERIF, fontSize: '38px', fontWeight: '700', color: C.textPrimary, marginBottom: '12px', letterSpacing: '-0.01em' }}>
+              Built for the Legal Profession
             </h2>
-            <p style={{ fontFamily: SERIF, fontStyle: 'italic', color: C.textSecondary, fontSize: '16px' }}>
+            <p style={{ fontFamily: SERIF, fontStyle: 'italic', color: C.textSecondary, fontSize: '16px', lineHeight: 1.7 }}>
               Every feature engineered for legal precision, not consumer convenience.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
+          <div className="tl-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
             {[
               {
                 icon: '⚖',
@@ -1369,41 +1263,39 @@ export default function Home() {
                 desc: 'Flags claims that were once true but are now outdated due to legislative changes, new precedent, or regulatory updates.',
               },
             ].map((f, i) => (
-              <div key={i} style={{
+              <div key={i} className="tl-card-pad" style={{
                 padding: '32px',
-                borderRadius: '12px',
                 border: `1px solid ${C.border}`,
                 background: C.bg,
-                transition: 'border-color 0.2s, transform 0.2s',
+                transition: 'border-color 0.2s',
                 cursor: 'default',
               }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = 'translateY(0)' }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = C.blue}
+                onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
               >
                 <div style={{
-                  width: '48px', height: '48px', borderRadius: '10px',
-                  background: C.goldGlow, border: `1px solid ${C.borderGold}`,
+                  width: '48px', height: '48px', borderRadius: '6px',
+                  background: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '22px', marginBottom: '20px',
                 }}>{f.icon}</div>
-                <h3 style={{ fontFamily: SERIF, fontSize: '20px', fontWeight: '600', marginBottom: '10px', color: C.textPrimary }}>
+                <h3 style={{ fontFamily: SERIF, fontSize: '20px', fontWeight: '600', marginBottom: '12px', color: C.textPrimary }}>
                   {f.title}
                 </h3>
-                <p style={{ fontSize: '14px', color: C.textSecondary, lineHeight: '1.65', margin: 0 }}>{f.desc}</p>
+                <p style={{ fontSize: '16px', color: C.textSecondary, lineHeight: '1.7', margin: 0 }}>{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
-      <section style={{ padding: '80px 24px' }}>
+      <section className="tl-section-pad" style={{ padding: '80px 40px' }}>
         <div style={{ maxWidth: '960px', margin: '0 auto' }}>
           <h2 style={{
-            textAlign: 'center', fontFamily: SERIF, fontSize: '34px',
-            fontWeight: '700', color: C.textPrimary, marginBottom: '56px',
+            textAlign: 'center', fontFamily: SERIF, fontSize: '38px',
+            fontWeight: '700', color: C.textPrimary, marginBottom: '56px', letterSpacing: '-0.01em',
           }}>What Legal Leaders Say</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+          <div className="tl-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
             {[
               {
                 quote: "TrustLayer caught three fabricated citations in a brief our associates had approved. It's become mandatory before any filing.",
@@ -1421,21 +1313,20 @@ export default function Home() {
                 title: 'Chief Compliance Officer, Vertex Health',
               },
             ].map((t, i) => (
-              <div key={i} style={{
+              <div key={i} className="tl-card-pad" style={{
                 padding: '32px',
-                borderRadius: '12px',
                 border: `1px solid ${C.border}`,
                 background: C.bgCard,
                 position: 'relative',
               }}>
                 <span style={{
                   position: 'absolute', top: '20px', left: '28px',
-                  fontSize: '60px', fontFamily: SERIF, color: C.gold,
+                  fontSize: '60px', fontFamily: SERIF, color: C.textSecondary,
                   opacity: 0.15, lineHeight: 1,
                 }}>"</span>
                 <p style={{
                   fontFamily: SERIF, fontStyle: 'italic',
-                  fontSize: '15px', lineHeight: '1.7',
+                  fontSize: '16px', lineHeight: '1.7',
                   color: C.textSecondary, margin: '0 0 24px',
                   paddingTop: '16px', position: 'relative',
                 }}>{t.quote}</p>
@@ -1449,23 +1340,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Pricing ── */}
-      <section style={{
-        padding: '80px 24px',
+      <section className="tl-section-pad" style={{
+        padding: '80px 40px',
         borderTop: `1px solid ${C.border}`,
         background: C.bgCard,
       }}>
         <div style={{ maxWidth: '960px', margin: '0 auto' }}>
           <h2 style={{
-            textAlign: 'center', fontFamily: SERIF, fontSize: '34px',
-            fontWeight: '700', color: C.textPrimary, marginBottom: '12px',
+            textAlign: 'center', fontFamily: SERIF, fontSize: '38px',
+            fontWeight: '700', color: C.textPrimary, marginBottom: '12px', letterSpacing: '-0.01em',
           }}>Transparent Pricing</h2>
           <p style={{
             textAlign: 'center', fontFamily: SERIF, fontStyle: 'italic',
-            color: C.textSecondary, fontSize: '16px', marginBottom: '56px',
+            color: C.textSecondary, fontSize: '16px', marginBottom: '56px', lineHeight: 1.7,
           }}>Scale as your verification needs grow.</p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px', alignItems: 'start' }}>
+          <div className="tl-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', alignItems: 'start' }}>
             {[
               {
                 name: 'Free',
@@ -1498,44 +1388,43 @@ export default function Home() {
                 featured: false,
               },
             ].map((tier, i) => (
-              <div key={i} style={{
+              <div key={i} className="tl-card-pad" style={{
                 padding: '32px',
-                borderRadius: '12px',
-                border: `1px solid ${tier.featured ? C.gold : C.border}`,
-                background: tier.featured ? 'rgba(212,168,83,0.04)' : C.bg,
+                border: tier.featured ? `2px solid ${C.blue}` : `1px solid ${C.border}`,
+                background: tier.featured ? C.blueGlow2 : C.bg,
                 position: 'relative',
-                boxShadow: tier.featured ? `0 0 40px rgba(212,168,83,0.08)` : 'none',
               }}>
                 {tier.featured && (
                   <div style={{
                     position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
-                    padding: '4px 16px', borderRadius: '999px',
-                    background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-                    color: '#0a0800', fontSize: '11px', fontWeight: '700',
+                    padding: '4px 16px', borderRadius: '4px',
+                    background: C.blue,
+                    color: '#fff', fontSize: '11px', fontWeight: '700',
                     letterSpacing: '0.1em', textTransform: 'uppercase',
+                    whiteSpace: 'nowrap',
                   }}>Most Popular</div>
                 )}
                 <div style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary, marginBottom: '4px' }}>
                   {tier.name}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', margin: '12px 0 8px' }}>
-                  <span style={{ fontFamily: SERIF, fontSize: '36px', fontWeight: '700', color: tier.featured ? C.gold : C.textPrimary }}>
+                  <span style={{ fontFamily: SERIF, fontSize: '36px', fontWeight: '700', color: tier.featured ? C.blue : C.textPrimary }}>
                     {tier.price}
                   </span>
                   <span style={{ fontSize: '12px', color: C.textSecondary }}>{tier.period}</span>
                 </div>
-                <p style={{ fontSize: '13px', color: C.textSecondary, marginBottom: '24px', lineHeight: '1.5' }}>
+                <p style={{ fontSize: '14px', color: C.textSecondary, marginBottom: '24px', lineHeight: '1.7' }}>
                   {tier.desc}
                 </p>
                 <div style={{ marginBottom: '28px' }}>
                   {tier.features.map((f, j) => (
                     <div key={j} style={{
                       display: 'flex', alignItems: 'center', gap: '8px',
-                      fontSize: '13px', color: C.textSecondary,
-                      padding: '5px 0',
+                      fontSize: '14px', color: C.textSecondary,
+                      padding: '6px 0',
                       borderBottom: j < tier.features.length - 1 ? `1px solid ${C.border}` : 'none',
                     }}>
-                      <span style={{ color: C.gold, fontSize: '10px' }}>✦</span>
+                      <span style={{ color: C.blue, fontSize: '12px', fontWeight: '700' }}>✓</span>
                       {f}
                     </div>
                   ))}
@@ -1544,24 +1433,26 @@ export default function Home() {
                   <Link href={tier.href} style={{
                     display: 'block', width: '100%', padding: '13px',
                     borderRadius: '6px', boxSizing: 'border-box',
-                    background: tier.featured
-                      ? `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`
-                      : 'transparent',
+                    background: tier.featured ? C.blue : 'transparent',
                     border: tier.featured ? 'none' : `1px solid ${C.border}`,
-                    color: tier.featured ? '#0a0800' : C.textSecondary,
-                    fontSize: '13px', fontWeight: '700',
-                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                    color: tier.featured ? '#fff' : C.textSecondary,
+                    fontSize: '14px', fontWeight: '600',
+                    letterSpacing: '0.04em',
                     cursor: 'pointer', textDecoration: 'none',
                     textAlign: 'center', transition: 'all 0.2s',
                   }}
                     onMouseEnter={e => {
-                      if (!tier.featured) {
-                        e.currentTarget.style.borderColor = C.borderGold
-                        e.currentTarget.style.color = C.gold
+                      if (tier.featured) {
+                        e.currentTarget.style.background = C.blueHover
+                      } else {
+                        e.currentTarget.style.borderColor = C.blue
+                        e.currentTarget.style.color = C.textPrimary
                       }
                     }}
                     onMouseLeave={e => {
-                      if (!tier.featured) {
+                      if (tier.featured) {
+                        e.currentTarget.style.background = C.blue
+                      } else {
                         e.currentTarget.style.borderColor = C.border
                         e.currentTarget.style.color = C.textSecondary
                       }
@@ -1574,11 +1465,11 @@ export default function Home() {
                     background: 'transparent',
                     border: `1px solid ${C.border}`,
                     color: C.textSecondary,
-                    fontSize: '13px', fontWeight: '700',
-                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                    fontSize: '14px', fontWeight: '600',
+                    letterSpacing: '0.04em',
                     cursor: 'pointer', transition: 'all 0.2s',
                   }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.textPrimary }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary }}
                   >{tier.cta}</button>
                 )}
@@ -1588,24 +1479,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
       <footer style={{
         padding: '32px 40px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         borderTop: `1px solid ${C.border}`, flexWrap: 'wrap', gap: '16px',
+        background: C.bg,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '28px', height: '28px', borderRadius: '6px',
-            background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <span style={{ fontFamily: SERIF, fontWeight: '700', fontSize: '14px', color: '#0a0800' }}>T</span>
-          </div>
-          <span style={{ fontFamily: SERIF, fontWeight: '700', fontSize: '16px' }}>
-            Trust<span style={{ color: C.gold }}>Layer</span>
-          </span>
-        </div>
+        <span style={{ fontFamily: SERIF, fontWeight: '700', fontSize: '18px', color: C.textPrimary, letterSpacing: '-0.02em' }}>
+          TrustLayer
+        </span>
         <p style={{ fontSize: '12px', color: C.textMuted, margin: 0 }}>
           © 2026 TrustLayer Inc. Not a substitute for qualified legal counsel.
         </p>
@@ -1615,7 +1497,7 @@ export default function Home() {
               fontSize: '12px', color: C.textMuted, textDecoration: 'none',
               transition: 'color 0.2s',
             }}
-              onMouseEnter={e => e.target.style.color = C.gold}
+              onMouseEnter={e => e.target.style.color = C.textSecondary}
               onMouseLeave={e => e.target.style.color = C.textMuted}
             >{item}</a>
           ))}
@@ -1624,22 +1506,6 @@ export default function Home() {
 
       {demoOpen && <DemoModal onClose={() => setDemoOpen(false)} />}
 
-      <style>{`
-        @keyframes spin    { to { transform: rotate(360deg); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse   { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        @keyframes barFill { from { width: 0%; } to { width: 100%; } }
-        * { box-sizing: border-box; }
-        body { margin: 0; background: ${C.bg}; }
-        textarea::placeholder { color: #3a3530; }
-        textarea::-webkit-scrollbar { width: 5px; }
-        textarea::-webkit-scrollbar-track { background: transparent; }
-        textarea::-webkit-scrollbar-thumb { background: #1a2035; border-radius: 3px; }
-        ::-webkit-scrollbar { width: 7px; }
-        ::-webkit-scrollbar-track { background: ${C.bg}; }
-        ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 4px; }
-      `}</style>
     </div>
   )
 }

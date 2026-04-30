@@ -1,39 +1,52 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
-  bg:           '#05070d',
-  bgCard:       '#0a0d1a',
-  bgInput:      '#080b14',
-  border:       '#1a2035',
-  borderGold:   'rgba(212,168,83,0.25)',
-  gold:         '#d4a853',
-  goldDim:      '#a07835',
-  goldGlow:     'rgba(212,168,83,0.12)',
-  goldGlow2:    'rgba(212,168,83,0.06)',
-  textPrimary:  '#e8e0d0',
-  textSecondary:'#8a8070',
-  textMuted:    '#3a3530',
+  bg:           '#000000',
+  bgCard:       '#111111',
+  bgSecondary:  '#0a0a0a',
+  border:       '#222222',
+  borderLight:  '#333333',
+  textPrimary:  '#ffffff',
+  textSecondary:'#888888',
+  textMuted:    '#444444',
+  blue:         '#2563eb',
+  blueHover:    '#1d4ed8',
+  blueGlow:     'rgba(37,99,235,0.15)',
+  blueGlow2:    'rgba(37,99,235,0.08)',
   verified:     '#22c55e',
-  caution:      '#f59e0b',
-  danger:       '#ef4444',
-  blue:         '#3b82f6',
-  purple:       '#8b5cf6',
+  verifiedBg:   'rgba(34,197,94,0.08)',
+  error:        '#ef4444',
+  errorBg:      'rgba(239,68,68,0.08)',
+  warning:      '#f59e0b',
+  warningBg:    'rgba(245,158,11,0.08)',
 }
 
-const SERIF = '"Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif'
-const SANS  = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+const SERIF = 'Georgia, "Times New Roman", serif'
+const SANS  = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+const MONO  = '"JetBrains Mono", "SF Mono", "Fira Code", "Courier New", monospace'
 
 // ─── Tools registry ───────────────────────────────────────────────────────────
+const TOOLS_NAV = [
+  { path:'/tools/plain-english',          name:'Plain English Translator',  icon:'📖' },
+  { path:'/tools/deadlines',              name:'Deadline Calculator',        icon:'⏰' },
+  { path:'/tools/red-flags',              name:'Contract Red Flag Scanner',  icon:'🔍' },
+  { path:'/tools/letter-response',        name:'Letter Response Generator',  icon:'✉'  },
+  { path:'/tools/statute-of-limitations', name:'Statute of Limitations',     icon:'⏳' },
+  { path:'/tools/ethics',                 name:'Ethics Checker',             icon:'⚖' },
+  { path:'/tools/pro-se',                 name:'Pro Se Assistant',           icon:'🏛' },
+]
+
 const TOOLS = [
   { id:'plain-english',          path:'/tools/plain-english',          name:'Plain English Translator',   icon:'📖', color:'#60a5fa', desc:'Understand any legal document instantly. Paste legalese — get plain English back with a full glossary.',       free:false, category:'Documents'  },
   { id:'deadlines',              path:'/tools/deadlines',              name:'Deadline Calculator',         icon:'⏰', color:'#f59e0b', desc:'Never miss a filing deadline. Enter your case type and triggering event — get every deadline with rule citations.', free:false, category:'Litigation' },
   { id:'red-flags',              path:'/tools/red-flags',              name:'Contract Red Flag Scanner',  icon:'🔍', color:'#ef4444', desc:'Scan any contract for 20 dangerous clause types in 30 seconds. Get a safety score and negotiation language.',    free:false, category:'Contracts'  },
   { id:'letter-response',        path:'/tools/letter-response',        name:'Letter Response Generator',  icon:'✉',  color:'#c084fc', desc:'Respond to legal threats with confidence. Paste the letter — get a professionally drafted response.',              free:false, category:'Disputes'   },
   { id:'statute-of-limitations', path:'/tools/statute-of-limitations', name:'Statute of Limitations',     icon:'⏳', color:'#34d399', desc:'Know exactly how long you have to file. Get the exact deadline, statute citation, tolling exceptions.',            free:false, category:'Litigation' },
-  { id:'ethics',                 path:'/tools/ethics',                 name:'Ethics Checker',              icon:'⚖', color:'#d4a853', desc:'Instant answers to attorney ethics questions. ABA Model Rules + state-specific bar opinions.',                     free:false, category:'Attorneys'  },
+  { id:'ethics',                 path:'/tools/ethics',                 name:'Ethics Checker',              icon:'⚖', color:'#a78bfa', desc:'Instant answers to attorney ethics questions. ABA Model Rules + state-specific bar opinions.',                     free:false, category:'Attorneys'  },
   { id:'pro-se',                 path:'/tools/pro-se',                 name:'Pro Se Legal Assistant',     icon:'🏛', color:'#22c55e', desc:'Navigate the legal system without an attorney. Step-by-step guidance, documents, hearing prep.',                   free:true,  category:'Self-Help'  },
 ]
 
@@ -43,70 +56,59 @@ const CAT_COLORS = {
   Litigation: '#f59e0b',
   Contracts:  '#ef4444',
   Disputes:   '#c084fc',
-  Attorneys:  '#d4a853',
+  Attorneys:  '#a78bfa',
   'Self-Help':'#22c55e',
 }
 
 // ─── Tool Card ────────────────────────────────────────────────────────────────
 function ToolCard({ tool }) {
-  const catColor = CAT_COLORS[tool.category] ?? C.gold
-
-  function handleEnter(e) {
-    e.currentTarget.style.borderColor = C.borderGold
-    e.currentTarget.style.transform   = 'translateY(-2px)'
-    e.currentTarget.style.boxShadow   = `0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px ${C.borderGold}`
-  }
-  function handleLeave(e) {
-    e.currentTarget.style.borderColor = C.border
-    e.currentTarget.style.transform   = 'translateY(0)'
-    e.currentTarget.style.boxShadow   = '0 2px 12px rgba(0,0,0,0.2)'
-  }
+  const [hovered, setHovered] = useState(false)
+  const catColor = CAT_COLORS[tool.category] ?? C.blue
 
   return (
     <div
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        background:   C.bgCard,
-        border:       `1px solid ${C.border}`,
-        borderRadius: '14px',
-        padding:      '28px',
-        display:      'flex',
-        flexDirection:'column',
-        gap:          '18px',
-        cursor:       'default',
-        transition:   'border-color 0.2s, transform 0.2s, box-shadow 0.2s',
-        boxShadow:    '0 2px 12px rgba(0,0,0,0.2)',
-        position:     'relative',
-        overflow:     'hidden',
+        background:    C.bgCard,
+        border:        `1px solid ${hovered ? C.blue : C.border}`,
+        padding:       '32px',
+        display:       'flex',
+        flexDirection: 'column',
+        gap:           '20px',
+        cursor:        'default',
+        transition:    'border-color 0.2s, box-shadow 0.2s',
+        boxShadow:     hovered ? `0 8px 40px rgba(37,99,235,0.12)` : '0 2px 12px rgba(0,0,0,0.2)',
+        position:      'relative',
+        overflow:      'hidden',
       }}
     >
-      {/* Subtle glow accent top-right */}
+      {/* Subtle glow accent */}
       <div style={{
-        position:   'absolute',
-        top:        '-40px',
-        right:      '-40px',
-        width:      '120px',
-        height:     '120px',
-        borderRadius:'50%',
-        background: `radial-gradient(circle, ${tool.color}14 0%, transparent 70%)`,
-        pointerEvents:'none',
+        position:      'absolute',
+        top:           '-40px',
+        right:         '-40px',
+        width:         '120px',
+        height:        '120px',
+        borderRadius:  '50%',
+        background:    `radial-gradient(circle, ${tool.color}14 0%, transparent 70%)`,
+        pointerEvents: 'none',
       }} />
 
       {/* Top row: icon + category */}
       <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
         {/* Icon circle */}
         <div style={{
-          width:        '48px',
-          height:       '48px',
-          borderRadius: '12px',
-          background:   `${tool.color}18`,
-          border:       `1px solid ${tool.color}35`,
-          display:      'flex',
-          alignItems:   'center',
+          width:         '52px',
+          height:        '52px',
+          borderRadius:  '50%',
+          background:    'rgba(37,99,235,0.1)',
+          border:        '1px solid rgba(37,99,235,0.2)',
+          display:       'flex',
+          alignItems:    'center',
           justifyContent:'center',
-          fontSize:     '22px',
-          flexShrink:   0,
+          fontSize:      '22px',
+          flexShrink:    0,
         }}>
           {tool.icon}
         </div>
@@ -119,7 +121,6 @@ function ToolCard({ tool }) {
           textTransform: 'uppercase',
           color:         catColor,
           padding:       '3px 9px',
-          borderRadius:  '4px',
           background:    `${catColor}15`,
           border:        `1px solid ${catColor}30`,
         }}>
@@ -128,26 +129,26 @@ function ToolCard({ tool }) {
       </div>
 
       {/* Body: name + description */}
-      <div style={{ flex:1 }}>
+      <div style={{ flex: 1 }}>
         <h3 style={{
           fontFamily:  SERIF,
           fontSize:    '19px',
           fontWeight:  '700',
           color:       C.textPrimary,
-          margin:      '0 0 8px',
+          margin:      '0 0 10px',
           lineHeight:  '1.25',
         }}>
           {tool.name}
         </h3>
         <p style={{
-          fontSize:   '13px',
-          color:      C.textSecondary,
-          lineHeight: '1.65',
-          margin:     0,
-          display:    '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient:'vertical',
-          overflow:   'hidden',
+          fontSize:         '14px',
+          color:            C.textSecondary,
+          lineHeight:       '1.65',
+          margin:           0,
+          display:          '-webkit-box',
+          WebkitLineClamp:  2,
+          WebkitBoxOrient:  'vertical',
+          overflow:         'hidden',
         }}>
           {tool.desc}
         </p>
@@ -164,9 +165,8 @@ function ToolCard({ tool }) {
               textTransform: 'uppercase',
               color:         C.verified,
               padding:       '3px 9px',
-              borderRadius:  '4px',
               background:    'rgba(34,197,94,0.1)',
-              border:        '1px solid rgba(34,197,94,0.25)',
+              border:        '1px solid rgba(34,197,94,0.3)',
             }}>
               FREE
             </span>
@@ -179,45 +179,18 @@ function ToolCard({ tool }) {
             display:       'inline-flex',
             alignItems:    'center',
             gap:           '6px',
-            padding:       '9px 18px',
-            borderRadius:  '7px',
-            fontSize:      '12px',
-            fontWeight:    '700',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
+            padding:       '10px 20px',
+            borderRadius:  '6px',
+            fontSize:      '13px',
+            fontWeight:    '600',
             textDecoration:'none',
-            transition:    'all 0.18s',
-            ...(tool.free
-              ? {
-                  background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-                  color:      '#0a0800',
-                  border:     'none',
-                  boxShadow:  '0 2px 12px rgba(212,168,83,0.25)',
-                }
-              : {
-                  background: 'transparent',
-                  color:      C.gold,
-                  border:     `1px solid ${C.borderGold}`,
-                }),
+            transition:    'background 0.15s',
+            background:    C.blue,
+            color:         '#fff',
+            border:        'none',
           }}
-          onMouseEnter={e => {
-            if (tool.free) {
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(212,168,83,0.45)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            } else {
-              e.currentTarget.style.background   = C.goldGlow
-              e.currentTarget.style.borderColor  = C.gold
-            }
-          }}
-          onMouseLeave={e => {
-            if (tool.free) {
-              e.currentTarget.style.boxShadow = '0 2px 12px rgba(212,168,83,0.25)'
-              e.currentTarget.style.transform = 'translateY(0)'
-            } else {
-              e.currentTarget.style.background  = 'transparent'
-              e.currentTarget.style.borderColor = C.borderGold
-            }
-          }}
+          onMouseEnter={e => e.currentTarget.style.background = C.blueHover}
+          onMouseLeave={e => e.currentTarget.style.background = C.blue}
         >
           Launch Tool
           <span style={{ fontSize:'13px', lineHeight:1 }}>→</span>
@@ -229,99 +202,77 @@ function ToolCard({ tool }) {
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function ToolsHub() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [toolsOpen, setToolsOpen]           = useState(false)
+
   return (
     <div style={{ minHeight:'100vh', background:C.bg, color:C.textPrimary, fontFamily:SANS }}>
 
       {/* ── Nav ── */}
-      <nav style={{
-        position:     'sticky',
-        top:          0,
-        zIndex:       100,
-        display:      'flex',
-        alignItems:   'center',
-        justifyContent:'space-between',
-        padding:      '0 40px',
-        height:       '68px',
-        background:   'rgba(5,7,13,0.92)',
-        backdropFilter:'blur(16px)',
-        borderBottom: `1px solid ${C.border}`,
-      }}>
-        {/* Logo */}
-        <Link href="/" style={{ display:'flex', alignItems:'center', gap:'12px', textDecoration:'none' }}>
-          <div style={{
-            width:        '36px',
-            height:       '36px',
-            borderRadius: '8px',
-            background:   `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-            display:      'flex',
-            alignItems:   'center',
-            justifyContent:'center',
-            boxShadow:    `0 0 16px ${C.goldGlow}`,
-          }}>
-            <span style={{ fontSize:'18px', fontFamily:SERIF, fontWeight:'700', color:'#0a0800' }}>T</span>
+      <nav className="tl-nav" style={{ position:'sticky', top:0, zIndex:100, background:'#000', borderBottom:'1px solid #222', height:'64px', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 40px' }}>
+        <Link href="/" style={{ textDecoration:'none', fontSize:'22px', fontFamily:SERIF, fontWeight:'700', color:'#fff', letterSpacing:'-0.02em' }}>TrustLayer</Link>
+        <div className="tl-nav-links" style={{ display:'flex', gap:'32px', alignItems:'center' }}>
+          {[['/', 'Verify'],['/research','Research']].map(([href,label]) => (
+            <Link key={href} href={href} style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+              onMouseEnter={e=>e.currentTarget.style.color='#2563eb'}
+              onMouseLeave={e=>e.currentTarget.style.color='#fff'}
+            >{label}</Link>
+          ))}
+          {/* Tools dropdown — active */}
+          <div style={{ position:'relative' }} onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}>
+            <Link href="/tools" style={{ fontSize:'14px', color:'#2563eb', textDecoration:'none', display:'flex', alignItems:'center', gap:'3px', borderBottom:'2px solid #2563eb', paddingBottom:'2px' }}
+            >Tools <span style={{ fontSize:'9px', opacity:0.6 }}>▾</span></Link>
+            {toolsOpen && (
+              <div style={{ position:'absolute', top:'calc(100% + 10px)', left:'-10px', background:'#111', border:'1px solid #222', borderRadius:'6px', padding:'8px 6px', minWidth:'240px', boxShadow:'0 8px 32px rgba(0,0,0,0.8)', zIndex:200, animation:'fadeIn 0.15s ease' }}>
+                {TOOLS_NAV.map(t => (
+                  <Link key={t.path} href={t.path} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'9px 10px', borderRadius:'4px', textDecoration:'none' }}
+                    onMouseEnter={e => e.currentTarget.style.background='rgba(37,99,235,0.1)'}
+                    onMouseLeave={e => e.currentTarget.style.background='transparent'}
+                  >
+                    <span style={{ fontSize:'14px', width:'20px', textAlign:'center' }}>{t.icon}</span>
+                    <span style={{ fontSize:'13px', color:'#888' }}>{t.name}</span>
+                  </Link>
+                ))}
+                <div style={{ borderTop:'1px solid #222', margin:'5px 4px' }} />
+                <Link href="/tools" style={{ display:'block', textAlign:'center', padding:'8px 10px', borderRadius:'4px', fontSize:'12px', color:'#2563eb', fontWeight:'600', textDecoration:'none' }}>View All Tools →</Link>
+              </div>
+            )}
           </div>
-          <span style={{ fontSize:'20px', fontFamily:SERIF, fontWeight:'700', letterSpacing:'0.02em', color:C.textPrimary }}>
-            Trust<span style={{ color:C.gold }}>Layer</span>
-          </span>
-        </Link>
-
-        {/* Links */}
-        <div style={{ display:'flex', gap:'32px', alignItems:'center' }}>
-          <Link href="/" style={{
-            fontSize:'13px', color:C.textSecondary, textDecoration:'none',
-            letterSpacing:'0.04em', transition:'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
-          >Verify</Link>
-
-          <Link href="/research" style={{
-            fontSize:'13px', color:C.textSecondary, textDecoration:'none',
-            letterSpacing:'0.04em', transition:'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
-          >Research</Link>
-
-          {/* Tools — active */}
-          <Link href="/tools" style={{
-            fontSize:'13px', color:C.gold, textDecoration:'none',
-            letterSpacing:'0.04em',
-            borderBottom:`2px solid ${C.gold}`,
-            paddingBottom:'2px',
-          }}>Tools</Link>
-
-          <Link href="/enterprise" style={{
-            fontSize:'13px', color:C.textSecondary, textDecoration:'none',
-            letterSpacing:'0.04em', transition:'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
+          <Link href="/enterprise" style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+            onMouseEnter={e=>e.currentTarget.style.color='#2563eb'}
+            onMouseLeave={e=>e.currentTarget.style.color='#fff'}
           >Enterprise</Link>
-
-          <Link href="/request-access" style={{
-            padding:      '8px 20px',
-            borderRadius: '6px',
-            border:       `1px solid ${C.borderGold}`,
-            background:   C.goldGlow2,
-            color:        C.gold,
-            fontSize:     '13px',
-            cursor:       'pointer',
-            letterSpacing:'0.04em',
-            transition:   'all 0.2s',
-            textDecoration:'none',
-            display:      'inline-block',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = C.goldGlow; e.currentTarget.style.borderColor = C.gold }}
-            onMouseLeave={e => { e.currentTarget.style.background = C.goldGlow2; e.currentTarget.style.borderColor = C.borderGold }}
+          <Link href="/request-access" style={{ background:'#2563eb', color:'#fff', padding:'9px 22px', borderRadius:'6px', fontSize:'14px', fontWeight:'600', textDecoration:'none', transition:'background 0.15s' }}
+            onMouseEnter={e=>e.currentTarget.style.background='#1d4ed8'}
+            onMouseLeave={e=>e.currentTarget.style.background='#2563eb'}
           >Request Access</Link>
         </div>
+        <button className="tl-hamburger" style={{ display:'none', background:'none', border:'none', color:'#fff', fontSize:'22px', cursor:'pointer', padding:'8px' }} onClick={() => setMobileMenuOpen(v => !v)}>
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
       </nav>
 
+      {/* Mobile overlay */}
+      {mobileMenuOpen && <div style={{ position:'fixed', inset:0, zIndex:149, background:'rgba(0,0,0,0.6)' }} onClick={() => setMobileMenuOpen(false)} />}
+
+      {/* Mobile drawer */}
+      <div style={{ position:'fixed', top:0, right:0, width:'280px', height:'100vh', background:'#000', borderLeft:'1px solid #222', zIndex:150, transform:mobileMenuOpen?'translateX(0)':'translateX(100%)', transition:'transform 0.25s ease', display:'flex', flexDirection:'column', padding:'72px 24px 40px', gap:'4px' }}>
+        {[['/', 'Verify'],['/research','Research'],['/enterprise','Enterprise']].map(([href,label]) => (
+          <Link key={href} href={href} style={{ display:'block', padding:'12px 8px', fontSize:'16px', color:'#fff', textDecoration:'none', borderBottom:'1px solid #111' }}>{label}</Link>
+        ))}
+        <div style={{ padding:'8px 0 4px', fontSize:'12px', color:'#444', letterSpacing:'0.08em', textTransform:'uppercase' }}>Tools</div>
+        {TOOLS_NAV.map(t => (
+          <Link key={t.path} href={t.path} style={{ display:'flex', gap:'10px', alignItems:'center', padding:'10px 8px', fontSize:'14px', color:'#888', textDecoration:'none' }}>
+            <span>{t.icon}</span><span>{t.name}</span>
+          </Link>
+        ))}
+        <Link href="/request-access" style={{ marginTop:'auto', background:'#2563eb', color:'#fff', padding:'14px 20px', borderRadius:'6px', textDecoration:'none', fontSize:'15px', fontWeight:'600', textAlign:'center', display:'block' }}>Request Access</Link>
+      </div>
+
       {/* ── Hero ── */}
-      <section style={{
+      <section className="tl-section-pad" style={{
         textAlign:  'center',
-        padding:    '100px 24px 72px',
+        padding:    '96px 40px 72px',
         position:   'relative',
         overflow:   'hidden',
       }}>
@@ -333,7 +284,7 @@ export default function ToolsHub() {
           transform: 'translateX(-50%)',
           width:     '900px',
           height:    '480px',
-          background:`radial-gradient(ellipse, rgba(212,168,83,0.07) 0%, transparent 65%)`,
+          background:`radial-gradient(ellipse, rgba(37,99,235,0.07) 0%, transparent 65%)`,
           pointerEvents:'none',
         }} />
 
@@ -343,11 +294,10 @@ export default function ToolsHub() {
           alignItems:    'center',
           gap:           '8px',
           padding:       '7px 18px',
-          borderRadius:  '999px',
-          background:    C.goldGlow2,
-          border:        `1px solid ${C.borderGold}`,
+          background:    C.blueGlow2,
+          border:        `1px solid rgba(37,99,235,0.3)`,
           fontSize:      '11px',
-          color:         C.gold,
+          color:         C.blue,
           fontWeight:    '600',
           letterSpacing: '0.1em',
           textTransform: 'uppercase',
@@ -360,18 +310,18 @@ export default function ToolsHub() {
 
         {/* Headline */}
         <h1 style={{
-          fontSize:    'clamp(38px, 6vw, 68px)',
-          fontFamily:  SERIF,
-          fontWeight:  '700',
+          fontSize:     'clamp(38px, 6vw, 64px)',
+          fontFamily:   SERIF,
+          fontWeight:   '700',
           letterSpacing:'-0.01em',
-          lineHeight:  '1.08',
-          margin:      '0 auto 24px',
-          maxWidth:    '820px',
-          color:       C.textPrimary,
-          animation:   'slideUp 0.55s 0.05s ease-out both',
+          lineHeight:   '1.08',
+          margin:       '0 auto 24px',
+          maxWidth:     '820px',
+          color:        C.textPrimary,
+          animation:    'slideUp 0.55s 0.05s ease-out both',
         }}>
           Your Complete<br />
-          <span style={{ color:C.gold }}>Legal Toolkit</span>
+          <span style={{ color:C.blue }}>Legal Toolkit</span>
         </h1>
 
         {/* Subtitle */}
@@ -391,38 +341,36 @@ export default function ToolsHub() {
 
         {/* Stats strip */}
         <div style={{
-          display:        'inline-flex',
-          alignItems:     'center',
-          gap:            '0',
-          background:     C.bgCard,
-          border:         `1px solid ${C.border}`,
-          borderRadius:   '12px',
-          overflow:       'hidden',
-          animation:      'slideUp 0.65s 0.15s ease-out both',
+          display:      'inline-flex',
+          alignItems:   'center',
+          background:   C.bgCard,
+          border:       `1px solid ${C.border}`,
+          overflow:     'hidden',
+          animation:    'slideUp 0.65s 0.15s ease-out both',
         }}>
           {[
-            { value:'7 Tools',              label:'Available Now'         },
-            { value:'Free to Start',        label:'No Credit Card'        },
-            { value:'50 States',            label:'Full Coverage'         },
-            { value:'No Subscription',      label:'Required'              },
+            { value:'7 Tools',         label:'Available Now'  },
+            { value:'Free to Start',   label:'No Credit Card' },
+            { value:'50 States',       label:'Full Coverage'  },
+            { value:'No Subscription', label:'Required'       },
           ].map((stat, i) => (
             <div key={i} style={{
-              padding:    '20px 32px',
-              textAlign:  'center',
+              padding:     '20px 32px',
+              textAlign:   'center',
               borderRight: i < 3 ? `1px solid ${C.border}` : 'none',
-              minWidth:   '130px',
+              minWidth:    '130px',
             }}>
               <div style={{
-                fontSize:   '15px',
-                fontFamily: SERIF,
-                fontWeight: '700',
-                color:      C.gold,
-                lineHeight: 1,
+                fontSize:    '15px',
+                fontFamily:  SERIF,
+                fontWeight:  '700',
+                color:       C.textPrimary,
+                lineHeight:  1,
                 marginBottom:'4px',
               }}>{stat.value}</div>
               <div style={{
-                fontSize:   '10px',
-                color:      C.textMuted,
+                fontSize:     '10px',
+                color:        C.textMuted,
                 letterSpacing:'0.06em',
                 textTransform:'uppercase',
               }}>{stat.label}</div>
@@ -432,17 +380,17 @@ export default function ToolsHub() {
       </section>
 
       {/* ── Tools grid ── */}
-      <section style={{
-        padding:   '16px 24px 96px',
-        maxWidth:  '1080px',
-        margin:    '0 auto',
+      <section className="tl-section-pad" style={{
+        padding:  '16px 40px 96px',
+        maxWidth: '1080px',
+        margin:   '0 auto',
       }}>
         {/* Section label */}
         <div style={{
-          display:       'flex',
-          alignItems:    'center',
-          gap:           '12px',
-          marginBottom:  '28px',
+          display:      'flex',
+          alignItems:   'center',
+          gap:          '12px',
+          marginBottom: '28px',
         }}>
           <p style={{
             fontSize:      '11px',
@@ -454,16 +402,16 @@ export default function ToolsHub() {
           }}>All Tools</p>
           <div style={{ flex:1, height:'1px', background:C.border }} />
           <span style={{
-            fontSize:   '11px',
-            color:      C.textMuted,
+            fontSize:     '11px',
+            color:        C.textMuted,
             letterSpacing:'0.05em',
           }}>{TOOLS.length} tools</span>
         </div>
 
         {/* Grid */}
-        <div style={{
+        <div className="tl-tool-grid" style={{
           display:             'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
           gap:                 '20px',
         }}>
           {TOOLS.map(tool => (
@@ -477,7 +425,7 @@ export default function ToolsHub() {
         borderTop:   `1px solid ${C.border}`,
         borderBottom:`1px solid ${C.border}`,
         background:  C.bgCard,
-        padding:     '72px 24px',
+        padding:     '72px 40px',
         textAlign:   'center',
       }}>
         <div style={{ maxWidth:'640px', margin:'0 auto' }}>
@@ -486,7 +434,7 @@ export default function ToolsHub() {
             fontWeight:    '700',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color:         C.gold,
+            color:         C.blue,
             margin:        '0 0 16px',
           }}>Limited Access</p>
           <h2 style={{
@@ -497,7 +445,7 @@ export default function ToolsHub() {
             margin:      '0 0 16px',
             lineHeight:  '1.15',
           }}>
-            World-class AI. <span style={{ color:C.gold }}>No law degree required.</span>
+            World-class AI. <span style={{ color:C.blue }}>No law degree required.</span>
           </h2>
           <p style={{
             fontFamily: SERIF,
@@ -513,38 +461,35 @@ export default function ToolsHub() {
           <div style={{ display:'flex', gap:'14px', justifyContent:'center', flexWrap:'wrap' }}>
             <Link href="/tools/pro-se" style={{
               padding:       '15px 36px',
-              borderRadius:  '7px',
-              background:    `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-              color:         '#0a0800',
-              fontSize:      '13px',
-              fontWeight:    '700',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
+              borderRadius:  '6px',
+              background:    C.blue,
+              color:         '#fff',
+              fontSize:      '14px',
+              fontWeight:    '600',
               textDecoration:'none',
-              boxShadow:     '0 4px 24px rgba(212,168,83,0.3)',
-              transition:    'transform 0.15s, box-shadow 0.15s',
+              transition:    'background 0.15s',
               display:       'inline-block',
+              fontFamily:    SANS,
             }}
-              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(212,168,83,0.4)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='0 4px 24px rgba(212,168,83,0.3)' }}
+              onMouseEnter={e => e.currentTarget.style.background = C.blueHover}
+              onMouseLeave={e => e.currentTarget.style.background = C.blue}
             >
               Try Pro Se Free
             </Link>
             <Link href="/request-access" style={{
               padding:       '15px 36px',
-              borderRadius:  '7px',
-              border:        `1px solid ${C.border}`,
+              borderRadius:  '6px',
+              border:        `1px solid ${C.borderLight}`,
               background:    'transparent',
               color:         C.textSecondary,
-              fontSize:      '13px',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
+              fontSize:      '14px',
               textDecoration:'none',
               display:       'inline-block',
-              transition:    'all 0.2s',
+              transition:    'all 0.15s',
+              fontFamily:    SANS,
             }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor=C.borderGold; e.currentTarget.style.color=C.gold; e.currentTarget.style.background=C.goldGlow2 }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor=C.border; e.currentTarget.style.color=C.textSecondary; e.currentTarget.style.background='transparent' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.textPrimary; e.currentTarget.style.background = C.blueGlow2 }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = C.borderLight; e.currentTarget.style.color = C.textSecondary; e.currentTarget.style.background = 'transparent' }}
             >
               Request Full Access
             </Link>
@@ -562,28 +507,17 @@ export default function ToolsHub() {
         flexWrap:       'wrap',
         gap:            '16px',
       }}>
-        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-          <div style={{
-            width:'28px', height:'28px', borderRadius:'6px',
-            background:`linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-            display:'flex', alignItems:'center', justifyContent:'center',
-          }}>
-            <span style={{ fontFamily:SERIF, fontWeight:'700', fontSize:'14px', color:'#0a0800' }}>T</span>
-          </div>
-          <span style={{ fontFamily:SERIF, fontWeight:'700', fontSize:'16px' }}>
-            Trust<span style={{ color:C.gold }}>Layer</span>
-          </span>
-        </div>
-        <p style={{ fontSize:'12px', color:C.textMuted, margin:0 }}>
+        <span style={{ fontFamily:SERIF, fontWeight:'700', fontSize:'18px', color:C.textPrimary, letterSpacing:'-0.02em' }}>TrustLayer</span>
+        <p style={{ fontSize:'13px', color:C.textMuted, margin:0 }}>
           © 2026 TrustLayer Inc. Not a substitute for qualified legal counsel.
         </p>
         <div style={{ display:'flex', gap:'24px' }}>
           {['Privacy', 'Terms', 'Security', 'Contact'].map(item => (
             <a key={item} href="#" style={{
-              fontSize:'12px', color:C.textMuted, textDecoration:'none',
-              transition:'color 0.2s',
+              fontSize:'13px', color:C.textMuted, textDecoration:'none',
+              transition:'color 0.15s',
             }}
-              onMouseEnter={e => e.target.style.color = C.gold}
+              onMouseEnter={e => e.target.style.color = C.textSecondary}
               onMouseLeave={e => e.target.style.color = C.textMuted}
             >{item}</a>
           ))}
@@ -591,13 +525,28 @@ export default function ToolsHub() {
       </footer>
 
       <style>{`
-        @keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes pulse   { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-        * { box-sizing:border-box; }
-        body { margin:0; background:${C.bg}; }
-        ::-webkit-scrollbar { width:7px; }
-        ::-webkit-scrollbar-track { background:${C.bg}; }
-        ::-webkit-scrollbar-thumb { background:${C.border}; border-radius:4px; }
+        * { box-sizing: border-box; }
+        @media (max-width: 768px) {
+          .tl-nav-links { display: none !important; }
+          .tl-hamburger { display: flex !important; align-items: center; }
+          .tl-2col { grid-template-columns: 1fr !important; }
+          .tl-3col { grid-template-columns: 1fr !important; }
+          .tl-section-pad { padding-left: 20px !important; padding-right: 20px !important; padding-top: 56px !important; padding-bottom: 56px !important; }
+          .tl-card-pad { padding: 20px !important; }
+          .tl-btn-full { width: 100% !important; }
+          .tl-nav { padding: 0 20px !important; }
+          .tl-hide-mobile { display: none !important; }
+          .tl-tool-grid { grid-template-columns: 1fr !important; }
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes spin { to { transform: rotate(360deg) } }
+        @keyframes pulse { 0%,100% { opacity:0.3 } 50% { opacity:0.7 } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+        ::selection { background: rgba(37,99,235,0.4); color: #fff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        body { margin: 0; background: #000; }
       `}</style>
     </div>
   )

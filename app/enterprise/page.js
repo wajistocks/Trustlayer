@@ -1,57 +1,57 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 
 // ─── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
-  bg:        '#05070d',
-  bgCard:    '#0a0d1a',
-  bgInput:   '#080b14',
-  bgDeep:    '#030508',
-  border:    '#1a2035',
-  borderGold:'rgba(212,168,83,0.25)',
-  gold:      '#d4a853',
-  goldDim:   '#a07835',
-  goldGlow:  'rgba(212,168,83,0.12)',
-  goldGlow2: 'rgba(212,168,83,0.06)',
-  textPrimary:   '#e8e0d0',
-  textSecondary: '#8a8070',
-  textMuted:     '#3a3530',
-  verified:  '#22c55e',
-  caution:   '#f59e0b',
-  danger:    '#ef4444',
-  blue:      '#3b82f6',
-  purple:    '#8b5cf6',
+  bg:           '#000000',
+  bgCard:       '#111111',
+  bgSecondary:  '#0a0a0a',
+  border:       '#222222',
+  borderLight:  '#333333',
+  textPrimary:  '#ffffff',
+  textSecondary:'#888888',
+  textMuted:    '#444444',
+  blue:         '#2563eb',
+  blueHover:    '#1d4ed8',
+  blueGlow:     'rgba(37,99,235,0.15)',
+  blueGlow2:    'rgba(37,99,235,0.08)',
+  verified:     '#22c55e',
+  verifiedBg:   'rgba(34,197,94,0.08)',
+  error:        '#ef4444',
+  errorBg:      'rgba(239,68,68,0.08)',
+  warning:      '#f59e0b',
+  warningBg:    'rgba(245,158,11,0.08)',
 }
-const SERIF = '"Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif'
-const SANS  = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+const SERIF = 'Georgia, "Times New Roman", serif'
+const SANS  = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+const MONO  = '"JetBrains Mono", "SF Mono", "Fira Code", "Courier New", monospace'
 
 const TOOLS_NAV = [
-  { path:'/tools/plain-english',         name:'Plain English Translator',  icon:'📖' },
-  { path:'/tools/deadlines',             name:'Deadline Calculator',        icon:'⏰' },
-  { path:'/tools/red-flags',             name:'Contract Red Flag Scanner',  icon:'🔍' },
-  { path:'/tools/letter-response',       name:'Letter Response Generator',  icon:'✉'  },
-  { path:'/tools/statute-of-limitations',name:'Statute of Limitations',     icon:'⏳' },
-  { path:'/tools/ethics',                name:'Ethics Checker',             icon:'⚖' },
-  { path:'/tools/pro-se',                name:'Pro Se Assistant',           icon:'🏛' },
+  { path:'/tools/plain-english',          name:'Plain English Translator',  icon:'📖' },
+  { path:'/tools/deadlines',              name:'Deadline Calculator',        icon:'⏰' },
+  { path:'/tools/red-flags',              name:'Contract Red Flag Scanner',  icon:'🔍' },
+  { path:'/tools/letter-response',        name:'Letter Response Generator',  icon:'✉'  },
+  { path:'/tools/statute-of-limitations', name:'Statute of Limitations',     icon:'⏳' },
+  { path:'/tools/ethics',                 name:'Ethics Checker',             icon:'⚖' },
+  { path:'/tools/pro-se',                 name:'Pro Se Assistant',           icon:'🏛' },
 ]
-const MONO  = '"SF Mono", "Fira Code", "Courier New", monospace'
 
 // ─── Circuit data ───────────────────────────────────────────────────────────────
 const CIRCUIT_DATA = {
-  1:  { name: '1st Circuit', short: '1st', seat: 'Boston, MA',         color: '#f87171', states: ['ME','NH','MA','RI'],                       districts: 7,  cases: 48200,  accuracy: 97 },
-  2:  { name: '2nd Circuit', short: '2nd', seat: 'New York, NY',       color: '#c084fc', states: ['NY','CT','VT'],                             districts: 12, cases: 142000, accuracy: 98 },
-  3:  { name: '3rd Circuit', short: '3rd', seat: 'Philadelphia, PA',   color: '#60a5fa', states: ['PA','NJ','DE'],                             districts: 7,  cases: 89400,  accuracy: 97 },
-  4:  { name: '4th Circuit', short: '4th', seat: 'Richmond, VA',       color: '#4ade80', states: ['MD','VA','WV','NC','SC'],                   districts: 14, cases: 61200,  accuracy: 96 },
-  5:  { name: '5th Circuit', short: '5th', seat: 'New Orleans, LA',    color: '#facc15', states: ['TX','LA','MS'],                             districts: 9,  cases: 84700,  accuracy: 97 },
-  6:  { name: '6th Circuit', short: '6th', seat: 'Cincinnati, OH',     color: '#fb923c', states: ['MI','OH','KY','TN'],                        districts: 10, cases: 72300,  accuracy: 96 },
-  7:  { name: '7th Circuit', short: '7th', seat: 'Chicago, IL',        color: '#34d399', states: ['IL','IN','WI'],                             districts: 7,  cases: 68900,  accuracy: 97 },
-  8:  { name: '8th Circuit', short: '8th', seat: 'St. Louis, MO',      color: '#d4a853', states: ['MN','IA','MO','AR','ND','SD','NE'],         districts: 14, cases: 54600,  accuracy: 96 },
+  1:  { name: '1st Circuit', short: '1st', seat: 'Boston, MA',         color: '#f87171', states: ['ME','NH','MA','RI'],                        districts: 7,  cases: 48200,  accuracy: 97 },
+  2:  { name: '2nd Circuit', short: '2nd', seat: 'New York, NY',       color: '#c084fc', states: ['NY','CT','VT'],                              districts: 12, cases: 142000, accuracy: 98 },
+  3:  { name: '3rd Circuit', short: '3rd', seat: 'Philadelphia, PA',   color: '#60a5fa', states: ['PA','NJ','DE'],                              districts: 7,  cases: 89400,  accuracy: 97 },
+  4:  { name: '4th Circuit', short: '4th', seat: 'Richmond, VA',       color: '#4ade80', states: ['MD','VA','WV','NC','SC'],                    districts: 14, cases: 61200,  accuracy: 96 },
+  5:  { name: '5th Circuit', short: '5th', seat: 'New Orleans, LA',    color: '#facc15', states: ['TX','LA','MS'],                              districts: 9,  cases: 84700,  accuracy: 97 },
+  6:  { name: '6th Circuit', short: '6th', seat: 'Cincinnati, OH',     color: '#fb923c', states: ['MI','OH','KY','TN'],                         districts: 10, cases: 72300,  accuracy: 96 },
+  7:  { name: '7th Circuit', short: '7th', seat: 'Chicago, IL',        color: '#34d399', states: ['IL','IN','WI'],                              districts: 7,  cases: 68900,  accuracy: 97 },
+  8:  { name: '8th Circuit', short: '8th', seat: 'St. Louis, MO',      color: '#d4a853', states: ['MN','IA','MO','AR','ND','SD','NE'],          districts: 14, cases: 54600,  accuracy: 96 },
   9:  { name: '9th Circuit', short: '9th', seat: 'San Francisco, CA',  color: '#f472b6', states: ['CA','AK','HI','AZ','NV','MT','ID','WA','OR'],districts: 28, cases: 198400, accuracy: 98 },
-  10: { name: '10th Circuit',short: '10th',seat: 'Denver, CO',         color: '#38bdf8', states: ['CO','WY','UT','KS','OK','NM'],              districts: 13, cases: 47800,  accuracy: 96 },
-  11: { name: '11th Circuit',short: '11th',seat: 'Atlanta, GA',        color: '#ff8c69', states: ['GA','AL','FL'],                             districts: 10, cases: 71200,  accuracy: 97 },
-  DC: { name: 'D.C. Circuit',short: 'D.C.',seat: 'Washington, D.C.',   color: '#94a3b8', states: ['DC'],                                       districts: 1,  cases: 38900,  accuracy: 98 },
+  10: { name: '10th Circuit',short: '10th',seat: 'Denver, CO',         color: '#38bdf8', states: ['CO','WY','UT','KS','OK','NM'],               districts: 13, cases: 47800,  accuracy: 96 },
+  11: { name: '11th Circuit',short: '11th',seat: 'Atlanta, GA',        color: '#ff8c69', states: ['GA','AL','FL'],                              districts: 10, cases: 71200,  accuracy: 97 },
+  DC: { name: 'D.C. Circuit',short: 'D.C.',seat: 'Washington, D.C.',   color: '#94a3b8', states: ['DC'],                                        districts: 1,  cases: 38900,  accuracy: 98 },
 }
 const STATE_CIRCUITS = {
   ME:1,NH:1,MA:1,RI:1, CT:2,NY:2,VT:2, PA:3,NJ:3,DE:3,
@@ -144,14 +144,14 @@ const AGENCIES = [
 
 // ─── Practice areas ────────────────────────────────────────────────────────────
 const PRACTICE_AREAS = [
-  { id:'employment',  label:'Employment Law',      accuracy:96, color:'#f472b6', claims:84200,  note:'NLRA, Title VII, FLSA, non-compete enforceability' },
-  { id:'real_estate', label:'Real Estate',         accuracy:95, color:'#34d399', claims:62400,  note:'CERCLA liability, zoning, title disputes, RESPA' },
-  { id:'contract',    label:'Contract Law',        accuracy:94, color:'#60a5fa', claims:118600, note:'UCC Article 2, common law formation, remedies' },
-  { id:'corporate',   label:'Corporate Law',       accuracy:94, color:'#d4a853', claims:74800,  note:'Delaware DGCL, fiduciary duties, M&A, securities' },
-  { id:'ip',          label:'Intellectual Property',accuracy:93,color:'#c084fc', claims:58200,  note:'Patent, trademark, copyright, trade secret (DTSA)' },
-  { id:'family',      label:'Family Law',          accuracy:93, color:'#fb923c', claims:41600,  note:'Custody, support calculations, equitable distribution' },
-  { id:'immigration', label:'Immigration',         accuracy:92, color:'#38bdf8', claims:36800,  note:'INA provisions, BIA decisions, visa regulations' },
-  { id:'criminal',    label:'Criminal Defense',    accuracy:91, color:'#f87171', claims:29400,  note:'4th/5th/6th Amendment standards, sentencing guidelines' },
+  { id:'employment',  label:'Employment Law',       accuracy:96, claims:84200,  note:'NLRA, Title VII, FLSA, non-compete enforceability' },
+  { id:'real_estate', label:'Real Estate',          accuracy:95, claims:62400,  note:'CERCLA liability, zoning, title disputes, RESPA' },
+  { id:'contract',    label:'Contract Law',         accuracy:94, claims:118600, note:'UCC Article 2, common law formation, remedies' },
+  { id:'corporate',   label:'Corporate Law',        accuracy:94, claims:74800,  note:'Delaware DGCL, fiduciary duties, M&A, securities' },
+  { id:'ip',          label:'Intellectual Property',accuracy:93, claims:58200,  note:'Patent, trademark, copyright, trade secret (DTSA)' },
+  { id:'family',      label:'Family Law',           accuracy:93, claims:41600,  note:'Custody, support calculations, equitable distribution' },
+  { id:'immigration', label:'Immigration',          accuracy:92, claims:36800,  note:'INA provisions, BIA decisions, visa regulations' },
+  { id:'criminal',    label:'Criminal Defense',     accuracy:91, claims:29400,  note:'4th/5th/6th Amendment standards, sentencing guidelines' },
 ]
 
 // ─── Hallucination database ────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ const SANCTION_CASES = [
     summary: 'Attorneys Steven Schwartz and Peter LoDuca submitted a brief containing six wholly fabricated case citations generated by ChatGPT. When opposing counsel flagged the citations, the attorneys doubled down with further AI-generated "verification." Judge Castel found the conduct frivolous and imposed sanctions.',
     fakeCitations: ['Varghese v. China S. Airlines','Shaboon v. EgyptAir','Petersen v. Iran Air','Martinez v. Delta Air Lines','Estate of Durden v. KLM Royal Dutch Airlines','Zicherman v. Korean Air Lines (fabricated headnote)'],
     howTrustLayerCatches: 'TrustLayer\'s CourtListener integration would have returned zero results for all six case names within seconds. Each would be flagged "Hallucination — case not found in any federal or state database." The document would receive a trust score of 8/100 before filing.',
-    color: C.danger,
+    severity: 'error',
   },
   {
     id: 2,
@@ -192,7 +192,7 @@ const SANCTION_CASES = [
     summary: 'Following documented incidents of AI-generated hallucinations in briefs filed in the Northern District of Texas, Judge Starr issued a standing order requiring all attorneys to certify that any AI-generated text has been verified for accuracy against reliable sources. Attorneys who cannot so certify must decline to use AI-generated text.',
     fakeCitations: ['Multiple instances of invented 5th Circuit opinions','Fabricated district court precedents from N.D. Tex.','AI-generated "quotes" from real cases that never appear in the opinion'],
     howTrustLayerCatches: 'TrustLayer generates the exact verification certification language Judge Starr\'s order requires. Each citation is checked against CourtListener. The audit trail and timestamp satisfy the standing order\'s documentation requirements automatically.',
-    color: C.caution,
+    severity: 'warning',
   },
   {
     id: 3,
@@ -204,17 +204,17 @@ const SANCTION_CASES = [
     summary: 'An attorney filed an opposition brief in a commercial dispute that cited multiple California Court of Appeal opinions that did not exist. The opposing party\'s research revealed the citations were AI-generated. The filing attorney faced a sanctions motion, and the court ultimately dismissed the case with prejudice, citing the integrity of the judicial process.',
     fakeCitations: ['Fabricated Cal. App. 5th opinions on promissory estoppel','AI-invented California Supreme Court holdings on contract formation','Non-existent Alameda County Superior Court precedents cited as persuasive authority'],
     howTrustLayerCatches: 'TrustLayer\'s California state court coverage flags any Cal. App. citation not in its verified database. The jurisdiction-specific hallucination patterns for California — including fake promissory estoppel citations — appear prominently in TrustLayer\'s training set because they are common AI failure modes.',
-    color: C.danger,
+    severity: 'error',
   },
 ]
 
 // ─── Pricing ──────────────────────────────────────────────────────────────────
 const PRICING = [
-  { tier:'Solo Practitioner', price:'$49',   period:'/mo', size:'1 attorney',              verifications:50,   features:['50 document verifications/mo','All 50 state law coverage','Case citation verification','PDF export & audit trail','Email support'],                                                        featured:false },
-  { tier:'Small Firm',        price:'$149',  period:'/mo', size:'2–5 attorneys',           verifications:250,  features:['250 verifications/mo','Team dashboard','Priority AI research access','CourtListener real-time integration','Malpractice audit trail','Phone support'],                                 featured:false },
-  { tier:'Mid Firm',          price:'$399',  period:'/mo', size:'6–20 attorneys',          verifications:1000, features:['1,000 verifications/mo','Custom practice area settings','ABA Rule 1.1 compliance reports','API access','Single sign-on (SSO)','Dedicated onboarding'],                               featured:true  },
-  { tier:'Large Firm',        price:'$799',  period:'/mo', size:'21–50 attorneys',         verifications:3000, features:['3,000 verifications/mo','Multi-office dashboard','Advanced analytics & reporting','DMS integration (iManage, NetDocs)','SLA guarantee (99.9% uptime)','Dedicated account manager'],  featured:false },
-  { tier:'AmLaw 200',         price:'Custom',period:'',    size:'50+ attorneys',           verifications:null, features:['Unlimited verifications','On-premise deployment option','Custom model fine-tuning','SOC 2 Type II certification','White-label portal','24/7 enterprise support'],                      featured:false },
+  { tier:'Solo Practitioner', price:'$49',   period:'/mo', size:'1 attorney',      verifications:50,   features:['50 document verifications/mo','All 50 state law coverage','Case citation verification','PDF export & audit trail','Email support'],                                                        featured:false },
+  { tier:'Small Firm',        price:'$149',  period:'/mo', size:'2–5 attorneys',   verifications:250,  features:['250 verifications/mo','Team dashboard','Priority AI research access','CourtListener real-time integration','Malpractice audit trail','Phone support'],                                 featured:false },
+  { tier:'Mid Firm',          price:'$399',  period:'/mo', size:'6–20 attorneys',  verifications:1000, features:['1,000 verifications/mo','Custom practice area settings','ABA Rule 1.1 compliance reports','API access','Single sign-on (SSO)','Dedicated onboarding'],                               featured:true  },
+  { tier:'Large Firm',        price:'$799',  period:'/mo', size:'21–50 attorneys', verifications:3000, features:['3,000 verifications/mo','Multi-office dashboard','Advanced analytics & reporting','DMS integration (iManage, NetDocs)','SLA guarantee (99.9% uptime)','Dedicated account manager'],  featured:false },
+  { tier:'AmLaw 200',         price:'Custom',period:'',    size:'50+ attorneys',   verifications:null, features:['Unlimited verifications','On-premise deployment option','Custom model fine-tuning','SOC 2 Type II certification','White-label portal','24/7 enterprise support'],                      featured:false },
 ]
 
 // ─── Bar partnership states ────────────────────────────────────────────────────
@@ -235,7 +235,23 @@ const ABA_RULES = [
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmt(n) { return n >= 1000000 ? `${(n/1000000).toFixed(1)}M` : n >= 1000 ? `${(n/1000).toFixed(0)}K` : String(n) }
-function pct(n) { return `${n}%` }
+
+// ─── Section divider ──────────────────────────────────────────────────────────
+function SectionDivider({ label }) {
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:'16px', margin:'0 0 32px' }}>
+      <div style={{ flex:1, height:'1px', background:C.border }} />
+      <div style={{
+        display:'flex', alignItems:'center', gap:'8px',
+        background:C.blueGlow2, border:`1px solid rgba(37,99,235,0.3)`,
+        padding:'5px 14px',
+      }}>
+        <span style={{ fontSize:'10px', color:C.blue, letterSpacing:'0.12em', textTransform:'uppercase', fontWeight:'700' }}>{label}</span>
+      </div>
+      <div style={{ flex:1, height:'1px', background:C.border }} />
+    </div>
+  )
+}
 
 // ─── CircuitMap component ─────────────────────────────────────────────────────
 function CircuitMap({ selCircuit, setSelCircuit, selState, setSelState }) {
@@ -247,62 +263,68 @@ function CircuitMap({ selCircuit, setSelCircuit, selState, setSelState }) {
         {Object.entries(CIRCUIT_DATA).map(([num, c]) => (
           <button key={num} onClick={() => setSelCircuit(selCircuit === num ? null : num)}
             style={{
-              padding:'4px 10px', borderRadius:'6px', cursor:'pointer', fontSize:'11px',
-              border:`1px solid ${selCircuit === num ? c.color : C.border}`,
-              background: selCircuit === num ? `${c.color}20` : 'transparent',
-              color: selCircuit === num ? c.color : C.textSecondary,
+              padding:'4px 10px', cursor:'pointer', fontSize:'11px',
+              border:`1px solid ${selCircuit === num ? C.blue : C.border}`,
+              background: selCircuit === num ? C.blueGlow2 : 'transparent',
+              color: selCircuit === num ? C.blue : C.textSecondary,
               fontWeight: selCircuit === num ? '700' : '400',
-              transition:'all 0.15s',
+              transition:'all 0.15s', borderRadius:'4px',
             }}>
             {c.short}
           </button>
         ))}
         {selCircuit && (
           <button onClick={() => setSelCircuit(null)} style={{
-            padding:'4px 10px', borderRadius:'6px', cursor:'pointer', fontSize:'11px',
-            border:`1px solid ${C.border}`, background:'transparent', color:C.textMuted,
+            padding:'4px 10px', cursor:'pointer', fontSize:'11px',
+            border:`1px solid ${C.border}`, background:'transparent', color:C.textMuted, borderRadius:'4px',
           }}>✕ Clear</button>
         )}
       </div>
 
       {/* Tile grid */}
-      <div style={{
-        display:'grid',
-        gridTemplateColumns:`repeat(12, ${SZ}px)`,
-        gridTemplateRows:`repeat(8, ${SZ}px)`,
-        gap:`${GAP}px`, width:'fit-content',
-      }}>
-        {Object.entries(TILE_GRID).map(([abbr, [col, row]]) => {
-          const circuit = STATE_CIRCUITS[abbr]
-          const cd = CIRCUIT_DATA[circuit]
-          const color = cd?.color ?? '#666'
-          const highlighted = !selCircuit || String(circuit) === String(selCircuit)
-          const active = selState === abbr
-          const isPartner = PARTNERSHIP_STATES[abbr]
-          return (
-            <button key={abbr}
-              title={`${abbr} — ${cd?.name ?? ''}`}
-              onClick={() => setSelState(selState === abbr ? null : abbr)}
-              style={{
-                gridColumn: col + 1, gridRow: row + 1,
-                width:SZ, height:SZ, borderRadius:'5px',
-                background: active ? color : highlighted ? `${color}28` : `${C.border}25`,
-                border:`1px solid ${active ? color : highlighted ? `${color}60` : C.border}`,
-                color: active ? '#0a0800' : highlighted ? color : C.textMuted,
-                fontSize:'9px', fontWeight:'700', cursor:'pointer',
-                transition:'all 0.15s', opacity: highlighted ? 1 : 0.25,
-                display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'1px',
-              }}>
-              <span>{abbr}</span>
-              {isPartner && <span style={{ width:'4px', height:'4px', borderRadius:'50%', background: isPartner === 'active' ? C.verified : C.caution }} />}
-            </button>
-          )
-        })}
+      <div className="tl-map-container">
+        <div style={{
+          display:'grid',
+          gridTemplateColumns:`repeat(12, ${SZ}px)`,
+          gridTemplateRows:`repeat(8, ${SZ}px)`,
+          gap:`${GAP}px`, width:'fit-content',
+        }}>
+          {Object.entries(TILE_GRID).map(([abbr, [col, row]]) => {
+            const circuit = STATE_CIRCUITS[abbr]
+            const cd = CIRCUIT_DATA[circuit]
+            const color = cd?.color ?? '#666'
+            const highlighted = !selCircuit || String(circuit) === String(selCircuit)
+            const active = selState === abbr
+            const isPartner = PARTNERSHIP_STATES[abbr]
+            return (
+              <button key={abbr}
+                title={`${abbr} — ${cd?.name ?? ''}`}
+                onClick={() => setSelState(selState === abbr ? null : abbr)}
+                style={{
+                  gridColumn: col + 1, gridRow: row + 1,
+                  width:SZ, height:SZ,
+                  background: active ? color : highlighted ? `${color}28` : `${C.border}25`,
+                  border: active ? `2px solid ${C.blue}` : highlighted ? `1px solid ${color}60` : `1px solid ${C.border}`,
+                  color: active ? '#000' : highlighted ? color : C.textMuted,
+                  fontSize:'9px', fontWeight:'700', cursor:'pointer',
+                  transition:'all 0.15s', opacity: highlighted ? 1 : 0.25,
+                  display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'1px',
+                  borderRadius:0,
+                }}
+                onMouseEnter={e => { if (!active) e.currentTarget.style.outline = `2px solid ${C.blue}` }}
+                onMouseLeave={e => { e.currentTarget.style.outline = 'none' }}
+              >
+                <span>{abbr}</span>
+                {isPartner && <span style={{ width:'4px', height:'4px', borderRadius:'50%', background: isPartner === 'active' ? C.verified : C.warning }} />}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      <p style={{ margin:'10px 0 0', fontSize:'10px', color:C.textMuted }}>
+      <p style={{ margin:'10px 0 0', fontSize:'11px', color:C.textMuted }}>
         <span style={{ color:C.verified }}>●</span> State bar partnership active &nbsp;
-        <span style={{ color:C.caution }}>●</span> Discussions underway
+        <span style={{ color:C.warning }}>●</span> Discussions underway
       </p>
     </div>
   )
@@ -316,21 +338,22 @@ function StatePanel({ abbr, onClose }) {
   if (!data || !cd) return null
   return (
     <div style={{
-      background:C.bgCard, border:`1px solid ${cd.color}40`,
-      borderRadius:'10px', padding:'22px', animation:'slideUp 0.25s ease',
+      background:C.bgCard, border:`1px solid ${C.border}`,
+      borderLeft:`3px solid ${C.blue}`,
+      padding:'24px', animation:'slideUp 0.25s ease',
       position:'sticky', top:'88px',
     }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'16px' }}>
         <div>
           <div style={{
-            display:'inline-block', background:`${cd.color}20`,
-            border:`1px solid ${cd.color}50`, borderRadius:'6px',
-            padding:'2px 8px', fontSize:'10px', color:cd.color, fontWeight:'700',
-            marginBottom:'6px',
+            display:'inline-block', background:C.blueGlow2,
+            border:`1px solid rgba(37,99,235,0.3)`,
+            padding:'2px 8px', fontSize:'10px', color:C.blue, fontWeight:'700',
+            marginBottom:'6px', borderRadius:'4px',
           }}>{cd.name}</div>
           <h3 style={{ margin:0, fontFamily:SERIF, fontSize:'22px', color:C.textPrimary }}>{data.name}</h3>
         </div>
-        <button onClick={onClose} style={{ background:'none', border:'none', color:C.textMuted, cursor:'pointer', fontSize:'18px' }}>✕</button>
+        <button onClick={onClose} style={{ background:'none', border:'none', color:C.textMuted, cursor:'pointer', fontSize:'18px', padding:'0' }}>✕</button>
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'16px' }}>
@@ -341,41 +364,41 @@ function StatePanel({ abbr, onClose }) {
           { label:'Accuracy Rate',    val:`${cd.accuracy}%` },
         ].map((s, i) => (
           <div key={i} style={{
-            background:'rgba(255,255,255,0.02)', borderRadius:'6px',
-            padding:'10px 12px', border:`1px solid ${C.border}`,
+            background:C.bgSecondary, border:`1px solid ${C.border}`,
+            padding:'10px 12px',
           }}>
             <div style={{ fontSize:'10px', color:C.textMuted, marginBottom:'3px', letterSpacing:'0.06em', textTransform:'uppercase' }}>{s.label}</div>
-            <div style={{ fontSize:'14px', fontWeight:'700', color:C.gold }}>{s.val}</div>
+            <div style={{ fontSize:'14px', fontWeight:'700', color:C.blue }}>{s.val}</div>
           </div>
         ))}
       </div>
 
       <div style={{ marginBottom:'14px' }}>
-        <div style={{ fontSize:'10px', color:C.gold, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'7px' }}>Common AI Hallucinations</div>
+        <div style={{ fontSize:'10px', color:C.textSecondary, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'7px' }}>Common AI Hallucinations</div>
         {data.hallucinations.slice(0,3).map((h, i) => (
           <div key={i} style={{
             display:'flex', gap:'7px', alignItems:'flex-start',
-            fontSize:'11px', color:C.textSecondary, padding:'4px 0',
+            fontSize:'12px', color:C.textSecondary, padding:'5px 0',
             borderBottom: i < 2 ? `1px solid ${C.border}` : 'none',
           }}>
-            <span style={{ color:C.danger, flexShrink:0, marginTop:'2px' }}>⚠</span>{h}
+            <span style={{ color:C.error, flexShrink:0, marginTop:'2px' }}>⚠</span>{h}
           </div>
         ))}
       </div>
 
       <div style={{ marginBottom:'14px' }}>
-        <div style={{ fontSize:'10px', color:C.gold, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'7px' }}>Recent Law Changes TrustLayer Caught</div>
+        <div style={{ fontSize:'10px', color:C.textSecondary, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'7px' }}>Recent Law Changes TrustLayer Caught</div>
         {data.recentCaught.map((r, i) => (
-          <div key={i} style={{ fontSize:'11px', color:C.verified, padding:'3px 0', display:'flex', gap:'6px', alignItems:'flex-start' }}>
+          <div key={i} style={{ fontSize:'12px', color:C.verified, padding:'3px 0', display:'flex', gap:'6px', alignItems:'flex-start' }}>
             <span style={{ flexShrink:0 }}>✓</span>{r}
           </div>
         ))}
       </div>
 
       <div>
-        <div style={{ fontSize:'10px', color:C.gold, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'7px' }}>Notable Cases in Database</div>
+        <div style={{ fontSize:'10px', color:C.textSecondary, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'7px' }}>Notable Cases in Database</div>
         {data.cases.map((c, i) => (
-          <div key={i} style={{ fontSize:'11px', color:C.textSecondary, fontFamily:MONO, padding:'3px 0' }}>• {c}</div>
+          <div key={i} style={{ fontSize:'12px', color:C.textSecondary, fontFamily:MONO, padding:'3px 0' }}>• {c}</div>
         ))}
       </div>
     </div>
@@ -383,9 +406,9 @@ function StatePanel({ abbr, onClose }) {
 }
 
 // ─── Malpractice calculator ────────────────────────────────────────────────────
-const CALC_RISK = { employment:0.0015, contract:0.0012, ip:0.0018, real_estate:0.0010, corporate:0.0013, criminal:0.0020, immigration:0.0016, family:0.0011 }
-const CALC_STATE_MUL = { CA:1.45, NY:1.5, TX:1.25, FL:1.35, IL:1.2, PA:1.15, NJ:1.1, OH:1.05, GA:1.1, WA:1.1 }
-const CALC_PLAN_COST = { solo:49, small:149, mid:399, large:799 }
+const CALC_RISK     = { employment:0.0015, contract:0.0012, ip:0.0018, real_estate:0.0010, corporate:0.0013, criminal:0.0020, immigration:0.0016, family:0.0011 }
+const CALC_STATE_MUL= { CA:1.45, NY:1.5, TX:1.25, FL:1.35, IL:1.2, PA:1.15, NJ:1.1, OH:1.05, GA:1.1, WA:1.1 }
+const CALC_PLAN_COST= { solo:49, small:149, mid:399, large:799 }
 
 function MalpracticeCalculator() {
   const [form, setForm] = useState({ state:'CA', practice:'contract', docs:40, caseValue:200000, plan:'mid' })
@@ -402,12 +425,22 @@ function MalpracticeCalculator() {
     setResult({ annualExposure, withTL, savings, planCost, roi })
   }
 
-  const $ = (n) => n >= 1000000 ? `$${(n/1000000).toFixed(2)}M` : n >= 1000 ? `$${(n/1000).toFixed(0)}K` : `$${Math.round(n)}`
+  const $$ = (n) => n >= 1000000 ? `$${(n/1000000).toFixed(2)}M` : n >= 1000 ? `$${(n/1000).toFixed(0)}K` : `$${Math.round(n)}`
+
+  const inputStyle = {
+    width:'100%', background:C.bgSecondary, border:`1px solid ${C.borderLight}`,
+    color:C.textPrimary, borderRadius:'4px', fontSize:'16px', padding:'12px 14px',
+    outline:'none', boxSizing:'border-box',
+  }
+  const labelStyle = {
+    display:'block', fontSize:'11px', color:C.textMuted,
+    marginBottom:'5px', letterSpacing:'0.06em', textTransform:'uppercase',
+  }
 
   return (
-    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'28px', alignItems:'start' }}>
+    <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'28px', alignItems:'start' }}>
       {/* Inputs */}
-      <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
+      <div style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
         {[
           { label:'Your State', key:'state', type:'select', opts: Object.keys(CALC_STATE_MUL).map(s => ({ v:s, l:s })).concat([{v:'other',l:'Other (avg risk)'}]) },
           { label:'Primary Practice Area', key:'practice', type:'select', opts: PRACTICE_AREAS.map(p => ({ v:p.id, l:p.label })) },
@@ -416,59 +449,58 @@ function MalpracticeCalculator() {
           { label:'TrustLayer Plan', key:'plan', type:'select', opts:[{v:'solo',l:'Solo — $49/mo'},{v:'small',l:'Small Firm — $149/mo'},{v:'mid',l:'Mid Firm — $399/mo'},{v:'large',l:'Large Firm — $799/mo'}] },
         ].map(field => (
           <div key={field.key}>
-            <label style={{ display:'block', fontSize:'11px', color:C.textMuted, marginBottom:'5px', letterSpacing:'0.06em', textTransform:'uppercase' }}>
-              {field.label}
-            </label>
+            <label style={labelStyle}>{field.label}</label>
             {field.type === 'select' ? (
               <select value={form[field.key]} onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
-                style={{ width:'100%', background:C.bgInput, border:`1px solid ${C.border}`, borderRadius:'7px', color:C.textPrimary, fontSize:'13px', padding:'9px 12px', outline:'none' }}>
+                style={inputStyle}>
                 {field.opts.map(o => <option key={o.v} value={o.v} style={{ background:C.bgCard }}>{o.l}</option>)}
               </select>
             ) : (
               <input type="number" value={form[field.key]} min={field.min} max={field.max} step={field.step}
                 onChange={e => setForm(f => ({ ...f, [field.key]: Number(e.target.value) }))}
-                style={{ width:'100%', background:C.bgInput, border:`1px solid ${C.border}`, borderRadius:'7px', color:C.textPrimary, fontSize:'13px', padding:'9px 12px', outline:'none', boxSizing:'border-box' }}
+                style={inputStyle}
               />
             )}
           </div>
         ))}
         <button onClick={calculate} style={{
-          padding:'12px', borderRadius:'8px', border:'none',
-          background:`linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-          color:'#0a0800', fontSize:'13px', fontWeight:'700',
-          letterSpacing:'0.06em', cursor:'pointer',
-          boxShadow:`0 4px 16px rgba(212,168,83,0.25)`,
-        }}>Calculate My Exposure</button>
+          padding:'12px 24px', border:'none', borderRadius:'6px',
+          background:C.blue, color:C.textPrimary, fontSize:'14px', fontWeight:'600',
+          cursor:'pointer', transition:'background 0.15s', letterSpacing:'0.04em',
+        }}
+          onMouseEnter={e => e.currentTarget.style.background=C.blueHover}
+          onMouseLeave={e => e.currentTarget.style.background=C.blue}
+        >Calculate My Exposure</button>
       </div>
 
       {/* Output */}
       <div>
         {!result ? (
-          <div style={{ padding:'40px 20px', textAlign:'center', border:`1px dashed ${C.border}`, borderRadius:'10px' }}>
+          <div style={{ padding:'48px 24px', textAlign:'center', border:`1px dashed ${C.border}` }}>
             <div style={{ fontSize:'32px', marginBottom:'12px', opacity:0.3 }}>⚖</div>
-            <p style={{ fontSize:'13px', color:C.textMuted, margin:0 }}>Fill in your details and click Calculate to see your exposure estimate.</p>
+            <p style={{ fontSize:'14px', color:C.textMuted, margin:0, lineHeight:'1.6' }}>Fill in your details and click Calculate to see your exposure estimate.</p>
           </div>
         ) : (
           <div style={{ display:'flex', flexDirection:'column', gap:'12px', animation:'fadeIn 0.4s ease' }}>
-            <div style={{ background:'rgba(239,68,68,0.08)', border:`1px solid rgba(239,68,68,0.2)`, borderRadius:'10px', padding:'18px' }}>
-              <div style={{ fontSize:'10px', color:C.danger, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'4px' }}>Annual Exposure WITHOUT TrustLayer</div>
-              <div style={{ fontSize:'28px', fontFamily:SERIF, fontWeight:'700', color:C.danger }}>{$(result.annualExposure)}</div>
-              <div style={{ fontSize:'11px', color:C.textMuted, marginTop:'4px' }}>Estimated annual malpractice risk from AI hallucinations</div>
+            <div style={{ background:C.errorBg, border:`1px solid rgba(239,68,68,0.2)`, padding:'20px' }}>
+              <div style={{ fontSize:'10px', color:C.error, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'6px' }}>Annual Exposure WITHOUT TrustLayer</div>
+              <div style={{ fontSize:'32px', fontFamily:SERIF, fontWeight:'700', color:C.error }}>{$$(result.annualExposure)}</div>
+              <div style={{ fontSize:'12px', color:C.textMuted, marginTop:'4px' }}>Estimated annual malpractice risk from AI hallucinations</div>
             </div>
-            <div style={{ background:'rgba(34,197,94,0.08)', border:`1px solid rgba(34,197,94,0.2)`, borderRadius:'10px', padding:'18px' }}>
-              <div style={{ fontSize:'10px', color:C.verified, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'4px' }}>Annual Exposure WITH TrustLayer</div>
-              <div style={{ fontSize:'28px', fontFamily:SERIF, fontWeight:'700', color:C.verified }}>{$(result.withTL)}</div>
-              <div style={{ fontSize:'11px', color:C.textMuted, marginTop:'4px' }}>90% risk reduction through pre-filing verification</div>
+            <div style={{ background:C.verifiedBg, border:`1px solid rgba(34,197,94,0.2)`, padding:'20px' }}>
+              <div style={{ fontSize:'10px', color:C.verified, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'6px' }}>Annual Exposure WITH TrustLayer</div>
+              <div style={{ fontSize:'32px', fontFamily:SERIF, fontWeight:'700', color:C.verified }}>{$$(result.withTL)}</div>
+              <div style={{ fontSize:'12px', color:C.textMuted, marginTop:'4px' }}>90% risk reduction through pre-filing verification</div>
             </div>
-            <div style={{ background:C.goldGlow2, border:`1px solid ${C.borderGold}`, borderRadius:'10px', padding:'18px' }}>
-              <div style={{ fontSize:'10px', color:C.gold, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'4px' }}>Annual Savings</div>
-              <div style={{ fontSize:'28px', fontFamily:SERIF, fontWeight:'700', color:C.gold }}>{$(result.savings)}</div>
-              <div style={{ fontSize:'11px', color:C.textSecondary, marginTop:'6px' }}>
-                TrustLayer costs <strong style={{ color:C.textPrimary }}>{$(result.planCost)}/year</strong>.
-                {' '}ROI: <strong style={{ color:C.gold }}>{result.roi.toFixed(0)}×</strong>
+            <div style={{ background:C.blueGlow2, border:`1px solid rgba(37,99,235,0.3)`, padding:'20px' }}>
+              <div style={{ fontSize:'10px', color:C.blue, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'6px' }}>Annual Savings</div>
+              <div style={{ fontSize:'32px', fontFamily:SERIF, fontWeight:'700', color:C.blue }}>{$$(result.savings)}</div>
+              <div style={{ fontSize:'13px', color:C.textSecondary, marginTop:'8px' }}>
+                TrustLayer costs <strong style={{ color:C.textPrimary }}>{$$(result.planCost)}/year</strong>.
+                {' '}ROI: <strong style={{ color:C.blue }}>{result.roi.toFixed(0)}×</strong>
               </div>
             </div>
-            <p style={{ fontSize:'10px', color:C.textMuted, margin:0, lineHeight:'1.5' }}>
+            <p style={{ fontSize:'11px', color:C.textMuted, margin:0, lineHeight:'1.6' }}>
               * Estimates based on industry malpractice claim frequency data and state litigation multipliers. Not legal or insurance advice. Consult your malpractice insurer.
             </p>
           </div>
@@ -478,31 +510,14 @@ function MalpracticeCalculator() {
   )
 }
 
-// ─── Section divider ──────────────────────────────────────────────────────────
-function SealDivider({ label }) {
-  return (
-    <div style={{ display:'flex', alignItems:'center', gap:'16px', margin:'0 0 32px' }}>
-      <div style={{ flex:1, height:'1px', background:`linear-gradient(to right, transparent, ${C.borderGold})` }} />
-      <div style={{
-        display:'flex', alignItems:'center', gap:'8px',
-        background:C.goldGlow2, border:`1px solid ${C.borderGold}`,
-        borderRadius:'20px', padding:'5px 14px',
-      }}>
-        <span style={{ color:C.gold, fontSize:'11px' }}>⚖</span>
-        <span style={{ fontSize:'10px', color:C.gold, letterSpacing:'0.12em', textTransform:'uppercase', fontWeight:'700' }}>{label}</span>
-      </div>
-      <div style={{ flex:1, height:'1px', background:`linear-gradient(to left, transparent, ${C.borderGold})` }} />
-    </div>
-  )
-}
-
 // ─── Main page ─────────────────────────────────────────────────────────────────
 export default function EnterprisePage() {
-  const [toolsOpen, setToolsOpen]   = useState(false)
-  const [selCircuit, setSelCircuit] = useState(null)
-  const [selState,   setSelState]   = useState(null)
-  const [hallFilter, setHallFilter] = useState('all')
-  const [expandedCase, setExpandedCase] = useState(null)
+  const [toolsOpen,     setToolsOpen]     = useState(false)
+  const [mobileMenuOpen,setMobileMenuOpen]= useState(false)
+  const [selCircuit,    setSelCircuit]    = useState(null)
+  const [selState,      setSelState]      = useState(null)
+  const [hallFilter,    setHallFilter]    = useState('all')
+  const [expandedCase,  setExpandedCase]  = useState(null)
 
   const circuitInfo = selCircuit ? CIRCUIT_DATA[selCircuit] : null
   const stateInfo   = selState   ? STATES_DATA[selState]    : null
@@ -511,160 +526,146 @@ export default function EnterprisePage() {
     <div style={{ minHeight:'100vh', background:C.bg, fontFamily:SANS, color:C.textPrimary }}>
 
       {/* ── Nav ──────────────────────────────────────────────────────────── */}
-      <nav style={{
-        position:'sticky', top:0, zIndex:100,
-        display:'flex', alignItems:'center', justifyContent:'space-between',
-        padding:'0 40px', height:'68px',
-        background:'rgba(5,7,13,0.94)', backdropFilter:'blur(16px)',
-        borderBottom:`1px solid ${C.border}`,
+      <nav className="tl-nav" style={{
+        position:'sticky', top:0, zIndex:100, background:'#000',
+        borderBottom:`1px solid ${C.border}`, height:'64px',
+        display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 40px',
       }}>
-        <Link href="/" style={{ display:'flex', alignItems:'center', gap:'12px', textDecoration:'none' }}>
-          <div style={{
-            width:'36px', height:'36px', borderRadius:'8px',
-            background:`linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-            display:'flex', alignItems:'center', justifyContent:'center',
-            boxShadow:`0 0 16px ${C.goldGlow}`,
-          }}>
-            <span style={{ fontSize:'18px', fontFamily:SERIF, fontWeight:'700', color:'#0a0800' }}>T</span>
-          </div>
-          <span style={{ fontSize:'20px', fontFamily:SERIF, fontWeight:'700', color:C.textPrimary }}>
-            Trust<span style={{ color:C.gold }}>Layer</span>
-          </span>
-        </Link>
-        <div style={{ display:'flex', gap:'28px', alignItems:'center' }}>
-          {[['/', 'Verify'], ['/research', 'Research']].map(([href, label]) => (
-            <Link key={href} href={href} style={{
-              fontSize:'13px', textDecoration:'none', letterSpacing:'0.04em', transition:'color 0.2s',
-              color: C.textSecondary,
-            }}
-              onMouseEnter={e => e.currentTarget.style.color = C.gold}
-              onMouseLeave={e => e.currentTarget.style.color = C.textSecondary}
+        <Link href="/" style={{ textDecoration:'none', fontSize:'22px', fontFamily:SERIF, fontWeight:'700', color:'#fff', letterSpacing:'-0.02em' }}>TrustLayer</Link>
+
+        <div className="tl-nav-links" style={{ display:'flex', gap:'32px', alignItems:'center' }}>
+          {[['/', 'Verify'],['/research','Research']].map(([href,label]) => (
+            <Link key={href} href={href} style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.color=C.blue}
+              onMouseLeave={e => e.currentTarget.style.color='#fff'}
             >{label}</Link>
           ))}
+
           {/* Tools dropdown */}
           <div style={{ position:'relative' }}
             onMouseEnter={() => setToolsOpen(true)}
             onMouseLeave={() => setToolsOpen(false)}
           >
-            <Link href="/tools" style={{ fontSize:'13px', color:C.textSecondary, textDecoration:'none', letterSpacing:'0.04em', display:'flex', alignItems:'center', gap:'3px', transition:'color 0.2s' }}
-              onMouseEnter={e => e.currentTarget.style.color = C.gold}
-              onMouseLeave={e => e.currentTarget.style.color = C.textSecondary}
-            >
-              Tools <span style={{ fontSize:'9px', opacity:0.7 }}>▾</span>
-            </Link>
+            <Link href="/tools" style={{ fontSize:'14px', color:'#fff', textDecoration:'none', display:'flex', alignItems:'center', gap:'3px', transition:'color 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.color=C.blue}
+              onMouseLeave={e => e.currentTarget.style.color='#fff'}
+            >Tools <span style={{ fontSize:'9px', opacity:0.7 }}>▾</span></Link>
             {toolsOpen && (
-              <div style={{ position:'absolute', top:'calc(100% + 10px)', left:'-10px', background:C.bgCard, border:`1px solid ${C.borderGold}`, borderRadius:'10px', padding:'8px 6px', minWidth:'236px', boxShadow:'0 8px 32px rgba(0,0,0,0.5)', zIndex:200, animation:'fadeIn 0.15s ease' }}>
+              <div style={{ position:'absolute', top:'calc(100% + 10px)', left:'-10px', background:'#111', border:`1px solid ${C.border}`, borderRadius:'6px', padding:'8px 6px', minWidth:'240px', boxShadow:'0 8px 32px rgba(0,0,0,0.8)', zIndex:200, animation:'fadeIn 0.15s ease' }}>
                 {TOOLS_NAV.map(t => (
-                  <Link key={t.path} href={t.path} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'8px 10px', borderRadius:'6px', textDecoration:'none', transition:'background 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.background=C.goldGlow2}
+                  <Link key={t.path} href={t.path} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'9px 10px', borderRadius:'4px', textDecoration:'none' }}
+                    onMouseEnter={e => e.currentTarget.style.background=C.blueGlow2}
                     onMouseLeave={e => e.currentTarget.style.background='transparent'}
                   >
                     <span style={{ fontSize:'14px', width:'20px', textAlign:'center' }}>{t.icon}</span>
-                    <span style={{ fontSize:'12px', color:C.textSecondary }}>{t.name}</span>
+                    <span style={{ fontSize:'13px', color:'#888' }}>{t.name}</span>
                   </Link>
                 ))}
                 <div style={{ borderTop:`1px solid ${C.border}`, margin:'5px 4px' }} />
-                <Link href="/tools" style={{ display:'block', textAlign:'center', padding:'7px 10px', borderRadius:'6px', textDecoration:'none', fontSize:'11px', color:C.gold, fontWeight:'600', background:C.goldGlow2, border:`1px solid ${C.borderGold}` }}>View All Tools →</Link>
+                <Link href="/tools" style={{ display:'block', textAlign:'center', padding:'8px 10px', borderRadius:'4px', fontSize:'12px', color:C.blue, fontWeight:'600', textDecoration:'none' }}>View All Tools →</Link>
               </div>
             )}
           </div>
-          {/* Enterprise active */}
-          <Link href="/enterprise" style={{ fontSize:'13px', color:C.gold, textDecoration:'none', letterSpacing:'0.04em', borderBottom:`1px solid ${C.gold}`, paddingBottom:'2px' }}>Enterprise</Link>
-          <Link href="/request-access" style={{
-            padding:'8px 20px', borderRadius:'6px',
-            border:`1px solid ${C.borderGold}`, background:C.goldGlow2,
-            color:C.gold, fontSize:'13px', textDecoration:'none',
-            letterSpacing:'0.04em', transition:'all 0.2s', display:'inline-block',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background=C.goldGlow; e.currentTarget.style.borderColor=C.gold }}
-            onMouseLeave={e => { e.currentTarget.style.background=C.goldGlow2; e.currentTarget.style.borderColor=C.borderGold }}
+
+          {/* Enterprise — active */}
+          <Link href="/enterprise" style={{ fontSize:'14px', color:C.blue, textDecoration:'none', borderBottom:`2px solid ${C.blue}`, paddingBottom:'2px' }}>Enterprise</Link>
+
+          <Link href="/request-access" style={{ background:C.blue, color:'#fff', padding:'9px 22px', borderRadius:'6px', fontSize:'14px', fontWeight:'600', textDecoration:'none', transition:'background 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.background=C.blueHover}
+            onMouseLeave={e => e.currentTarget.style.background=C.blue}
           >Request Access</Link>
         </div>
+
+        {/* Hamburger */}
+        <button className="tl-hamburger" style={{ display:'none', background:'none', border:'none', color:'#fff', fontSize:'22px', cursor:'pointer', padding:'8px' }}
+          onClick={() => setMobileMenuOpen(v => !v)}
+        >
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
       </nav>
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <div style={{
-        background:`linear-gradient(180deg, rgba(212,168,83,0.06) 0%, transparent 60%)`,
-        borderBottom:`1px solid ${C.border}`,
-        padding:'72px 40px 56px', textAlign:'center', position:'relative', overflow:'hidden',
-      }}>
-        {/* Decorative rings */}
-        <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%, -50%)', width:'600px', height:'600px', borderRadius:'50%', border:`1px solid ${C.borderGold}`, opacity:0.3, pointerEvents:'none' }} />
-        <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%, -50%)', width:'800px', height:'800px', borderRadius:'50%', border:`1px solid ${C.borderGold}`, opacity:0.15, pointerEvents:'none' }} />
+      {/* Mobile overlay */}
+      {mobileMenuOpen && (
+        <div style={{ position:'fixed', inset:0, zIndex:149, background:'rgba(0,0,0,0.6)' }} onClick={() => setMobileMenuOpen(false)} />
+      )}
 
-        <div style={{ position:'relative', maxWidth:'820px', margin:'0 auto' }}>
-          {/* Seal badge */}
+      {/* Mobile drawer */}
+      <div style={{ position:'fixed', top:0, right:0, width:'280px', height:'100vh', background:'#000', borderLeft:`1px solid ${C.border}`, zIndex:150, transform:mobileMenuOpen?'translateX(0)':'translateX(100%)', transition:'transform 0.25s ease', display:'flex', flexDirection:'column', padding:'72px 24px 40px', gap:'4px' }}>
+        {[['/', 'Verify'],['/research','Research'],['/enterprise','Enterprise']].map(([href,label]) => (
+          <Link key={href} href={href} style={{ display:'block', padding:'12px 8px', fontSize:'16px', color:'#fff', textDecoration:'none', borderBottom:`1px solid #111` }} onClick={() => setMobileMenuOpen(false)}>{label}</Link>
+        ))}
+        <div style={{ padding:'8px 0 4px', fontSize:'12px', color:C.textMuted, letterSpacing:'0.08em', textTransform:'uppercase' }}>Tools</div>
+        {TOOLS_NAV.map(t => (
+          <Link key={t.path} href={t.path} style={{ display:'flex', gap:'10px', alignItems:'center', padding:'10px 8px', fontSize:'14px', color:'#888', textDecoration:'none' }} onClick={() => setMobileMenuOpen(false)}>
+            <span>{t.icon}</span><span>{t.name}</span>
+          </Link>
+        ))}
+        <Link href="/request-access" style={{ marginTop:'auto', background:C.blue, color:'#fff', padding:'14px 20px', borderRadius:'6px', textDecoration:'none', fontSize:'15px', fontWeight:'600', textAlign:'center', display:'block' }} onClick={() => setMobileMenuOpen(false)}>Request Access</Link>
+      </div>
+
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <div className="tl-section-pad" style={{
+        background:C.bg, borderBottom:`1px solid ${C.border}`,
+        padding:'80px 40px 64px', textAlign:'center',
+      }}>
+        <div style={{ maxWidth:'820px', margin:'0 auto' }}>
           <div style={{
-            display:'inline-flex', flexDirection:'column', alignItems:'center',
-            marginBottom:'24px',
-          }}>
-            <div style={{
-              width:'72px', height:'72px', borderRadius:'50%',
-              background:`radial-gradient(circle, ${C.goldGlow} 0%, ${C.bg} 70%)`,
-              border:`2px solid ${C.gold}`,
-              display:'flex', alignItems:'center', justifyContent:'center',
-              boxShadow:`0 0 32px ${C.goldGlow}, inset 0 0 16px ${C.goldGlow2}`,
-              marginBottom:'10px',
-            }}>
-              <span style={{ fontSize:'30px' }}>⚖</span>
-            </div>
-            <div style={{
-              background:C.goldGlow2, border:`1px solid ${C.borderGold}`,
-              borderRadius:'20px', padding:'4px 14px',
-              fontSize:'10px', color:C.gold, letterSpacing:'0.14em', textTransform:'uppercase', fontWeight:'700',
-            }}>Enterprise — US Law Firms</div>
-          </div>
+            display:'inline-block', background:C.blueGlow2, border:`1px solid rgba(37,99,235,0.3)`,
+            color:C.blue, fontSize:'12px', fontWeight:'600', letterSpacing:'0.1em',
+            padding:'5px 14px', borderRadius:'4px', marginBottom:'24px', textTransform:'uppercase',
+          }}>Enterprise Legal AI</div>
 
           <h1 style={{
-            fontFamily:SERIF, fontSize:'clamp(34px, 4.5vw, 58px)', fontWeight:'700',
-            lineHeight:'1.12', margin:'0 0 16px', color:C.textPrimary,
-            letterSpacing:'-0.01em',
+            fontFamily:SERIF, fontSize:'clamp(32px,5vw,60px)', fontWeight:'700',
+            color:'#fff', margin:'0 0 20px', lineHeight:1.1, letterSpacing:'-0.02em',
           }}>
             The Legal AI Verification Platform<br />
-            <span style={{ color:C.gold }}>Built for US Courts</span>
+            <span style={{ color:C.blue }}>Built for US Courts</span>
           </h1>
+
           <p style={{
             fontFamily:SERIF, fontStyle:'italic', fontSize:'17px',
-            color:C.textSecondary, maxWidth:'580px', margin:'0 auto 36px', lineHeight:'1.7',
+            color:C.textSecondary, maxWidth:'580px', margin:'0 auto 48px', lineHeight:'1.7',
           }}>
             Coverage across all 13 federal circuits, 50 state jurisdictions, and every federal agency. Not built by technologists — built by attorneys, for attorneys.
           </p>
 
           {/* Stats row */}
-          <div style={{ display:'flex', justifyContent:'center', flexWrap:'wrap', gap:'0' }}>
+          <div style={{ display:'flex', justifyContent:'center', flexWrap:'wrap', gap:'0', border:`1px solid ${C.border}` }}>
             {[
-              { n:'1.2M+',   label:'Cases Verified' },
-              { n:'50',      label:'State Jurisdictions' },
-              { n:'13',      label:'Federal Circuits' },
-              { n:'94',      label:'U.S. District Courts' },
-              { n:'99%',     label:'SCOTUS Coverage' },
-              { n:'96%',     label:'Avg Accuracy Rate' },
+              { n:'1.2M+', label:'Cases Verified' },
+              { n:'50',    label:'State Jurisdictions' },
+              { n:'13',    label:'Federal Circuits' },
+              { n:'94',    label:'U.S. District Courts' },
+              { n:'99%',   label:'SCOTUS Coverage' },
+              { n:'96%',   label:'Avg Accuracy Rate' },
             ].map((s, i, arr) => (
               <div key={i} style={{
-                padding:'16px 28px', textAlign:'center',
+                padding:'20px 28px', textAlign:'center',
                 borderRight: i < arr.length - 1 ? `1px solid ${C.border}` : 'none',
+                flex:'1 1 auto',
               }}>
-                <div style={{ fontFamily:SERIF, fontSize:'26px', fontWeight:'700', color:C.gold }}>{s.n}</div>
-                <div style={{ fontSize:'11px', color:C.textMuted, letterSpacing:'0.06em', textTransform:'uppercase', marginTop:'2px' }}>{s.label}</div>
+                <div style={{ fontFamily:SERIF, fontSize:'26px', fontWeight:'700', color:C.blue }}>{s.n}</div>
+                <div style={{ fontSize:'11px', color:C.textMuted, letterSpacing:'0.06em', textTransform:'uppercase', marginTop:'4px' }}>{s.label}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div style={{ maxWidth:'1240px', margin:'0 auto', padding:'52px 40px' }}>
+      <div style={{ maxWidth:'1240px', margin:'0 auto', padding:'56px 40px' }}>
 
         {/* ── Section 1: Federal Court Coverage Map ─────────────────────── */}
-        <SealDivider label="Federal Court Coverage" />
-        <div style={{ marginBottom:'60px' }}>
-          <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 6px', color:C.textPrimary }}>
+        <SectionDivider label="Federal Court Coverage" />
+        <div style={{ marginBottom:'72px' }}>
+          <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 8px', color:C.textPrimary }}>
             Interactive Federal Circuit Map
           </h2>
-          <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 0 28px', maxWidth:'640px', lineHeight:'1.6' }}>
+          <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 0 32px', maxWidth:'640px', lineHeight:'1.6' }}>
             Click any circuit in the legend or any state tile to see verified case counts, district coverage, and state bar partnership status. Dots indicate bar partnership activity.
           </p>
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 320px', gap:'28px', alignItems:'start' }}>
+          <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'1fr 320px', gap:'28px', alignItems:'start' }}>
             <div>
               <CircuitMap selCircuit={selCircuit} setSelCircuit={setSelCircuit} selState={selState} setSelState={setSelState} />
             </div>
@@ -675,42 +676,47 @@ export default function EnterprisePage() {
                 <StatePanel abbr={selState} onClose={() => setSelState(null)} />
               ) : selCircuit && circuitInfo ? (
                 <div style={{
-                  background:C.bgCard, border:`1px solid ${circuitInfo.color}40`,
-                  borderRadius:'10px', padding:'22px', animation:'slideUp 0.25s ease',
+                  background:C.bgCard, border:`1px solid ${C.border}`,
+                  borderLeft:`3px solid ${C.blue}`,
+                  padding:'24px', animation:'slideUp 0.25s ease',
                   position:'sticky', top:'88px',
                 }}>
                   <div style={{
-                    display:'inline-block', background:`${circuitInfo.color}20`,
-                    border:`1px solid ${circuitInfo.color}50`, borderRadius:'6px',
-                    padding:'2px 8px', fontSize:'10px', color:circuitInfo.color, fontWeight:'700',
+                    display:'inline-block', background:C.blueGlow2,
+                    border:`1px solid rgba(37,99,235,0.3)`, borderRadius:'4px',
+                    padding:'2px 8px', fontSize:'10px', color:C.blue, fontWeight:'700',
                     marginBottom:'8px',
                   }}>{circuitInfo.name}</div>
                   <h3 style={{ margin:'0 0 4px', fontFamily:SERIF, fontSize:'20px', color:C.textPrimary }}>{circuitInfo.name}</h3>
-                  <p style={{ margin:'0 0 16px', fontSize:'12px', color:C.textMuted }}>Seat: {circuitInfo.seat}</p>
+                  <p style={{ margin:'0 0 16px', fontSize:'13px', color:C.textMuted }}>Seat: {circuitInfo.seat}</p>
 
                   <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'16px' }}>
                     {[
-                      { label:'Cases Verified',    val:circuitInfo.cases.toLocaleString() },
-                      { label:'District Courts',   val:circuitInfo.districts },
-                      { label:'Accuracy Rate',     val:`${circuitInfo.accuracy}%` },
-                      { label:'States Covered',    val:circuitInfo.states.length },
+                      { label:'Cases Verified', val:circuitInfo.cases.toLocaleString() },
+                      { label:'District Courts', val:circuitInfo.districts },
+                      { label:'Accuracy Rate',   val:`${circuitInfo.accuracy}%` },
+                      { label:'States Covered',  val:circuitInfo.states.length },
                     ].map((s, i) => (
-                      <div key={i} style={{ background:'rgba(255,255,255,0.02)', borderRadius:'6px', padding:'10px 12px', border:`1px solid ${C.border}` }}>
+                      <div key={i} style={{ background:C.bgSecondary, border:`1px solid ${C.border}`, padding:'10px 12px' }}>
                         <div style={{ fontSize:'10px', color:C.textMuted, marginBottom:'2px', letterSpacing:'0.06em', textTransform:'uppercase' }}>{s.label}</div>
-                        <div style={{ fontSize:'16px', fontWeight:'700', color:circuitInfo.color }}>{s.val}</div>
+                        <div style={{ fontSize:'16px', fontWeight:'700', color:C.blue }}>{s.val}</div>
                       </div>
                     ))}
                   </div>
 
                   <div>
-                    <div style={{ fontSize:'10px', color:C.gold, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'6px' }}>States in Circuit</div>
+                    <div style={{ fontSize:'10px', color:C.textSecondary, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'8px' }}>States in Circuit</div>
                     <div style={{ display:'flex', flexWrap:'wrap', gap:'6px' }}>
                       {circuitInfo.states.map(s => (
                         <button key={s} onClick={() => setSelState(s)} style={{
-                          padding:'3px 9px', borderRadius:'4px', cursor:'pointer',
-                          background:`${circuitInfo.color}15`, border:`1px solid ${circuitInfo.color}40`,
-                          color:circuitInfo.color, fontSize:'11px', fontWeight:'600',
-                        }}>{s}</button>
+                          padding:'3px 9px', cursor:'pointer', borderRadius:'4px',
+                          background:C.blueGlow2, border:`1px solid rgba(37,99,235,0.3)`,
+                          color:C.blue, fontSize:'11px', fontWeight:'600',
+                          transition:'background 0.15s',
+                        }}
+                          onMouseEnter={e => e.currentTarget.style.background=C.blueGlow}
+                          onMouseLeave={e => e.currentTarget.style.background=C.blueGlow2}
+                        >{s}</button>
                       ))}
                     </div>
                   </div>
@@ -718,76 +724,72 @@ export default function EnterprisePage() {
               ) : (
                 <div style={{
                   background:C.bgCard, border:`1px dashed ${C.border}`,
-                  borderRadius:'10px', padding:'32px 24px', textAlign:'center',
+                  padding:'40px 24px', textAlign:'center',
                 }}>
-                  <div style={{ fontSize:'28px', marginBottom:'10px', opacity:0.3 }}>⚖</div>
-                  <p style={{ fontSize:'13px', color:C.textMuted, margin:0 }}>Click a circuit in the legend or a state tile to see coverage details.</p>
+                  <div style={{ fontSize:'28px', marginBottom:'12px', opacity:0.3 }}>⚖</div>
+                  <p style={{ fontSize:'14px', color:C.textMuted, margin:0, lineHeight:'1.6' }}>Click a circuit in the legend or a state tile to see coverage details.</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Coverage stats row */}
-          <div style={{
-            display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'14px', marginTop:'28px',
-          }}>
+          <div className="tl-3col" style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'1px', marginTop:'32px', background:C.border }}>
             {[
-              { icon:'⚖', label:'Supreme Court', val:'All opinions 1950–present', sub:'5,200+ opinions' },
-              { icon:'🏛', label:'Circuit Courts',val:'All 13 circuits covered',    sub:'982K+ published opinions' },
-              { icon:'📋', label:'District Courts',val:'All 94 districts',          sub:'420K+ published opinions' },
-              { icon:'📜', label:'State Courts',   val:'All 50 state systems',      sub:'Coverage varies by state' },
+              { icon:'⚖', label:'Supreme Court',  val:'All opinions 1950–present', sub:'5,200+ opinions' },
+              { icon:'🏛', label:'Circuit Courts', val:'All 13 circuits covered',    sub:'982K+ published opinions' },
+              { icon:'📋', label:'District Courts',val:'All 94 districts',           sub:'420K+ published opinions' },
+              { icon:'📜', label:'State Courts',   val:'All 50 state systems',       sub:'Coverage varies by state' },
             ].map((item, i) => (
-              <div key={i} style={{
-                background:C.bgCard, border:`1px solid ${C.border}`, borderRadius:'8px', padding:'16px',
-              }}>
-                <div style={{ fontSize:'20px', marginBottom:'8px' }}>{item.icon}</div>
-                <div style={{ fontSize:'12px', fontWeight:'700', color:C.textPrimary, marginBottom:'3px' }}>{item.label}</div>
-                <div style={{ fontSize:'11px', color:C.gold, marginBottom:'2px' }}>{item.val}</div>
-                <div style={{ fontSize:'10px', color:C.textMuted }}>{item.sub}</div>
+              <div key={i} style={{ background:C.bgCard, padding:'20px' }}>
+                <div style={{ fontSize:'20px', marginBottom:'10px' }}>{item.icon}</div>
+                <div style={{ fontSize:'13px', fontWeight:'700', color:C.textPrimary, marginBottom:'4px' }}>{item.label}</div>
+                <div style={{ fontSize:'12px', color:C.blue, marginBottom:'2px' }}>{item.val}</div>
+                <div style={{ fontSize:'11px', color:C.textMuted }}>{item.sub}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* ── Section 2: Federal Agency Coverage ────────────────────────── */}
-        <SealDivider label="Federal Agency Coverage" />
-        <div style={{ marginBottom:'60px' }}>
-          <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 6px', color:C.textPrimary }}>
+        <SectionDivider label="Federal Agency Coverage" />
+        <div style={{ marginBottom:'72px' }}>
+          <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 8px', color:C.textPrimary }}>
             Federal Agency & Regulatory Coverage
           </h2>
-          <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 0 24px', lineHeight:'1.6', maxWidth:'640px' }}>
+          <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 0 28px', lineHeight:'1.6', maxWidth:'640px' }}>
             Every major federal regulatory body — from SEC no-action letters to EPA enforcement orders — verified and cross-referenced.
           </p>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'12px' }}>
+          <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'1px', background:C.border }}>
             {AGENCIES.map((ag, i) => (
               <div key={i} style={{
-                background:C.bgCard, border:`1px solid ${C.border}`, borderRadius:'8px',
-                padding:'16px 18px', display:'flex', gap:'14px', alignItems:'flex-start',
-                transition:'border-color 0.2s',
+                background:C.bgCard, padding:'20px 22px',
+                display:'flex', gap:'16px', alignItems:'flex-start',
+                transition:'background 0.15s',
               }}
-                onMouseEnter={e => e.currentTarget.style.borderColor=C.borderGold}
-                onMouseLeave={e => e.currentTarget.style.borderColor=C.border}
+                onMouseEnter={e => e.currentTarget.style.background='#161616'}
+                onMouseLeave={e => e.currentTarget.style.background=C.bgCard}
               >
                 <div style={{
-                  width:'38px', height:'38px', borderRadius:'8px', flexShrink:0,
-                  background:C.goldGlow, border:`1px solid ${C.borderGold}`,
+                  width:'40px', height:'40px', flexShrink:0,
+                  background:C.blueGlow2, border:`1px solid rgba(37,99,235,0.2)`,
                   display:'flex', alignItems:'center', justifyContent:'center', fontSize:'16px',
                 }}>{ag.icon}</div>
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'8px', marginBottom:'3px' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'8px', marginBottom:'4px' }}>
                     <div>
-                      <span style={{ fontSize:'11px', fontWeight:'700', color:C.gold, fontFamily:MONO, marginRight:'6px' }}>{ag.abbr}</span>
-                      <span style={{ fontSize:'12px', fontWeight:'600', color:C.textPrimary }}>{ag.name}</span>
+                      <span style={{ fontSize:'12px', fontWeight:'700', color:C.blue, fontFamily:MONO, marginRight:'8px' }}>{ag.abbr}</span>
+                      <span style={{ fontSize:'13px', fontWeight:'600', color:C.textPrimary }}>{ag.name}</span>
                     </div>
                     <span style={{
                       fontSize:'11px', fontWeight:'700', color:C.verified, flexShrink:0,
-                      background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)',
-                      borderRadius:'4px', padding:'1px 6px',
+                      background:C.verifiedBg, border:'1px solid rgba(34,197,94,0.2)',
+                      borderRadius:'4px', padding:'2px 7px',
                     }}>{ag.accuracy}%</span>
                   </div>
-                  <p style={{ margin:'0 0 4px', fontSize:'11px', color:C.gold }}>{ag.coverage}</p>
-                  <p style={{ margin:'0 0 4px', fontSize:'10px', color:C.textMuted }}>{ag.note}</p>
-                  <div style={{ fontSize:'10px', color:C.textSecondary, fontFamily:MONO }}>
+                  <p style={{ margin:'0 0 3px', fontSize:'12px', color:C.textSecondary }}>{ag.coverage}</p>
+                  <p style={{ margin:'0 0 4px', fontSize:'11px', color:C.textMuted }}>{ag.note}</p>
+                  <div style={{ fontSize:'11px', color:C.textMuted, fontFamily:MONO }}>
                     {ag.verified.toLocaleString()} documents verified
                   </div>
                 </div>
@@ -797,31 +799,29 @@ export default function EnterprisePage() {
         </div>
 
         {/* ── Section 3: Practice Area Depth ────────────────────────────── */}
-        <SealDivider label="Practice Area Accuracy" />
-        <div style={{ marginBottom:'60px' }}>
-          <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 6px', color:C.textPrimary }}>
+        <SectionDivider label="Practice Area Accuracy" />
+        <div style={{ marginBottom:'72px' }}>
+          <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 8px', color:C.textPrimary }}>
             Accuracy Rates by Practice Area
           </h2>
-          <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 0 24px', lineHeight:'1.6', maxWidth:'640px' }}>
+          <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 0 28px', lineHeight:'1.6', maxWidth:'640px' }}>
             Independently measured accuracy across {PRACTICE_AREAS.reduce((sum, p) => sum + p.claims, 0).toLocaleString()} verified legal claims, updated quarterly.
           </p>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'14px' }}>
+          <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'1px', background:C.border }}>
             {PRACTICE_AREAS.map((pa, i) => (
-              <div key={i} style={{
-                background:C.bgCard, border:`1px solid ${C.border}`,
-                borderRadius:'8px', padding:'18px 20px',
-              }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px' }}>
+              <div key={i} style={{ background:C.bgCard, padding:'20px 24px' }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'12px' }}>
                   <div>
-                    <div style={{ fontSize:'13px', fontWeight:'700', color:C.textPrimary }}>{pa.label}</div>
-                    <div style={{ fontSize:'10px', color:C.textMuted, marginTop:'2px' }}>{pa.claims.toLocaleString()} claims verified · {pa.note}</div>
+                    <div style={{ fontSize:'15px', fontWeight:'700', color:C.textPrimary, marginBottom:'3px' }}>{pa.label}</div>
+                    <div style={{ fontSize:'11px', color:C.textMuted }}>{pa.claims.toLocaleString()} claims verified</div>
+                    <div style={{ fontSize:'11px', color:C.textMuted, marginTop:'2px' }}>{pa.note}</div>
                   </div>
-                  <span style={{ fontFamily:SERIF, fontSize:'22px', fontWeight:'700', color:pa.color }}>{pa.accuracy}%</span>
+                  <span style={{ fontFamily:SERIF, fontSize:'24px', fontWeight:'700', color:C.blue, flexShrink:0 }}>{pa.accuracy}%</span>
                 </div>
-                <div style={{ height:'6px', background:C.border, borderRadius:'3px', overflow:'hidden' }}>
+                <div style={{ height:'6px', background:'#222', overflow:'hidden' }}>
                   <div style={{
-                    height:'100%', width:`${pa.accuracy}%`, borderRadius:'3px',
-                    background:`linear-gradient(90deg, ${pa.color}80, ${pa.color})`,
+                    height:'100%', background:C.blue,
+                    width:`${pa.accuracy}%`,
                     animation:'barFill 1.2s ease both',
                   }} />
                 </div>
@@ -831,66 +831,67 @@ export default function EnterprisePage() {
         </div>
 
         {/* ── Section 4: Hallucination Database ─────────────────────────── */}
-        <SealDivider label="Hallucination Database" />
-        <div style={{ marginBottom:'60px' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'20px', flexWrap:'wrap', gap:'12px' }}>
+        <SectionDivider label="Hallucination Database" />
+        <div style={{ marginBottom:'72px' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:'24px', flexWrap:'wrap', gap:'16px' }}>
             <div>
-              <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 4px', color:C.textPrimary }}>
+              <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 6px', color:C.textPrimary }}>
                 The AI Legal Hallucination Database
               </h2>
-              <p style={{ fontSize:'14px', color:C.textSecondary, margin:0, lineHeight:'1.6', maxWidth:'580px' }}>
-                The most common AI hallucination patterns documented in real legal filings. Updated weekly. Bookmark this — every attorney using AI needs it.
+              <p style={{ fontSize:'16px', color:C.textSecondary, margin:0, lineHeight:'1.6', maxWidth:'580px' }}>
+                The most common AI hallucination patterns documented in real legal filings. Updated weekly.
               </p>
             </div>
             <div style={{ display:'flex', gap:'6px', flexWrap:'wrap' }}>
               {['all', ...new Set(HALLUCINATION_DB.map(h => h.area))].map(f => (
                 <button key={f} onClick={() => setHallFilter(f)} style={{
-                  padding:'5px 12px', borderRadius:'6px', cursor:'pointer', fontSize:'11px',
-                  border:`1px solid ${hallFilter === f ? C.borderGold : C.border}`,
-                  background: hallFilter === f ? C.goldGlow2 : 'transparent',
-                  color: hallFilter === f ? C.gold : C.textSecondary,
-                  transition:'all 0.15s',
+                  padding:'6px 14px', cursor:'pointer', fontSize:'12px',
+                  border:`1px solid ${hallFilter === f ? C.blue : C.border}`,
+                  background: hallFilter === f ? C.blueGlow2 : 'transparent',
+                  color: hallFilter === f ? C.blue : C.textSecondary,
+                  transition:'all 0.15s', borderRadius:'4px',
                 }}>{f === 'all' ? 'All Areas' : f}</button>
               ))}
             </div>
           </div>
 
-          <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
+          <div style={{ display:'flex', flexDirection:'column', gap:'1px', background:C.border }}>
             {HALLUCINATION_DB.filter(h => hallFilter === 'all' || h.area === hallFilter).map((h, i) => (
               <div key={h.id} style={{
-                background:C.bgCard, border:`1px solid ${C.border}`,
-                borderRadius:'8px', padding:'18px 20px',
+                background:C.bgCard, padding:'20px 24px',
                 animation:'slideUp 0.3s ease both',
                 animationDelay:`${i * 40}ms`,
               }}>
-                <div style={{ display:'flex', gap:'10px', alignItems:'flex-start', marginBottom:'10px' }}>
+                <div style={{ display:'flex', gap:'8px', alignItems:'flex-start', marginBottom:'12px', flexWrap:'wrap' }}>
                   <span style={{
-                    padding:'2px 7px', borderRadius:'4px', fontSize:'10px', fontWeight:'700',
-                    background:'rgba(239,68,68,0.12)', color:C.danger,
-                    border:'1px solid rgba(239,68,68,0.25)', flexShrink:0,
+                    padding:'3px 8px', fontSize:'11px', fontWeight:'700',
+                    background:C.errorBg, color:C.error,
+                    border:'1px solid rgba(239,68,68,0.25)', flexShrink:0, borderRadius:'4px',
                   }}>{h.type}</span>
                   <span style={{
-                    padding:'2px 7px', borderRadius:'4px', fontSize:'10px',
-                    background:C.goldGlow2, color:C.gold, border:`1px solid ${C.borderGold}`, flexShrink:0,
+                    padding:'3px 8px', fontSize:'11px',
+                    background:C.blueGlow2, color:C.blue,
+                    border:`1px solid rgba(37,99,235,0.3)`, flexShrink:0, borderRadius:'4px',
                   }}>{h.area}</span>
                   <span style={{
-                    padding:'2px 7px', borderRadius:'4px', fontSize:'10px',
-                    background:'rgba(59,130,246,0.1)', color:C.blue, border:'1px solid rgba(59,130,246,0.2)', flexShrink:0,
+                    padding:'3px 8px', fontSize:'11px',
+                    background:C.bgSecondary, color:C.textSecondary,
+                    border:`1px solid ${C.border}`, flexShrink:0, borderRadius:'4px',
                   }}>{h.jurisdiction}</span>
                   <span style={{
-                    padding:'2px 7px', borderRadius:'4px', fontSize:'10px', marginLeft:'auto', flexShrink:0,
-                    background: h.freq === 'High' ? 'rgba(239,68,68,0.1)' : h.freq === 'Medium' ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)',
-                    color: h.freq === 'High' ? C.danger : h.freq === 'Medium' ? C.caution : C.verified,
+                    padding:'3px 8px', fontSize:'11px', marginLeft:'auto', flexShrink:0, borderRadius:'4px',
+                    background: h.freq === 'High' ? C.errorBg : h.freq === 'Medium' ? C.warningBg : C.verifiedBg,
+                    color: h.freq === 'High' ? C.error : h.freq === 'Medium' ? C.warning : C.verified,
                     border: `1px solid ${h.freq === 'High' ? 'rgba(239,68,68,0.25)' : h.freq === 'Medium' ? 'rgba(245,158,11,0.25)' : 'rgba(34,197,94,0.25)'}`,
                   }}>{h.freq} frequency</span>
                 </div>
-                <p style={{ margin:'0 0 8px', fontSize:'12px', color:C.textSecondary, lineHeight:'1.55' }}>
-                  <strong style={{ color:C.danger }}>AI Output: </strong>{h.ai}
+                <p style={{ margin:'0 0 10px', fontSize:'14px', color:C.textSecondary, lineHeight:'1.6' }}>
+                  <strong style={{ color:C.error }}>AI Output: </strong>{h.ai}
                 </p>
-                <p style={{ margin:'0 0 8px', fontSize:'12px', color:C.textSecondary, lineHeight:'1.55' }}>
+                <p style={{ margin:'0 0 10px', fontSize:'14px', color:C.textSecondary, lineHeight:'1.6' }}>
                   <strong style={{ color:C.verified }}>Correct: </strong>{h.correct}
                 </p>
-                <p style={{ margin:0, fontSize:'11px', color:C.gold }}>
+                <p style={{ margin:0, fontSize:'12px', color:C.blue }}>
                   ✓ TrustLayer detection: {h.caught}
                 </p>
               </div>
@@ -898,54 +899,52 @@ export default function EnterprisePage() {
           </div>
         </div>
 
-        {/* ── Section 5: Bar Compliance ─────────────────────────────────── */}
-        <SealDivider label="Bar Association Compliance" />
-        <div style={{ marginBottom:'60px' }}>
-          <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 4px', color:C.textPrimary }}>
+        {/* ── Section 5: ABA Compliance ─────────────────────────────────── */}
+        <SectionDivider label="Bar Association Compliance" />
+        <div style={{ marginBottom:'72px' }}>
+          <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 8px', color:C.textPrimary }}>
             Professional Responsibility & AI Compliance
           </h2>
-          <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 0 24px', lineHeight:'1.6', maxWidth:'640px' }}>
+          <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 0 28px', lineHeight:'1.6', maxWidth:'640px' }}>
             TrustLayer is specifically designed to satisfy the professional responsibility obligations every US attorney faces when using AI tools. Here is exactly how.
           </p>
 
-          <div style={{ display:'flex', flexDirection:'column', gap:'16px', marginBottom:'28px' }}>
+          <div style={{ display:'flex', flexDirection:'column', gap:'1px', background:C.border, marginBottom:'32px' }}>
             {ABA_RULES.map((rule, i) => (
-              <div key={i} style={{
-                background:C.bgCard, border:`1px solid ${C.border}`,
-                borderRadius:'10px', overflow:'hidden',
-              }}>
+              <div key={i} style={{ background:C.bgCard, overflow:'hidden' }}>
+                {/* Rule header */}
                 <div style={{
-                  display:'flex', gap:'16px', padding:'20px 22px',
+                  display:'flex', gap:'16px', padding:'24px',
                   borderBottom:`1px solid ${C.border}`,
-                  background:`linear-gradient(90deg, ${C.goldGlow2}, transparent)`,
+                  background:C.blueGlow2,
                 }}>
                   <div style={{
-                    width:'56px', height:'56px', borderRadius:'8px', flexShrink:0,
-                    background:C.goldGlow, border:`1px solid ${C.borderGold}`,
+                    width:'56px', height:'56px', flexShrink:0,
+                    background:C.bgSecondary, border:`1px solid rgba(37,99,235,0.3)`,
                     display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
                   }}>
-                    <span style={{ fontSize:'9px', color:C.gold, letterSpacing:'0.06em', textTransform:'uppercase' }}>ABA</span>
-                    <span style={{ fontSize:'12px', fontWeight:'700', color:C.gold }}>{rule.rule.replace('Model Rule ','')}</span>
+                    <span style={{ fontSize:'9px', color:C.blue, letterSpacing:'0.06em', textTransform:'uppercase' }}>ABA</span>
+                    <span style={{ fontSize:'13px', fontWeight:'700', color:C.blue }}>{rule.rule.replace('Model Rule ','')}</span>
                   </div>
                   <div>
-                    <div style={{ fontSize:'12px', color:C.gold, fontWeight:'700', marginBottom:'2px' }}>{rule.rule}</div>
-                    <div style={{ fontSize:'16px', fontWeight:'700', color:C.textPrimary, fontFamily:SERIF, marginBottom:'4px' }}>{rule.title}</div>
-                    <p style={{ margin:0, fontSize:'12px', color:C.textSecondary, lineHeight:'1.5', fontStyle:'italic' }}>"{rule.text}"</p>
+                    <div style={{ fontSize:'13px', color:C.blue, fontWeight:'700', marginBottom:'2px' }}>{rule.rule}</div>
+                    <div style={{ fontFamily:SERIF, fontSize:'18px', fontWeight:'700', color:C.textPrimary, marginBottom:'6px' }}>{rule.title}</div>
+                    <p style={{ margin:0, fontSize:'13px', color:C.textSecondary, lineHeight:'1.6', fontStyle:'italic' }}>"{rule.text}"</p>
                   </div>
                 </div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0' }}>
-                  <div style={{ padding:'16px 22px', borderRight:`1px solid ${C.border}` }}>
-                    <div style={{ fontSize:'10px', color:C.danger, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'6px' }}>⚠ AI Risk</div>
-                    <p style={{ margin:0, fontSize:'12px', color:C.textSecondary, lineHeight:'1.55' }}>{rule.aiRisk}</p>
+                <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0' }}>
+                  <div style={{ padding:'20px 24px', borderRight:`1px solid ${C.border}` }}>
+                    <div style={{ fontSize:'11px', color:C.error, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'8px' }}>⚠ AI Risk</div>
+                    <p style={{ margin:0, fontSize:'13px', color:C.textSecondary, lineHeight:'1.6' }}>{rule.aiRisk}</p>
                   </div>
-                  <div style={{ padding:'16px 22px' }}>
-                    <div style={{ fontSize:'10px', color:C.verified, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'6px' }}>✓ TrustLayer Solution</div>
-                    <p style={{ margin:'0 0 10px', fontSize:'12px', color:C.textSecondary, lineHeight:'1.55' }}>{rule.trustlayerSolution}</p>
-                    <div style={{ display:'flex', flexWrap:'wrap', gap:'5px' }}>
+                  <div style={{ padding:'20px 24px' }}>
+                    <div style={{ fontSize:'11px', color:C.verified, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'8px' }}>✓ TrustLayer Solution</div>
+                    <p style={{ margin:'0 0 12px', fontSize:'13px', color:C.textSecondary, lineHeight:'1.6' }}>{rule.trustlayerSolution}</p>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:'6px' }}>
                       {rule.states.map((s, j) => (
                         <span key={j} style={{
-                          fontSize:'10px', padding:'2px 7px', borderRadius:'4px',
-                          background:'rgba(34,197,94,0.08)', color:C.verified,
+                          fontSize:'11px', padding:'3px 8px', borderRadius:'4px',
+                          background:C.verifiedBg, color:C.verified,
                           border:'1px solid rgba(34,197,94,0.2)',
                         }}>{s}</span>
                       ))}
@@ -957,27 +956,21 @@ export default function EnterprisePage() {
           </div>
 
           {/* State bar ethics opinions */}
-          <div style={{
-            background:C.bgCard, border:`1px solid ${C.borderGold}`,
-            borderRadius:'10px', padding:'22px',
-          }}>
-            <h3 style={{ fontFamily:SERIF, fontSize:'18px', margin:'0 0 16px', color:C.gold }}>
+          <div style={{ background:C.bgCard, border:`1px solid ${C.border}`, borderLeft:`3px solid ${C.blue}`, padding:'28px' }}>
+            <h3 style={{ fontFamily:SERIF, fontSize:'20px', margin:'0 0 20px', color:C.textPrimary }}>
               State Bar Ethics Opinions on AI Use
             </h3>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'14px' }}>
+            <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'16px' }}>
               {[
-                { bar:'California State Bar', op:'Formal Opinion 2023-204', key:'Attorneys must supervise AI output; cannot delegate review to AI. Competence requires understanding AI limitations.', color:'#f472b6' },
-                { bar:'New York State Bar', op:'Ethics Opinion 1240 (2024)', key:'Use of AI is permissible but requires review. Client confidentiality applies to prompts sent to AI systems. Fee considerations apply.', color:'#c084fc' },
-                { bar:'Florida Bar', op:'Ethics Opinion 24-1 (2024)', key:'AI-generated work product must be reviewed by a competent attorney. Disclosure to clients may be required. Billing for AI time governed by Rule 4-1.5.', color:'#60a5fa' },
-                { bar:'Texas Professional Ethics Committee', op:'Opinion 699 (2023)', key:'AI tools constitute "assistance from others" under Rule 5.03. Supervising attorney responsible for AI output. Cannot bill as attorney time without review.', color:'#fb923c' },
+                { bar:'California State Bar',             op:'Formal Opinion 2023-204',     key:'Attorneys must supervise AI output; cannot delegate review to AI. Competence requires understanding AI limitations.' },
+                { bar:'New York State Bar',               op:'Ethics Opinion 1240 (2024)',   key:'Use of AI is permissible but requires review. Client confidentiality applies to prompts sent to AI systems. Fee considerations apply.' },
+                { bar:'Florida Bar',                      op:'Ethics Opinion 24-1 (2024)',   key:'AI-generated work product must be reviewed by a competent attorney. Disclosure to clients may be required. Billing for AI time governed by Rule 4-1.5.' },
+                { bar:'Texas Professional Ethics Committee',op:'Opinion 699 (2023)',         key:'AI tools constitute "assistance from others" under Rule 5.03. Supervising attorney responsible for AI output. Cannot bill as attorney time without review.' },
               ].map((b, i) => (
-                <div key={i} style={{
-                  padding:'14px 16px', borderRadius:'8px',
-                  background:'rgba(255,255,255,0.02)', border:`1px solid ${b.color}30`,
-                }}>
-                  <div style={{ fontSize:'11px', fontWeight:'700', color:b.color, marginBottom:'3px' }}>{b.bar}</div>
-                  <div style={{ fontSize:'11px', color:C.textSecondary, fontFamily:MONO, marginBottom:'6px' }}>{b.op}</div>
-                  <p style={{ margin:0, fontSize:'11px', color:C.textMuted, lineHeight:'1.5' }}>{b.key}</p>
+                <div key={i} style={{ background:C.bgSecondary, border:`1px solid ${C.border}`, padding:'16px' }}>
+                  <div style={{ fontSize:'12px', fontWeight:'700', color:C.blue, marginBottom:'3px' }}>{b.bar}</div>
+                  <div style={{ fontSize:'11px', color:C.textSecondary, fontFamily:MONO, marginBottom:'8px' }}>{b.op}</div>
+                  <p style={{ margin:0, fontSize:'13px', color:C.textMuted, lineHeight:'1.6' }}>{b.key}</p>
                 </div>
               ))}
             </div>
@@ -985,247 +978,243 @@ export default function EnterprisePage() {
         </div>
 
         {/* ── Section 6: Court Cases / Sanctions ───────────────────────── */}
-        <SealDivider label="AI Sanctions — Real Cases" />
-        <div style={{ marginBottom:'60px' }}>
-          <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 4px', color:C.textPrimary }}>
+        <SectionDivider label="AI Sanctions — Real Cases" />
+        <div style={{ marginBottom:'72px' }}>
+          <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 8px', color:C.textPrimary }}>
             When AI Hallucinations Reached Federal Courts
           </h2>
-          <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 0 28px', lineHeight:'1.6', maxWidth:'640px' }}>
+          <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 0 32px', lineHeight:'1.6', maxWidth:'640px' }}>
             These are not hypotheticals. These are documented cases where AI-generated hallucinations caused real professional consequences — and how TrustLayer would have prevented each one.
           </p>
 
           <div style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
-            {SANCTION_CASES.map((sc, i) => (
-              <div key={sc.id} style={{
-                background:C.bgCard, border:`1px solid ${sc.color}35`,
-                borderRadius:'10px', overflow:'hidden',
-              }}>
-                {/* Header */}
-                <div style={{
-                  padding:'18px 22px', background:`${sc.color}08`,
-                  borderBottom:`1px solid ${sc.color}25`,
-                  display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'12px',
-                }}>
-                  <div>
-                    <div style={{ display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap', marginBottom:'6px' }}>
-                      <span style={{
-                        padding:'2px 8px', borderRadius:'4px', fontSize:'10px', fontWeight:'700',
-                        background:`${sc.color}15`, color:sc.color, border:`1px solid ${sc.color}35`,
-                      }}>⚠ AI Sanction</span>
-                      <span style={{ fontSize:'11px', color:C.textMuted, fontFamily:MONO }}>{sc.citation}</span>
-                    </div>
-                    <h3 style={{ margin:'0 0 3px', fontFamily:SERIF, fontSize:'18px', color:C.textPrimary, fontWeight:'700' }}>{sc.name}</h3>
-                    <div style={{ fontSize:'12px', color:C.textSecondary }}>{sc.court} · {sc.judge}</div>
-                  </div>
+            {SANCTION_CASES.map((sc) => {
+              const accent = sc.severity === 'error' ? C.error : C.warning
+              const accentBg = sc.severity === 'error' ? C.errorBg : C.warningBg
+              return (
+                <div key={sc.id} style={{ background:C.bgCard, border:`1px solid ${C.border}`, borderLeft:`3px solid ${accent}`, overflow:'hidden' }}>
+                  {/* Header */}
                   <div style={{
-                    background:`${sc.color}12`, border:`1px solid ${sc.color}30`,
-                    borderRadius:'8px', padding:'8px 12px', textAlign:'center', flexShrink:0,
+                    padding:'20px 24px', background:accentBg,
+                    borderBottom:`1px solid ${C.border}`,
+                    display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:'16px', flexWrap:'wrap',
                   }}>
-                    <div style={{ fontSize:'10px', color:sc.color, letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:'2px' }}>Sanction</div>
-                    <div style={{ fontSize:'12px', fontWeight:'700', color:sc.color }}>{sc.sanction}</div>
+                    <div>
+                      <div style={{ display:'flex', gap:'8px', alignItems:'center', flexWrap:'wrap', marginBottom:'8px' }}>
+                        <span style={{
+                          padding:'3px 9px', fontSize:'11px', fontWeight:'700',
+                          background:accentBg, color:accent, border:`1px solid ${accent}40`, borderRadius:'4px',
+                        }}>⚠ AI Sanction</span>
+                        <span style={{ fontSize:'12px', color:C.textMuted, fontFamily:MONO }}>{sc.citation}</span>
+                      </div>
+                      <h3 style={{ margin:'0 0 4px', fontFamily:SERIF, fontSize:'20px', color:C.textPrimary, fontWeight:'700' }}>{sc.name}</h3>
+                      <div style={{ fontSize:'13px', color:C.textSecondary }}>{sc.court} · {sc.judge}</div>
+                    </div>
+                    <div style={{
+                      background:accentBg, border:`1px solid ${accent}40`,
+                      padding:'10px 16px', textAlign:'center', flexShrink:0,
+                    }}>
+                      <div style={{ fontSize:'10px', color:accent, letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:'3px' }}>Sanction</div>
+                      <div style={{ fontSize:'13px', fontWeight:'700', color:accent }}>{sc.sanction}</div>
+                    </div>
+                  </div>
+
+                  <div style={{ padding:'20px 24px' }}>
+                    <p style={{ margin:'0 0 16px', fontSize:'14px', color:C.textSecondary, lineHeight:'1.7' }}>{sc.summary}</p>
+
+                    <button onClick={() => setExpandedCase(expandedCase === sc.id ? null : sc.id)} style={{
+                      background:'none', border:`1px solid ${C.border}`, color:C.textSecondary,
+                      fontSize:'12px', cursor:'pointer', padding:'7px 14px',
+                      marginBottom: expandedCase === sc.id ? '16px' : '0',
+                      transition:'all 0.15s', borderRadius:'4px',
+                    }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor=C.blue; e.currentTarget.style.color=C.blue }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor=C.border; e.currentTarget.style.color=C.textSecondary }}
+                    >
+                      {expandedCase === sc.id ? '▲ Collapse' : '▼ See fake citations + how TrustLayer catches this'}
+                    </button>
+
+                    {expandedCase === sc.id && (
+                      <div style={{ animation:'slideUp 0.2s ease' }}>
+                        <div style={{ marginBottom:'16px' }}>
+                          <div style={{ fontSize:'11px', color:C.error, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'10px' }}>Hallucinated Citations</div>
+                          {sc.fakeCitations.map((fc, j) => (
+                            <div key={j} style={{
+                              display:'flex', gap:'8px', alignItems:'flex-start',
+                              fontSize:'13px', color:C.textMuted, padding:'6px 0',
+                              borderBottom: j < sc.fakeCitations.length-1 ? `1px solid ${C.border}` : 'none',
+                              fontFamily:MONO,
+                            }}>
+                              <span style={{ color:C.error, flexShrink:0 }}>✗</span>{fc}
+                            </div>
+                          ))}
+                        </div>
+                        <div style={{ background:C.verifiedBg, border:`1px solid rgba(34,197,94,0.2)`, padding:'16px' }}>
+                          <div style={{ fontSize:'11px', color:C.verified, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'8px' }}>✓ How TrustLayer Would Have Caught This</div>
+                          <p style={{ margin:0, fontSize:'13px', color:C.textSecondary, lineHeight:'1.7' }}>{sc.howTrustLayerCatches}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                <div style={{ padding:'18px 22px' }}>
-                  <p style={{ margin:'0 0 14px', fontSize:'13px', color:C.textSecondary, lineHeight:'1.65' }}>{sc.summary}</p>
-
-                  <button onClick={() => setExpandedCase(expandedCase === sc.id ? null : sc.id)} style={{
-                    background:'none', border:`1px solid ${C.border}`, borderRadius:'6px',
-                    color:C.textSecondary, fontSize:'11px', cursor:'pointer', padding:'6px 12px',
-                    marginBottom: expandedCase === sc.id ? '14px' : '0',
-                    transition:'all 0.15s',
-                  }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor=C.borderGold; e.currentTarget.style.color=C.gold }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor=C.border; e.currentTarget.style.color=C.textSecondary }}
-                  >
-                    {expandedCase === sc.id ? '▲ Collapse' : '▼ See fake citations + how TrustLayer catches this'}
-                  </button>
-
-                  {expandedCase === sc.id && (
-                    <div style={{ animation:'slideUp 0.2s ease' }}>
-                      <div style={{ marginBottom:'14px' }}>
-                        <div style={{ fontSize:'10px', color:C.danger, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'7px' }}>Hallucinated Citations</div>
-                        {sc.fakeCitations.map((fc, j) => (
-                          <div key={j} style={{
-                            display:'flex', gap:'7px', alignItems:'flex-start',
-                            fontSize:'12px', color:C.textMuted, padding:'5px 0',
-                            borderBottom: j < sc.fakeCitations.length-1 ? `1px solid ${C.border}` : 'none',
-                            fontFamily:MONO,
-                          }}>
-                            <span style={{ color:C.danger, flexShrink:0 }}>✗</span>{fc}
-                          </div>
-                        ))}
-                      </div>
-                      <div style={{
-                        background:'rgba(34,197,94,0.06)', border:`1px solid rgba(34,197,94,0.2)`,
-                        borderRadius:'8px', padding:'14px 16px',
-                      }}>
-                        <div style={{ fontSize:'10px', color:C.verified, letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'7px' }}>✓ How TrustLayer Would Have Caught This</div>
-                        <p style={{ margin:0, fontSize:'12px', color:C.textSecondary, lineHeight:'1.65' }}>{sc.howTrustLayerCatches}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
         {/* ── Section 7: Malpractice Calculator ───────────────────────── */}
-        <SealDivider label="Malpractice Exposure Calculator" />
-        <div style={{ marginBottom:'60px' }}>
-          <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 4px', color:C.textPrimary }}>
+        <SectionDivider label="Malpractice Exposure Calculator" />
+        <div style={{ marginBottom:'72px' }}>
+          <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 8px', color:C.textPrimary }}>
             Your AI Malpractice Exposure Calculator
           </h2>
-          <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 0 24px', lineHeight:'1.6', maxWidth:'640px' }}>
+          <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 0 28px', lineHeight:'1.6', maxWidth:'640px' }}>
             Input your firm's profile to see your estimated annual malpractice exposure from AI hallucinations — and the ROI of TrustLayer as a protective layer.
           </p>
-          <div style={{
-            background:C.bgCard, border:`1px solid ${C.border}`,
-            borderRadius:'12px', padding:'28px 32px',
-          }}>
+          <div style={{ background:C.bgCard, border:`1px solid ${C.border}`, padding:'32px' }}>
             <MalpracticeCalculator />
           </div>
         </div>
 
         {/* ── Section 8: Pricing ────────────────────────────────────────── */}
-        <SealDivider label="Firm Size Pricing" />
-        <div style={{ marginBottom:'60px' }}>
-          <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 4px', color:C.textPrimary, textAlign:'center' }}>
+        <SectionDivider label="Firm Size Pricing" />
+        <div style={{ marginBottom:'72px' }}>
+          <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 8px', color:C.textPrimary, textAlign:'center' }}>
             Pricing for Every Firm Size
           </h2>
-          <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 auto 28px', lineHeight:'1.6', maxWidth:'520px', textAlign:'center' }}>
+          <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 auto 32px', lineHeight:'1.6', maxWidth:'520px', textAlign:'center' }}>
             From solo practitioners to AmLaw 200 firms. No per-verification fees. No hidden costs.
           </p>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:'12px' }}>
+          <div className="tl-3col" style={{ display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:'1px', background:C.border }}>
             {PRICING.map((tier, i) => (
               <div key={i} style={{
-                background: tier.featured ? `linear-gradient(160deg, ${C.goldGlow} 0%, ${C.bgCard} 100%)` : C.bgCard,
-                border:`1px solid ${tier.featured ? C.gold : C.border}`,
-                borderRadius:'10px', padding:'22px 18px',
-                position:'relative', overflow:'hidden',
+                background: tier.featured ? C.bgCard : C.bgCard,
+                border: tier.featured ? `2px solid ${C.blue}` : 'none',
+                padding:'32px 20px', position:'relative', overflow:'hidden',
+                display:'flex', flexDirection:'column',
               }}>
                 {tier.featured && (
                   <div style={{
-                    position:'absolute', top:'10px', right:'10px',
-                    background:C.gold, color:'#0a0800', fontSize:'9px',
-                    fontWeight:'700', letterSpacing:'0.08em', textTransform:'uppercase',
-                    padding:'2px 7px', borderRadius:'4px',
+                    position:'absolute', top:'0', left:'0', right:'0',
+                    background:C.blue, color:'#fff', fontSize:'10px',
+                    fontWeight:'700', letterSpacing:'0.1em', textTransform:'uppercase',
+                    padding:'4px', textAlign:'center',
                   }}>Most Popular</div>
                 )}
-                <div style={{ fontSize:'11px', color:tier.featured ? C.gold : C.textMuted, fontWeight:'600', marginBottom:'6px' }}>{tier.tier}</div>
-                <div style={{ fontFamily:SERIF, fontSize:'28px', fontWeight:'700', color:tier.featured ? C.gold : C.textPrimary, lineHeight:1 }}>
-                  {tier.price}<span style={{ fontSize:'13px', fontWeight:'400', color:C.textMuted }}>{tier.period}</span>
-                </div>
-                <div style={{ fontSize:'11px', color:C.textMuted, margin:'4px 0 14px' }}>{tier.size}</div>
+                <div style={{ paddingTop: tier.featured ? '20px' : '0' }}>
+                  <div style={{ fontSize:'12px', color: tier.featured ? C.blue : C.textMuted, fontWeight:'600', marginBottom:'8px', textTransform:'uppercase', letterSpacing:'0.06em' }}>{tier.tier}</div>
+                  <div style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', color: tier.featured ? C.blue : C.textPrimary, lineHeight:1 }}>
+                    {tier.price}<span style={{ fontSize:'14px', fontWeight:'400', color:C.textMuted }}>{tier.period}</span>
+                  </div>
+                  <div style={{ fontSize:'12px', color:C.textMuted, margin:'6px 0 20px' }}>{tier.size}</div>
 
-                <div style={{ marginBottom:'18px' }}>
-                  {tier.features.map((f, j) => (
-                    <div key={j} style={{
-                      display:'flex', gap:'6px', alignItems:'flex-start',
-                      fontSize:'11px', color:C.textSecondary, padding:'4px 0',
-                      borderBottom: j < tier.features.length-1 ? `1px solid ${C.border}` : 'none',
-                    }}>
-                      <span style={{ color:tier.featured ? C.gold : C.verified, fontSize:'9px', marginTop:'3px', flexShrink:0 }}>✦</span>
-                      {f}
-                    </div>
-                  ))}
-                </div>
+                  <div style={{ marginBottom:'20px', flex:1 }}>
+                    {tier.features.map((f, j) => (
+                      <div key={j} style={{
+                        display:'flex', gap:'8px', alignItems:'flex-start',
+                        fontSize:'13px', color:C.textSecondary, padding:'6px 0',
+                        borderBottom: j < tier.features.length-1 ? `1px solid ${C.border}` : 'none',
+                      }}>
+                        <span style={{ color:C.verified, fontSize:'11px', marginTop:'2px', flexShrink:0 }}>✓</span>
+                        {f}
+                      </div>
+                    ))}
+                  </div>
 
-                <Link href="/request-access" style={{
-                  display:'block', textAlign:'center', padding:'10px',
-                  borderRadius:'6px', textDecoration:'none', fontSize:'12px', fontWeight:'700',
-                  letterSpacing:'0.05em', transition:'all 0.2s',
-                  background: tier.featured ? `linear-gradient(135deg, ${C.gold}, ${C.goldDim})` : 'transparent',
-                  border: tier.featured ? 'none' : `1px solid ${C.border}`,
-                  color: tier.featured ? '#0a0800' : C.textSecondary,
-                  boxSizing:'border-box',
-                }}
-                  onMouseEnter={e => { if (!tier.featured) { e.currentTarget.style.borderColor=C.borderGold; e.currentTarget.style.color=C.gold } }}
-                  onMouseLeave={e => { if (!tier.featured) { e.currentTarget.style.borderColor=C.border; e.currentTarget.style.color=C.textSecondary } }}
-                >
-                  {tier.price === 'Custom' ? 'Contact Sales' : 'Get Started'}
-                </Link>
+                  <Link href="/request-access" style={{
+                    display:'block', textAlign:'center', padding:'11px',
+                    borderRadius:'6px', textDecoration:'none', fontSize:'13px', fontWeight:'600',
+                    transition:'background 0.15s',
+                    background: tier.featured ? C.blue : 'transparent',
+                    border: tier.featured ? 'none' : `1px solid ${C.border}`,
+                    color: tier.featured ? '#fff' : C.textSecondary,
+                  }}
+                    onMouseEnter={e => {
+                      if (tier.featured) e.currentTarget.style.background = C.blueHover
+                      else { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue }
+                    }}
+                    onMouseLeave={e => {
+                      if (tier.featured) e.currentTarget.style.background = C.blue
+                      else { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary }
+                    }}
+                  >
+                    {tier.price === 'Custom' ? 'Contact Sales' : 'Get Started'}
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* ── Section 9: State Bar Partnership ────────────────────────── */}
-        <SealDivider label="State Bar Partnerships" />
-        <div style={{ marginBottom:'60px' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 360px', gap:'32px', alignItems:'start' }}>
+        <SectionDivider label="State Bar Partnerships" />
+        <div style={{ marginBottom:'72px' }}>
+          <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'1fr 360px', gap:'40px', alignItems:'start' }}>
             <div>
-              <h2 style={{ fontFamily:SERIF, fontSize:'30px', fontWeight:'700', margin:'0 0 6px', color:C.textPrimary }}>
+              <h2 style={{ fontFamily:SERIF, fontSize:'32px', fontWeight:'700', margin:'0 0 8px', color:C.textPrimary }}>
                 State Bar Partnership Program
               </h2>
-              <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 0 20px', lineHeight:'1.6' }}>
+              <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 0 16px', lineHeight:'1.6' }}>
                 TrustLayer is actively partnering with state bar associations to provide member discounts, CLE-eligible training on AI verification, and official guidance on ABA Rule 1.1 compliance.
               </p>
-              <p style={{ fontSize:'13px', color:C.textSecondary, margin:'0 0 20px', lineHeight:'1.6' }}>
-                Attorneys who are bar members in <strong style={{ color:C.gold }}>active partnership states</strong> receive 20% discounts. Attorneys in <strong style={{ color:C.caution }}>discussion states</strong> can join the waitlist for priority access when their bar partnership activates.
+              <p style={{ fontSize:'14px', color:C.textSecondary, margin:'0 0 24px', lineHeight:'1.6' }}>
+                Attorneys who are bar members in <strong style={{ color:C.textPrimary }}>active partnership states</strong> receive 20% discounts. Attorneys in <strong style={{ color:C.textPrimary }}>discussion states</strong> can join the waitlist for priority access when their bar partnership activates.
               </p>
-              <div style={{ display:'flex', gap:'20px', flexWrap:'wrap' }}>
+              <div style={{ display:'flex', gap:'24px', flexWrap:'wrap', marginBottom:'32px' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
                   <span style={{ width:'10px', height:'10px', borderRadius:'50%', background:C.verified, display:'inline-block' }} />
-                  <span style={{ fontSize:'12px', color:C.textSecondary }}>Active partnership — member discount available</span>
+                  <span style={{ fontSize:'13px', color:C.textSecondary }}>Active partnership — member discount available</span>
                 </div>
                 <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-                  <span style={{ width:'10px', height:'10px', borderRadius:'50%', background:C.caution, display:'inline-block' }} />
-                  <span style={{ fontSize:'12px', color:C.textSecondary }}>Discussions underway — join waitlist</span>
+                  <span style={{ width:'10px', height:'10px', borderRadius:'50%', background:C.warning, display:'inline-block' }} />
+                  <span style={{ fontSize:'13px', color:C.textSecondary }}>Discussions underway — join waitlist</span>
                 </div>
               </div>
-
-              <div style={{ marginTop:'24px' }}>
-                <CircuitMap selCircuit={null} setSelCircuit={() => {}} selState={selState} setSelState={setSelState} />
-              </div>
+              <CircuitMap selCircuit={null} setSelCircuit={() => {}} selState={selState} setSelState={setSelState} />
             </div>
 
-            <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
-              <div style={{
-                background:C.bgCard, border:`1px solid ${C.verified}30`,
-                borderRadius:'10px', padding:'18px',
-              }}>
-                <div style={{ fontSize:'11px', color:C.verified, fontWeight:'700', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'10px' }}>
-                  ● Active Partnerships
+            <div style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
+              <div style={{ background:C.bgCard, border:`1px solid ${C.border}`, borderLeft:`3px solid ${C.verified}`, padding:'20px' }}>
+                <div style={{ fontSize:'11px', color:C.verified, fontWeight:'700', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'12px' }}>
+                  Active Partnerships
                 </div>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:'7px' }}>
                   {Object.entries(PARTNERSHIP_STATES).filter(([,v]) => v === 'active').map(([s]) => (
                     <span key={s} style={{
-                      padding:'3px 9px', borderRadius:'4px', fontSize:'11px', fontWeight:'600',
-                      background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.25)',
-                      color:C.verified,
+                      padding:'3px 10px', fontSize:'12px', fontWeight:'600',
+                      background:C.verifiedBg, border:'1px solid rgba(34,197,94,0.25)',
+                      color:C.verified, borderRadius:'4px',
                     }}>{s}</span>
                   ))}
                 </div>
               </div>
 
-              <div style={{
-                background:C.bgCard, border:`1px solid ${C.caution}30`,
-                borderRadius:'10px', padding:'18px',
-              }}>
-                <div style={{ fontSize:'11px', color:C.caution, fontWeight:'700', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'10px' }}>
-                  ⟳ Discussions Underway
+              <div style={{ background:C.bgCard, border:`1px solid ${C.border}`, borderLeft:`3px solid ${C.warning}`, padding:'20px' }}>
+                <div style={{ fontSize:'11px', color:C.warning, fontWeight:'700', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:'12px' }}>
+                  Discussions Underway
                 </div>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:'7px' }}>
                   {Object.entries(PARTNERSHIP_STATES).filter(([,v]) => v === 'discussions').map(([s]) => (
                     <span key={s} style={{
-                      padding:'3px 9px', borderRadius:'4px', fontSize:'11px', fontWeight:'600',
-                      background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.2)',
-                      color:C.caution,
+                      padding:'3px 10px', fontSize:'12px', fontWeight:'600',
+                      background:C.warningBg, border:'1px solid rgba(245,158,11,0.2)',
+                      color:C.warning, borderRadius:'4px',
                     }}>{s}</span>
                   ))}
                 </div>
               </div>
 
-              <div style={{
-                background:C.bgCard, border:`1px solid ${C.border}`,
-                borderRadius:'10px', padding:'18px',
-              }}>
-                <h4 style={{ fontFamily:SERIF, fontSize:'15px', margin:'0 0 10px', color:C.textPrimary }}>Partnership Benefits</h4>
-                {['20% member discount on all plans','CLE-eligible AI verification training','Official ethics opinion guidance documents','Joint webinar series: AI & Professional Responsibility','Co-branded compliance materials for member attorneys'].map((b, i) => (
-                  <div key={i} style={{ display:'flex', gap:'7px', fontSize:'12px', color:C.textSecondary, padding:'5px 0', borderBottom: i < 4 ? `1px solid ${C.border}` : 'none' }}>
-                    <span style={{ color:C.gold, flexShrink:0 }}>✦</span>{b}
+              <div style={{ background:C.bgCard, border:`1px solid ${C.border}`, padding:'20px' }}>
+                <h4 style={{ fontFamily:SERIF, fontSize:'16px', margin:'0 0 12px', color:C.textPrimary }}>Partnership Benefits</h4>
+                {[
+                  '20% member discount on all plans',
+                  'CLE-eligible AI verification training',
+                  'Official ethics opinion guidance documents',
+                  'Joint webinar series: AI & Professional Responsibility',
+                  'Co-branded compliance materials for member attorneys',
+                ].map((b, i, arr) => (
+                  <div key={i} style={{ display:'flex', gap:'8px', fontSize:'13px', color:C.textSecondary, padding:'7px 0', borderBottom: i < arr.length-1 ? `1px solid ${C.border}` : 'none' }}>
+                    <span style={{ color:C.verified, flexShrink:0 }}>✓</span>{b}
                   </div>
                 ))}
               </div>
@@ -1235,44 +1224,39 @@ export default function EnterprisePage() {
 
         {/* ── Final CTA ─────────────────────────────────────────────────── */}
         <div style={{
-          textAlign:'center', padding:'60px 40px',
-          background:`radial-gradient(ellipse at center, ${C.goldGlow} 0%, transparent 70%)`,
-          border:`1px solid ${C.borderGold}`, borderRadius:'16px',
-          marginBottom:'40px', position:'relative', overflow:'hidden',
+          textAlign:'center', padding:'64px 40px',
+          background:C.blueGlow2, border:`1px solid rgba(37,99,235,0.25)`,
+          marginBottom:'40px',
         }}>
-          <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%, -50%)', width:'400px', height:'400px', borderRadius:'50%', border:`1px solid ${C.borderGold}`, opacity:0.3, pointerEvents:'none' }} />
-          <div style={{ position:'relative' }}>
-            <div style={{
-              width:'60px', height:'60px', borderRadius:'50%',
-              background:C.goldGlow, border:`1px solid ${C.gold}`,
-              display:'flex', alignItems:'center', justifyContent:'center',
-              margin:'0 auto 18px', fontSize:'24px',
-            }}>⚖</div>
-            <h2 style={{ fontFamily:SERIF, fontSize:'34px', fontWeight:'700', margin:'0 0 12px', color:C.textPrimary }}>
-              Ready to Protect Your Practice?
-            </h2>
-            <p style={{ fontSize:'15px', color:C.textSecondary, margin:'0 auto 28px', maxWidth:'480px', lineHeight:'1.65', fontFamily:SERIF, fontStyle:'italic' }}>
-              Join over 340 law firms already using TrustLayer to satisfy ABA Rule 1.1, protect against malpractice, and file with confidence.
-            </p>
-            <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap' }}>
-              <Link href="/request-access" style={{
-                padding:'14px 32px', borderRadius:'8px', border:'none',
-                background:`linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-                color:'#0a0800', fontSize:'14px', fontWeight:'700',
-                letterSpacing:'0.06em', textDecoration:'none', display:'inline-block',
-                boxShadow:`0 4px 24px rgba(212,168,83,0.3)`,
-              }}>Request Enterprise Access</Link>
-              <Link href="/" style={{
-                padding:'14px 32px', borderRadius:'8px',
-                border:`1px solid ${C.border}`,
-                background:'transparent', color:C.textSecondary,
-                fontSize:'14px', textDecoration:'none', display:'inline-block',
-                transition:'all 0.2s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor=C.borderGold; e.currentTarget.style.color=C.gold }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor=C.border; e.currentTarget.style.color=C.textSecondary }}
-              >Try the Verifier Free</Link>
-            </div>
+          <div style={{
+            display:'inline-block', background:C.blueGlow2, border:`1px solid rgba(37,99,235,0.3)`,
+            color:C.blue, fontSize:'12px', fontWeight:'600', letterSpacing:'0.1em',
+            padding:'5px 14px', borderRadius:'4px', marginBottom:'24px', textTransform:'uppercase',
+          }}>Ready to File with Confidence?</div>
+          <h2 style={{ fontFamily:SERIF, fontSize:'36px', fontWeight:'700', margin:'0 0 16px', color:C.textPrimary }}>
+            Protect Your Practice
+          </h2>
+          <p style={{ fontSize:'16px', color:C.textSecondary, margin:'0 auto 32px', maxWidth:'480px', lineHeight:'1.7', fontFamily:SERIF, fontStyle:'italic' }}>
+            Join over 340 law firms already using TrustLayer to satisfy ABA Rule 1.1, protect against malpractice, and file with confidence.
+          </p>
+          <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap' }}>
+            <Link href="/request-access" style={{
+              padding:'14px 32px', borderRadius:'6px', border:'none',
+              background:C.blue, color:'#fff', fontSize:'15px', fontWeight:'600',
+              textDecoration:'none', display:'inline-block', transition:'background 0.15s',
+            }}
+              onMouseEnter={e => e.currentTarget.style.background=C.blueHover}
+              onMouseLeave={e => e.currentTarget.style.background=C.blue}
+            >Request Enterprise Access</Link>
+            <Link href="/" style={{
+              padding:'14px 32px', borderRadius:'6px',
+              border:`1px solid ${C.border}`,
+              background:'transparent', color:C.textSecondary,
+              fontSize:'15px', textDecoration:'none', display:'inline-block', transition:'all 0.15s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor=C.blue; e.currentTarget.style.color=C.blue }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor=C.border; e.currentTarget.style.color=C.textSecondary }}
+            >Try the Verifier Free</Link>
           </div>
         </div>
 
@@ -1284,35 +1268,43 @@ export default function EnterprisePage() {
         display:'flex', justifyContent:'space-between', alignItems:'center',
         flexWrap:'wrap', gap:'12px',
       }}>
-        <span style={{ fontFamily:SERIF, fontSize:'15px', fontWeight:'700', color:C.textPrimary }}>
-          Trust<span style={{ color:C.gold }}>Layer</span>
-        </span>
-        <p style={{ fontSize:'11px', color:C.textMuted, margin:0 }}>
-          © 2026 TrustLayer Inc. · This page is for informational purposes only. Not legal or malpractice insurance advice.
+        <span style={{ fontFamily:SERIF, fontSize:'16px', fontWeight:'700', color:C.textPrimary }}>TrustLayer</span>
+        <p style={{ fontSize:'12px', color:C.textMuted, margin:0 }}>
+          © 2026 TrustLayer Inc. · For informational purposes only. Not legal or malpractice insurance advice.
         </p>
-        <div style={{ display:'flex', gap:'20px' }}>
+        <div style={{ display:'flex', gap:'24px' }}>
           {[['/', 'Verify'], ['/research', 'Research'], ['/request-access', 'Request Access']].map(([href, label]) => (
-            <Link key={href} href={href} style={{ fontSize:'12px', color:C.textMuted, textDecoration:'none', transition:'color 0.2s' }}
-              onMouseEnter={e => e.target.style.color=C.gold}
-              onMouseLeave={e => e.target.style.color=C.textMuted}
+            <Link key={href} href={href} style={{ fontSize:'13px', color:C.textMuted, textDecoration:'none', transition:'color 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.color=C.blue}
+              onMouseLeave={e => e.currentTarget.style.color=C.textMuted}
             >{label}</Link>
           ))}
         </div>
       </footer>
 
       <style>{`
-        @keyframes spin    { to { transform: rotate(360deg); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse   { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        @keyframes barFill { from { width: 0%; } to { width: var(--target-width, 100%); } }
         * { box-sizing: border-box; }
-        body { margin: 0; background: ${C.bg}; }
-        select option { background: #0a0d1a; color: #e8e0d0; }
+        @media (max-width: 768px) {
+          .tl-nav-links { display: none !important; }
+          .tl-hamburger { display: flex !important; align-items: center; }
+          .tl-2col { grid-template-columns: 1fr !important; }
+          .tl-3col { grid-template-columns: 1fr !important; }
+          .tl-section-pad { padding-left: 20px !important; padding-right: 20px !important; padding-top: 56px !important; padding-bottom: 56px !important; }
+          .tl-map-container { overflow-x: auto !important; }
+          .tl-nav { padding: 0 20px !important; }
+          .tl-hide-mobile { display: none !important; }
+        }
+        @keyframes fadeIn  { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes spin    { to { transform: rotate(360deg) } }
+        @keyframes pulse   { 0%,100% { opacity:0.3 } 50% { opacity:0.7 } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes barFill { from { width:0 } to { width:var(--w) } }
+        ::selection { background: rgba(37,99,235,0.4); color: #fff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        select option { background: #111; color: #fff; }
         input[type=number]::-webkit-inner-spin-button { opacity: 0.3; }
-        ::-webkit-scrollbar { width: 7px; }
-        ::-webkit-scrollbar-track { background: ${C.bg}; }
-        ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 4px; }
       `}</style>
     </div>
   )

@@ -5,38 +5,41 @@ import Link from 'next/link'
 
 // ─── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
-  bg:          '#05070d',
-  bgCard:      '#0a0d1a',
-  bgInput:     '#080b14',
-  border:      '#1a2035',
-  borderGold:  'rgba(212,168,83,0.25)',
-  gold:        '#d4a853',
-  goldDim:     '#a07835',
-  goldGlow:    'rgba(212,168,83,0.12)',
-  goldGlow2:   'rgba(212,168,83,0.06)',
-  textPrimary:   '#e8e0d0',
-  textSecondary: '#8a8070',
-  textMuted:     '#3a3530',
-  verified:    '#22c55e',
-  caution:     '#f59e0b',
-  danger:      '#ef4444',
-  blue:        '#3b82f6',
-  purple:      '#8b5cf6',
+  bg:           '#000000',
+  bgCard:       '#111111',
+  bgSecondary:  '#0a0a0a',
+  border:       '#222222',
+  borderLight:  '#333333',
+  textPrimary:  '#ffffff',
+  textSecondary:'#888888',
+  textMuted:    '#444444',
+  blue:         '#2563eb',
+  blueHover:    '#1d4ed8',
+  blueGlow:     'rgba(37,99,235,0.15)',
+  blueGlow2:    'rgba(37,99,235,0.08)',
+  verified:     '#22c55e',
+  verifiedBg:   'rgba(34,197,94,0.08)',
+  error:        '#ef4444',
+  errorBg:      'rgba(239,68,68,0.08)',
+  warning:      '#f59e0b',
+  warningBg:    'rgba(245,158,11,0.08)',
 }
 
-const SERIF = '"Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif'
-const SANS  = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-const MONO  = '"SF Mono", "Fira Code", "Courier New", monospace'
+const SERIF = 'Georgia, "Times New Roman", serif'
+const SANS  = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+const MONO  = '"JetBrains Mono", "SF Mono", "Fira Code", "Courier New", monospace'
 
 const TOOLS = [
-  { id: 'plain-english',          path: '/tools/plain-english',          name: 'Plain English Translator',   icon: '📖' },
-  { id: 'deadlines',              path: '/tools/deadlines',              name: 'Deadline Calculator',         icon: '⏰' },
-  { id: 'red-flags',              path: '/tools/red-flags',              name: 'Contract Red Flag Scanner',   icon: '🔍' },
-  { id: 'letter-response',        path: '/tools/letter-response',        name: 'Letter Response Generator',   icon: '✉' },
-  { id: 'statute-of-limitations', path: '/tools/statute-of-limitations', name: 'Statute of Limitations',     icon: '⏳' },
-  { id: 'ethics',                 path: '/tools/ethics',                 name: 'Ethics Checker',              icon: '⚖' },
-  { id: 'pro-se',                 path: '/tools/pro-se',                 name: 'Pro Se Assistant',            icon: '🏛', free: true },
+  { id: 'plain-english',          path: '/tools/plain-english',          name: 'Plain English Translator', icon: '📖' },
+  { id: 'deadlines',              path: '/tools/deadlines',              name: 'Deadline Calculator',       icon: '⏰' },
+  { id: 'red-flags',              path: '/tools/red-flags',              name: 'Contract Red Flag Scanner', icon: '🔍' },
+  { id: 'letter-response',        path: '/tools/letter-response',        name: 'Letter Response Generator', icon: '✉' },
+  { id: 'statute-of-limitations', path: '/tools/statute-of-limitations', name: 'Statute of Limitations',   icon: '⏳' },
+  { id: 'ethics',                 path: '/tools/ethics',                 name: 'Ethics Checker',            icon: '⚖' },
+  { id: 'pro-se',                 path: '/tools/pro-se',                 name: 'Pro Se Assistant',          icon: '🏛', free: true },
 ]
+
+const CURRENT_TOOL_ID = 'pro-se'
 
 const STATES_50 = [
   'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
@@ -60,20 +63,20 @@ const COURT_TYPES = [
 
 // ─── Difficulty badge ──────────────────────────────────────────────────────────
 function difficultyBadge(d) {
-  if (d === 'very_challenging') return { label: 'Very Challenging', color: C.danger,   bg: 'rgba(239,68,68,0.10)'  }
-  if (d === 'challenging')      return { label: 'Challenging',      color: C.caution,  bg: 'rgba(245,158,11,0.10)' }
-  return                               { label: 'Manageable',       color: C.verified, bg: 'rgba(34,197,94,0.10)'  }
+  if (d === 'very_challenging') return { label: 'Very Challenging', color: C.error,   bg: C.errorBg }
+  if (d === 'challenging')      return { label: 'Challenging',      color: C.warning, bg: C.warningBg }
+  return                               { label: 'Manageable',       color: C.verified,bg: C.verifiedBg }
 }
 
 // ─── Skeleton ──────────────────────────────────────────────────────────────────
 function SkeletonCard() {
   return (
-    <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '24px 26px', animation: 'pulse 1.6s ease-in-out infinite' }}>
-      <div style={{ height: '14px', width: '35%', background: C.border, borderRadius: '4px', marginBottom: '14px' }} />
-      <div style={{ height: '18px', width: '70%', background: C.border, borderRadius: '4px', marginBottom: '10px' }} />
-      <div style={{ height: '14px', width: '95%', background: C.border, borderRadius: '4px', marginBottom: '8px' }} />
-      <div style={{ height: '14px', width: '82%', background: C.border, borderRadius: '4px', marginBottom: '8px' }} />
-      <div style={{ height: '14px', width: '60%', background: C.border, borderRadius: '4px' }} />
+    <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, padding: '28px', animation: 'pulse 1.6s ease-in-out infinite' }}>
+      <div style={{ height: '14px', width: '35%', background: C.border, marginBottom: '14px' }} />
+      <div style={{ height: '18px', width: '70%', background: C.border, marginBottom: '10px' }} />
+      <div style={{ height: '14px', width: '95%', background: C.border, marginBottom: '8px' }} />
+      <div style={{ height: '14px', width: '82%', background: C.border, marginBottom: '8px' }} />
+      <div style={{ height: '14px', width: '60%', background: C.border }} />
     </div>
   )
 }
@@ -108,6 +111,8 @@ export default function ProSePage() {
   const [result,     setResult]     = useState(null)
   const [saved,      setSaved]      = useState(false)
   const [shareMsg,   setShareMsg]   = useState(null)
+  const [toolsOpen,  setToolsOpen]  = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   function handleSave()  { setSaved(true); setTimeout(() => setSaved(false), 2200) }
   function handleShare() {
@@ -137,221 +142,195 @@ export default function ProSePage() {
     }
   }
 
-  const selectBase = {
-    background: C.bgInput, border: `1px solid ${C.border}`, borderRadius: '8px',
-    color: C.textPrimary, fontSize: '14px', padding: '11px 14px',
+  const selectStyle = {
+    background: C.bgSecondary, border: `1px solid ${C.borderLight}`, borderRadius: '4px',
+    color: C.textPrimary, fontSize: '16px', padding: '12px 14px',
     outline: 'none', width: '100%', fontFamily: SANS, cursor: 'pointer',
-    transition: 'border-color 0.2s',
+    transition: 'border-color 0.15s',
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: SANS, color: C.textPrimary, fontSize: '14px' }}>
+    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: SANS, color: C.textPrimary, fontSize: '16px' }}>
 
       {/* ── Nav ─────────────────────────────────────────────────────────────── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 40px', height: '68px',
-        background: 'rgba(5,7,13,0.92)', backdropFilter: 'blur(16px)',
-        borderBottom: `1px solid ${C.border}`,
-      }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-          <div style={{
-            width: '36px', height: '36px', borderRadius: '8px',
-            background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: `0 0 16px ${C.goldGlow}`,
-          }}>
-            <span style={{ fontSize: '18px', fontFamily: SERIF, fontWeight: '700', color: '#0a0800' }}>T</span>
-          </div>
-          <span style={{ fontSize: '20px', fontFamily: SERIF, fontWeight: '700', letterSpacing: '0.02em', color: C.textPrimary }}>
-            Trust<span style={{ color: C.gold }}>Layer</span>
-          </span>
-        </Link>
+      <nav className="tl-nav" style={{ position:'sticky', top:0, zIndex:100, background:'#000', borderBottom:'1px solid #222', height:'64px', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 40px' }}>
+        <Link href="/" style={{ textDecoration:'none', fontSize:'22px', fontFamily:SERIF, fontWeight:'700', color:'#fff', letterSpacing:'-0.02em' }}>TrustLayer</Link>
 
-        <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
-          {[
-            { href: '/',           label: 'Verify',     active: false },
-            { href: '/research',   label: 'Research',   active: false },
-            { href: '/tools',      label: 'Tools',      active: true  },
-            { href: '/enterprise', label: 'Enterprise', active: false },
-          ].map(({ href, label, active }) => (
-            <Link key={href} href={href} style={{
-              fontSize: '13px', letterSpacing: '0.04em', textDecoration: 'none',
-              color:         active ? C.gold : C.textSecondary,
-              borderBottom:  active ? `1px solid ${C.gold}` : 'none',
-              paddingBottom: active ? '2px' : '0',
-              transition: 'color 0.2s',
-            }}
-              onMouseEnter={e => { if (!active) e.currentTarget.style.color = C.gold }}
-              onMouseLeave={e => { if (!active) e.currentTarget.style.color = C.textSecondary }}
+        <div className="tl-nav-links" style={{ display:'flex', gap:'32px', alignItems:'center' }}>
+          {[['/', 'Verify'],['/research','Research'],['/enterprise','Enterprise']].map(([href,label]) => (
+            <Link key={href} href={href} style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+              onMouseEnter={e=>e.currentTarget.style.color='#2563eb'}
+              onMouseLeave={e=>e.currentTarget.style.color='#fff'}
             >{label}</Link>
           ))}
 
-          <Link href="/request-access" style={{
-            padding: '8px 20px', borderRadius: '6px',
-            border: `1px solid ${C.borderGold}`, background: C.goldGlow2,
-            color: C.gold, fontSize: '13px', textDecoration: 'none',
-            letterSpacing: '0.04em', transition: 'all 0.2s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = C.goldGlow; e.currentTarget.style.borderColor = C.gold }}
-            onMouseLeave={e => { e.currentTarget.style.background = C.goldGlow2; e.currentTarget.style.borderColor = C.borderGold }}
+          {/* Tools dropdown — active */}
+          <div style={{ position:'relative' }} onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}>
+            <Link href="/tools" style={{ fontSize:'14px', color:'#2563eb', textDecoration:'none', display:'flex', alignItems:'center', gap:'3px', borderBottom:'2px solid #2563eb', paddingBottom:'2px' }}>
+              Tools <span style={{ fontSize:'9px', opacity:0.7 }}>▾</span>
+            </Link>
+            {toolsOpen && (
+              <div style={{ position:'absolute', top:'calc(100% + 10px)', left:'-10px', background:'#111', border:'1px solid #222', borderRadius:'6px', padding:'8px 6px', minWidth:'240px', boxShadow:'0 8px 32px rgba(0,0,0,0.8)', zIndex:200, animation:'fadeIn 0.15s ease' }}>
+                {TOOLS.map(t => (
+                  <Link key={t.path} href={t.path} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'9px 10px', borderRadius:'4px', textDecoration:'none', background: t.id === CURRENT_TOOL_ID ? 'rgba(37,99,235,0.1)' : 'transparent' }}
+                    onMouseEnter={e => e.currentTarget.style.background='rgba(37,99,235,0.1)'}
+                    onMouseLeave={e => e.currentTarget.style.background= t.id === CURRENT_TOOL_ID ? 'rgba(37,99,235,0.1)' : 'transparent'}
+                  >
+                    <span style={{ fontSize:'14px', width:'20px', textAlign:'center' }}>{t.icon}</span>
+                    <span style={{ fontSize:'13px', color: t.id === CURRENT_TOOL_ID ? '#2563eb' : '#888' }}>{t.name}</span>
+                  </Link>
+                ))}
+                <div style={{ borderTop:'1px solid #222', margin:'5px 4px' }} />
+                <Link href="/tools" style={{ display:'block', textAlign:'center', padding:'8px 10px', borderRadius:'4px', fontSize:'12px', color:'#2563eb', fontWeight:'600', textDecoration:'none' }}>View All Tools →</Link>
+              </div>
+            )}
+          </div>
+
+          <Link href="/request-access" style={{ background:'#2563eb', color:'#fff', padding:'9px 22px', borderRadius:'6px', fontSize:'14px', fontWeight:'600', textDecoration:'none' }}
+            onMouseEnter={e=>e.currentTarget.style.background='#1d4ed8'}
+            onMouseLeave={e=>e.currentTarget.style.background='#2563eb'}
           >Request Access</Link>
         </div>
+
+        <button className="tl-hamburger" style={{ display:'none', background:'none', border:'none', color:'#fff', fontSize:'22px', cursor:'pointer', padding:'8px' }} onClick={() => setMobileMenuOpen(v => !v)}>
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
       </nav>
 
-      {/* ── Hero ─────────────────────────────────────────────────────────────── */}
-      <div style={{
-        background: `radial-gradient(ellipse at 50% 0%, rgba(212,168,83,0.07) 0%, transparent 65%), linear-gradient(180deg, rgba(212,168,83,0.03) 0%, transparent 100%)`,
-        borderBottom: `1px solid ${C.border}`,
-        padding: '60px 40px 48px',
-        textAlign: 'center',
-      }}>
-        {/* Breadcrumb */}
-        <p style={{ fontSize: '12px', color: C.textMuted, marginBottom: '28px', letterSpacing: '0.04em' }}>
-          <Link href="/"      style={{ color: C.textMuted, textDecoration: 'none' }}>TrustLayer</Link>
-          {' › '}
-          <Link href="/tools" style={{ color: C.textMuted, textDecoration: 'none' }}>Tools</Link>
-          {' › '}
-          <span style={{ color: C.textSecondary }}>Pro Se Assistant</span>
-        </p>
+      {/* Mobile overlay */}
+      {mobileMenuOpen && <div style={{ position:'fixed', inset:0, zIndex:149, background:'rgba(0,0,0,0.6)' }} onClick={() => setMobileMenuOpen(false)} />}
 
-        {/* Big compassionate headline — no eyebrow badge */}
-        <h1 style={{ margin: '0 0 10px', fontFamily: SERIF, lineHeight: 1.1 }}>
-          <span style={{ display: 'block', fontSize: 'clamp(38px, 6vw, 52px)', fontWeight: '700', color: C.gold, letterSpacing: '-0.01em' }}>
+      {/* Mobile drawer */}
+      <div style={{ position:'fixed', top:0, right:0, width:'280px', height:'100vh', background:'#000', borderLeft:'1px solid #222', zIndex:150, transform:mobileMenuOpen?'translateX(0)':'translateX(100%)', transition:'transform 0.25s ease', display:'flex', flexDirection:'column', padding:'72px 24px 40px', gap:'4px' }}>
+        {[['/', 'Verify'],['/research','Research'],['/enterprise','Enterprise']].map(([href,label]) => (
+          <Link key={href} href={href} style={{ display:'block', padding:'12px 8px', fontSize:'16px', color:'#fff', textDecoration:'none', borderBottom:'1px solid #111' }}>{label}</Link>
+        ))}
+        <div style={{ padding:'8px 0 4px', fontSize:'12px', color:'#444', letterSpacing:'0.08em', textTransform:'uppercase' }}>Tools</div>
+        {TOOLS.map(t => (
+          <Link key={t.path} href={t.path} style={{ display:'flex', gap:'10px', alignItems:'center', padding:'10px 8px', fontSize:'14px', color: t.id === CURRENT_TOOL_ID ? '#2563eb' : '#888', textDecoration:'none' }}>
+            <span>{t.icon}</span><span>{t.name}</span>
+          </Link>
+        ))}
+        <Link href="/request-access" style={{ marginTop:'auto', background:'#2563eb', color:'#fff', padding:'14px 20px', borderRadius:'6px', textDecoration:'none', fontSize:'15px', fontWeight:'600', textAlign:'center', display:'block' }}>Request Access</Link>
+      </div>
+
+      {/* ── Breadcrumb ──────────────────────────────────────────────────────── */}
+      <div style={{ padding:'16px 40px', borderBottom:'1px solid #222', background:'#000', display:'flex', gap:'6px', alignItems:'center', fontSize:'13px', color:'#444' }} className="tl-breadcrumb">
+        <Link href="/" style={{ color:'#888', textDecoration:'none' }}>TrustLayer</Link>
+        <span>›</span>
+        <Link href="/tools" style={{ color:'#888', textDecoration:'none' }}>Tools</Link>
+        <span>›</span>
+        <span style={{ color:'#fff' }}>Pro Se Assistant</span>
+      </div>
+
+      {/* ── Hero — full-width, warmer tone ──────────────────────────────────── */}
+      <div style={{ background:'#000', borderBottom:'1px solid #222', padding:'56px 40px 52px', textAlign:'center' }} className="tl-hero">
+        {/* Large FREE badge */}
+        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.3)', color:'#22c55e', fontSize:'13px', fontWeight:'700', padding:'6px 16px', borderRadius:'4px', marginBottom:'28px' }}>
+          ✓ This tool is 100% FREE — No account required
+        </div>
+
+        {/* Two-line Georgia serif headline */}
+        <h1 style={{ margin:'0 0 20px', fontFamily:SERIF, lineHeight:1.1 }}>
+          <span style={{ display:'block', fontSize:'clamp(36px, 6vw, 52px)', fontWeight:'700', color:'#fff', letterSpacing:'-0.02em' }}>
             You Have Rights.
           </span>
-          <span style={{ display: 'block', fontSize: 'clamp(28px, 4.5vw, 40px)', fontWeight: '600', color: C.textPrimary, marginTop: '6px' }}>
+          <span style={{ display:'block', fontSize:'clamp(28px, 4.5vw, 40px)', fontWeight:'700', color:'#fff', marginTop:'8px', opacity:0.85 }}>
             We Help You Use Them.
           </span>
         </h1>
 
-        <p style={{
-          fontSize: '16px', color: C.textSecondary, margin: '20px auto 24px',
-          maxWidth: '640px', lineHeight: '1.7', fontFamily: SERIF, fontStyle: 'italic',
-        }}>
+        <p style={{ fontSize:'18px', color:'#888', margin:'0 auto', maxWidth:'600px', lineHeight:'1.7' }}>
           Navigating the legal system alone is one of the hardest things a person can do.
           You're not alone. This free tool gives you step-by-step guidance written in plain English.
         </p>
-
-        {/* FREE badge */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: 'rgba(34,197,94,0.10)', border: '1px solid rgba(34,197,94,0.30)',
-          borderRadius: '24px', padding: '8px 18px',
-        }}>
-          <span style={{ color: C.verified, fontSize: '14px' }}>✓</span>
-          <span style={{ fontSize: '13px', fontWeight: '700', color: C.verified, letterSpacing: '0.04em' }}>
-            This tool is 100% FREE — No account required
-          </span>
-        </div>
       </div>
 
-      {/* ── Main content (full-width, no sidebar) ───────────────────────────── */}
-      <div style={{ maxWidth: '840px', margin: '0 auto', padding: '36px 40px' }}>
+      {/* ── Main content — full-width single column ─────────────────────────── */}
+      <div style={{ maxWidth:'860px', margin:'0 auto', padding:'48px 40px' }} className="tl-section-pad">
 
         {/* ── Form card ─────────────────────────────────────────────────────── */}
-        <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: '14px', padding: '32px', marginBottom: '28px' }}>
-          <h2 style={{ margin: '0 0 8px', fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary }}>
+        <div className="tl-card-pad" style={{ background:C.bgCard, border:`1px solid ${C.border}`, padding:'36px', marginBottom:'32px' }}>
+          <h2 style={{ margin:'0 0 8px', fontFamily:SERIF, fontSize:'24px', fontWeight:'700', color:'#fff' }}>
             Tell us what's happening
           </h2>
-          <p style={{ margin: '0 0 22px', fontSize: '14px', color: C.textSecondary, lineHeight: '1.6' }}>
+          <p style={{ margin:'0 0 24px', fontSize:'16px', color:C.textSecondary, lineHeight:'1.65' }}>
             Use your own words — don't worry about legal language. The more detail you share, the more specific your guide will be.
           </p>
 
-          {/* Situation textarea */}
-          <div style={{ marginBottom: '18px' }}>
+          <div style={{ marginBottom:'20px' }}>
             <textarea
               value={situation}
               onChange={e => setSituation(e.target.value)}
               placeholder={"Describe your situation in your own words. Don't worry about legal language. Example: 'My landlord is trying to evict me and I don't think it's fair. I received a 3-day notice to pay or quit but I paid my rent.' or 'I was fired from my job and I think it was because I complained about harassment.'"}
               rows={8}
               style={{
-                width: '100%', background: C.bgInput, border: `1px solid ${C.border}`,
-                borderRadius: '10px', color: C.textPrimary, fontSize: '14px',
-                padding: '14px 16px', outline: 'none', resize: 'vertical',
-                minHeight: '200px', fontFamily: SANS, lineHeight: '1.7',
-                transition: 'border-color 0.2s',
+                width:'100%', background:C.bgSecondary, border:`1px solid ${C.borderLight}`,
+                borderRadius:'4px', color:C.textPrimary, fontSize:'16px',
+                padding:'14px 16px', outline:'none', resize:'vertical',
+                minHeight:'200px', fontFamily:SANS, lineHeight:'1.7',
+                transition:'border-color 0.15s',
               }}
-              onFocus={e => e.target.style.borderColor = C.borderGold}
-              onBlur={e => e.target.style.borderColor = C.border}
+              onFocus={e => e.target.style.borderColor='#2563eb'}
+              onBlur={e => e.target.style.borderColor=C.borderLight}
             />
           </div>
 
-          {/* Court type + State */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '22px' }}>
+          <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px', marginBottom:'28px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '12px', color: C.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '7px' }}>
-                Type of Court
-              </label>
-              <select
-                value={courtType}
-                onChange={e => setCourtType(e.target.value)}
-                style={selectBase}
-                onFocus={e => e.target.style.borderColor = C.borderGold}
-                onBlur={e => e.target.style.borderColor = C.border}
+              <label style={{ display:'block', fontSize:'12px', color:C.textMuted, letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:'8px', fontWeight:'600' }}>Type of Court</label>
+              <select value={courtType} onChange={e => setCourtType(e.target.value)} style={selectStyle}
+                onFocus={e => e.target.style.borderColor='#2563eb'}
+                onBlur={e => e.target.style.borderColor=C.borderLight}
               >
                 {COURT_TYPES.map(ct => (
-                  <option key={ct.value} value={ct.value} style={{ background: C.bgCard }}>{ct.label}</option>
+                  <option key={ct.value} value={ct.value} style={{ background:'#111' }}>{ct.label}</option>
                 ))}
               </select>
             </div>
-
             <div>
-              <label style={{ display: 'block', fontSize: '12px', color: C.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '7px' }}>
-                Your State
-              </label>
-              <select
-                value={state}
-                onChange={e => setState(e.target.value)}
-                style={selectBase}
-                onFocus={e => e.target.style.borderColor = C.borderGold}
-                onBlur={e => e.target.style.borderColor = C.border}
+              <label style={{ display:'block', fontSize:'12px', color:C.textMuted, letterSpacing:'0.06em', textTransform:'uppercase', marginBottom:'8px', fontWeight:'600' }}>Your State</label>
+              <select value={state} onChange={e => setState(e.target.value)} style={selectStyle}
+                onFocus={e => e.target.style.borderColor='#2563eb'}
+                onBlur={e => e.target.style.borderColor=C.borderLight}
               >
                 {STATES_50.map(s => (
-                  <option key={s} value={s} style={{ background: C.bgCard }}>{s}</option>
+                  <option key={s} value={s} style={{ background:'#111' }}>{s}</option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* Submit button */}
           <button
             onClick={handleSubmit}
             disabled={loading || !situation.trim()}
+            className="tl-btn-full"
             style={{
-              width: '100%', padding: '15px', borderRadius: '10px', border: 'none',
-              background: loading || !situation.trim()
-                ? C.border
-                : `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-              color: loading || !situation.trim() ? C.textMuted : '#0a0800',
-              fontSize: '16px', fontWeight: '700', letterSpacing: '0.04em',
-              cursor: loading || !situation.trim() ? 'not-allowed' : 'pointer',
-              transition: 'all 0.2s',
-              boxShadow: loading || !situation.trim() ? 'none' : `0 6px 24px rgba(212,168,83,0.28)`,
+              width:'100%', padding:'16px', borderRadius:'6px', border:'none',
+              background: loading || !situation.trim() ? '#222' : '#2563eb',
+              color: loading || !situation.trim() ? C.textMuted : '#fff',
+              fontSize:'16px', fontWeight:'600', cursor: loading || !situation.trim() ? 'not-allowed' : 'pointer',
+              transition:'background 0.15s',
             }}
+            onMouseEnter={e => { if (!loading && situation.trim()) e.currentTarget.style.background='#1d4ed8' }}
+            onMouseLeave={e => { if (!loading && situation.trim()) e.currentTarget.style.background='#2563eb' }}
           >
             {loading ? (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{
-                  width: '15px', height: '15px', border: `2px solid #0a0800`,
-                  borderTopColor: 'transparent', borderRadius: '50%',
-                  display: 'inline-block', animation: 'spin 0.7s linear infinite',
-                }} />
+              <span style={{ display:'inline-flex', alignItems:'center', gap:'10px' }}>
+                <span style={{ width:'15px', height:'15px', border:'2px solid rgba(255,255,255,0.3)', borderTopColor:'#fff', borderRadius:'50%', display:'inline-block', animation:'spin 0.7s linear infinite' }} />
                 Building your personal legal guide…
               </span>
             ) : 'Get Your Legal Guide'}
           </button>
 
-          {/* Empathy text */}
-          <p style={{ margin: '14px 0 0', fontSize: '13px', color: C.textMuted, lineHeight: '1.6', textAlign: 'center' }}>
+          <p style={{ margin:'14px 0 0', fontSize:'14px', color:C.textMuted, lineHeight:'1.65', textAlign:'center', fontStyle:'italic' }}>
             We'll create a personalized step-by-step guide just for your situation. This is not legal advice, but it will help you understand your rights and your options.
           </p>
         </div>
 
         {/* ── Loading ─────────────────────────────────────────────────────────── */}
         {loading && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
@@ -360,11 +339,7 @@ export default function ProSePage() {
 
         {/* ── Error ───────────────────────────────────────────────────────────── */}
         {error && (
-          <div style={{
-            background: 'rgba(239,68,68,0.08)', border: `1px solid rgba(239,68,68,0.25)`,
-            borderRadius: '12px', padding: '18px 22px', color: C.danger, fontSize: '14px',
-            lineHeight: '1.6', animation: 'fadeIn 0.3s ease',
-          }}>
+          <div style={{ background:C.errorBg, border:`1px solid rgba(239,68,68,0.3)`, padding:'18px 22px', color:C.error, fontSize:'16px', lineHeight:'1.6', animation:'fadeIn 0.3s ease' }}>
             {error}
           </div>
         )}
@@ -373,73 +348,57 @@ export default function ProSePage() {
         {result && !loading && (() => {
           const db = difficultyBadge(result.difficulty)
           return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'slideUp 0.4s ease both' }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:'20px', animation:'slideUp 0.2s ease' }}>
 
               {/* Overview card */}
-              <div style={{ background: C.bgCard, border: `1px solid ${C.borderGold}`, borderRadius: '14px', padding: '26px 28px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px', flexWrap: 'wrap' }}>
-                  <h2 style={{ margin: 0, fontFamily: SERIF, fontSize: '20px', fontWeight: '700', color: C.textPrimary }}>
+              <div style={{ background:C.bgCard, border:`1px solid ${C.border}`, padding:'28px' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'14px', marginBottom:'16px', flexWrap:'wrap' }}>
+                  <h2 style={{ margin:0, fontFamily:SERIF, fontSize:'22px', fontWeight:'700', color:'#fff' }}>
                     {result.canHandleProSe ? 'You can handle this.' : 'This is challenging, but doable.'}
                   </h2>
-                  <span style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '20px', background: db.bg, color: db.color, fontWeight: '600' }}>
+                  <span style={{ fontSize:'12px', padding:'4px 12px', borderRadius:'4px', background:db.bg, color:db.color, fontWeight:'700', border:`1px solid ${db.color}22` }}>
                     {db.label}
                   </span>
                 </div>
-                <p style={{ margin: 0, fontFamily: SERIF, fontSize: '16px', color: C.textSecondary, lineHeight: '1.75' }}>
+                <p style={{ margin:0, fontFamily:SERIF, fontSize:'17px', color:C.textSecondary, lineHeight:'1.8' }}>
                   {result.overview}
                 </p>
               </div>
 
-              {/* Steps */}
+              {/* Steps — numbered circles in blue */}
               {result.steps?.length > 0 && (
                 <div>
-                  <h3 style={{ margin: '0 0 16px', fontFamily: SERIF, fontSize: '18px', color: C.textPrimary, fontWeight: '700' }}>
+                  <h3 style={{ margin:'0 0 18px', fontFamily:SERIF, fontSize:'20px', color:'#fff', fontWeight:'700' }}>
                     Your Step-by-Step Plan
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
                     {result.steps.map((step, i) => (
-                      <div key={i} style={{
-                        background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: '12px',
-                        padding: '20px 22px', display: 'flex', gap: '18px', alignItems: 'flex-start',
-                        transition: 'border-color 0.2s',
-                      }}
-                        onMouseEnter={e => e.currentTarget.style.borderColor = C.borderGold}
-                        onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
+                      <div key={i} style={{ background:C.bgCard, border:`1px solid ${C.border}`, padding:'22px 24px', display:'flex', gap:'20px', alignItems:'flex-start', transition:'border-color 0.15s' }}
+                        onMouseEnter={e => e.currentTarget.style.borderColor='#2563eb'}
+                        onMouseLeave={e => e.currentTarget.style.borderColor=C.border}
                       >
-                        {/* Step circle */}
-                        <div style={{
-                          width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0,
-                          background: C.goldGlow, border: `2px solid ${C.borderGold}`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontFamily: SERIF, fontSize: '18px', fontWeight: '700', color: C.gold,
-                        }}>
+                        {/* Blue step circle */}
+                        <div style={{ width:'40px', height:'40px', borderRadius:'50%', flexShrink:0, background:'#2563eb', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:SERIF, fontSize:'18px', fontWeight:'700', color:'#fff' }}>
                           {step.number ?? i + 1}
                         </div>
-
-                        <div style={{ flex: 1 }}>
-                          <h4 style={{ margin: '0 0 8px', fontFamily: SERIF, fontSize: '16px', fontWeight: '700', color: C.textPrimary }}>
+                        <div style={{ flex:1 }}>
+                          <h4 style={{ margin:'0 0 10px', fontFamily:SERIF, fontSize:'17px', fontWeight:'700', color:'#fff' }}>
                             {step.title}
                           </h4>
-                          <p style={{ margin: '0 0 12px', fontSize: '14px', color: C.textSecondary, lineHeight: '1.7' }}>
+                          <p style={{ margin:'0 0 12px', fontSize:'15px', color:C.textSecondary, lineHeight:'1.7' }}>
                             {step.detail}
                           </p>
-
-                          {/* Documents for this step */}
                           {step.documents?.length > 0 && (
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+                            <div style={{ display:'flex', flexWrap:'wrap', gap:'6px', marginBottom:'10px' }}>
                               {step.documents.map((doc, j) => (
-                                <span key={j} style={{
-                                  fontSize: '11px', padding: '3px 10px', borderRadius: '12px',
-                                  background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
-                                  color: C.gold,
-                                }}>📄 {doc}</span>
+                                <span key={j} style={{ fontSize:'12px', padding:'3px 10px', borderRadius:'4px', background:C.blueGlow2, border:'1px solid rgba(37,99,235,0.2)', color:'#2563eb' }}>
+                                  📄 {doc}
+                                </span>
                               ))}
                             </div>
                           )}
-
-                          {/* Timeframe */}
                           {step.timeframe && (
-                            <p style={{ margin: 0, fontSize: '12px', color: C.textMuted }}>
+                            <p style={{ margin:0, fontSize:'13px', color:C.textMuted }}>
                               ⏱ {step.timeframe}
                             </p>
                           )}
@@ -453,28 +412,28 @@ export default function ProSePage() {
               {/* Documents you'll need */}
               {result.requiredDocuments?.length > 0 && (
                 <div>
-                  <h3 style={{ margin: '0 0 14px', fontFamily: SERIF, fontSize: '18px', color: C.textPrimary, fontWeight: '700' }}>
+                  <h3 style={{ margin:'0 0 16px', fontFamily:SERIF, fontSize:'20px', color:'#fff', fontWeight:'700' }}>
                     Documents You'll Need
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
                     {result.requiredDocuments.map((doc, i) => (
-                      <div key={i} style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: '10px', padding: '16px 18px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                          <span style={{ fontWeight: '600', fontSize: '14px', color: C.textPrimary }}>📄 {doc.name}</span>
+                      <div key={i} style={{ background:C.bgCard, border:`1px solid ${C.border}`, padding:'18px 20px' }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'8px', flexWrap:'wrap' }}>
+                          <span style={{ fontWeight:'700', fontSize:'15px', color:'#fff' }}>📄 {doc.name}</span>
                           {doc.cost && (
                             <span style={{
-                              fontSize: '11px', padding: '2px 8px', borderRadius: '10px',
-                              background: doc.cost === 'Free' ? 'rgba(34,197,94,0.10)' : 'rgba(245,158,11,0.10)',
-                              color: doc.cost === 'Free' ? C.verified : C.caution,
+                              fontSize:'12px', padding:'2px 10px', borderRadius:'4px',
+                              background: doc.cost === 'Free' ? C.verifiedBg : C.warningBg,
+                              color: doc.cost === 'Free' ? C.verified : C.warning,
                               border: `1px solid ${doc.cost === 'Free' ? 'rgba(34,197,94,0.25)' : 'rgba(245,158,11,0.25)'}`,
-                              fontWeight: '600',
+                              fontWeight:'700',
                             }}>{doc.cost}</span>
                           )}
                         </div>
-                        <p style={{ margin: '0 0 4px', fontSize: '13px', color: C.textSecondary, lineHeight: '1.5' }}>{doc.purpose}</p>
+                        <p style={{ margin:'0 0 6px', fontSize:'15px', color:C.textSecondary, lineHeight:'1.55' }}>{doc.purpose}</p>
                         {doc.whereToGet && (
-                          <p style={{ margin: 0, fontSize: '12px', color: C.textMuted }}>
-                            Where to get it: <span style={{ color: C.textSecondary }}>{doc.whereToGet}</span>
+                          <p style={{ margin:0, fontSize:'13px', color:C.textMuted }}>
+                            Where to get it: <span style={{ color:C.textSecondary }}>{doc.whereToGet}</span>
                           </p>
                         )}
                       </div>
@@ -486,15 +445,15 @@ export default function ProSePage() {
               {/* At your hearing */}
               {result.hearingPrep?.length > 0 && (
                 <div>
-                  <h3 style={{ margin: '0 0 14px', fontFamily: SERIF, fontSize: '18px', color: C.textPrimary, fontWeight: '700' }}>
+                  <h3 style={{ margin:'0 0 16px', fontFamily:SERIF, fontSize:'20px', color:'#fff', fontWeight:'700' }}>
                     At Your Hearing
                   </h3>
-                  <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '20px 22px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ background:C.bgCard, border:`1px solid ${C.border}`, padding:'22px 24px' }}>
+                    <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
                       {result.hearingPrep.map((tip, i) => (
-                        <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                          <span style={{ color: C.verified, fontSize: '14px', flexShrink: 0, marginTop: '1px' }}>✓</span>
-                          <p style={{ margin: 0, fontSize: '14px', color: C.textSecondary, lineHeight: '1.6' }}>{tip}</p>
+                        <div key={i} style={{ display:'flex', gap:'14px', alignItems:'flex-start' }}>
+                          <span style={{ color:C.verified, fontSize:'15px', flexShrink:0, marginTop:'1px' }}>✓</span>
+                          <p style={{ margin:0, fontSize:'15px', color:C.textSecondary, lineHeight:'1.65' }}>{tip}</p>
                         </div>
                       ))}
                     </div>
@@ -502,112 +461,94 @@ export default function ProSePage() {
                 </div>
               )}
 
-              {/* Your rights */}
+              {/* Your rights — green-tinted cards */}
               {result.yourRights?.length > 0 && (
                 <div>
-                  <h3 style={{ margin: '0 0 14px', fontFamily: SERIF, fontSize: '18px', color: C.textPrimary, fontWeight: '700' }}>
+                  <h3 style={{ margin:'0 0 16px', fontFamily:SERIF, fontSize:'20px', color:'#fff', fontWeight:'700' }}>
                     Your Rights
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
                     {result.yourRights.map((right, i) => (
-                      <div key={i} style={{
-                        background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.18)',
-                        borderRadius: '8px', padding: '13px 16px',
-                        display: 'flex', gap: '12px', alignItems: 'flex-start',
-                      }}>
-                        <span style={{ color: C.verified, fontSize: '13px', flexShrink: 0, marginTop: '1px' }}>⚖</span>
-                        <p style={{ margin: 0, fontSize: '14px', color: C.textSecondary, lineHeight: '1.6' }}>{right}</p>
+                      <div key={i} style={{ background:'rgba(34,197,94,0.04)', border:'1px solid rgba(34,197,94,0.15)', padding:'14px 18px', display:'flex', gap:'14px', alignItems:'flex-start' }}>
+                        <span style={{ color:C.verified, fontSize:'14px', flexShrink:0, marginTop:'2px' }}>⚖</span>
+                        <p style={{ margin:0, fontSize:'15px', color:C.textSecondary, lineHeight:'1.65' }}>{right}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Common mistakes */}
+              {/* Common mistakes — red-tinted */}
               {result.commonMistakes?.length > 0 && (
                 <div>
-                  <h3 style={{ margin: '0 0 14px', fontFamily: SERIF, fontSize: '18px', color: C.textPrimary, fontWeight: '700' }}>
+                  <h3 style={{ margin:'0 0 16px', fontFamily:SERIF, fontSize:'20px', color:'#fff', fontWeight:'700' }}>
                     Common Mistakes to Avoid
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
                     {result.commonMistakes.map((mistake, i) => (
-                      <div key={i} style={{
-                        background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.18)',
-                        borderRadius: '8px', padding: '13px 16px',
-                        display: 'flex', gap: '12px', alignItems: 'flex-start',
-                      }}>
-                        <span style={{ color: C.danger, fontSize: '13px', flexShrink: 0, marginTop: '1px' }}>⚠</span>
-                        <p style={{ margin: 0, fontSize: '14px', color: C.textSecondary, lineHeight: '1.6' }}>{mistake}</p>
+                      <div key={i} style={{ background:C.errorBg, border:'1px solid rgba(239,68,68,0.18)', padding:'14px 18px', display:'flex', gap:'14px', alignItems:'flex-start' }}>
+                        <span style={{ color:C.error, fontSize:'14px', flexShrink:0, marginTop:'2px' }}>⚠</span>
+                        <p style={{ margin:0, fontSize:'15px', color:C.textSecondary, lineHeight:'1.65' }}>{mistake}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Court resources */}
+              {/* Court resources — blue-tinted */}
               {result.courtResources?.length > 0 && (
                 <div>
-                  <h3 style={{ margin: '0 0 14px', fontFamily: SERIF, fontSize: '18px', color: C.textPrimary, fontWeight: '700' }}>
+                  <h3 style={{ margin:'0 0 16px', fontFamily:SERIF, fontSize:'20px', color:'#fff', fontWeight:'700' }}>
                     Court Resources & Self-Help
                   </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
                     {result.courtResources.map((resource, i) => (
-                      <div key={i} style={{
-                        background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.18)',
-                        borderRadius: '8px', padding: '13px 16px',
-                        display: 'flex', gap: '12px', alignItems: 'flex-start',
-                      }}>
-                        <span style={{ color: C.blue, fontSize: '13px', flexShrink: 0, marginTop: '1px' }}>🔗</span>
-                        <p style={{ margin: 0, fontSize: '14px', color: C.textSecondary, lineHeight: '1.6' }}>{resource}</p>
+                      <div key={i} style={{ background:C.blueGlow2, border:'1px solid rgba(37,99,235,0.18)', padding:'14px 18px', display:'flex', gap:'14px', alignItems:'flex-start' }}>
+                        <span style={{ color:'#2563eb', fontSize:'14px', flexShrink:0, marginTop:'2px' }}>🔗</span>
+                        <p style={{ margin:0, fontSize:'15px', color:C.textSecondary, lineHeight:'1.65' }}>{resource}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* When to hire an attorney — honest, non-preachy */}
+              {/* When to hire an attorney */}
               {result.whenToHireAttorney && (
-                <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '22px 24px' }}>
-                  <h3 style={{ margin: '0 0 10px', fontFamily: SERIF, fontSize: '16px', fontWeight: '700', color: C.textPrimary }}>
+                <div style={{ background:C.bgCard, border:`1px solid ${C.border}`, padding:'24px 26px' }}>
+                  <h3 style={{ margin:'0 0 12px', fontFamily:SERIF, fontSize:'17px', fontWeight:'700', color:'#fff' }}>
                     When to Consider Hiring an Attorney
                   </h3>
-                  <p style={{ margin: 0, fontSize: '14px', color: C.textSecondary, lineHeight: '1.7' }}>
+                  <p style={{ margin:0, fontSize:'15px', color:C.textSecondary, lineHeight:'1.7' }}>
                     {result.whenToHireAttorney}
                   </p>
                 </div>
               )}
 
               {/* Save / Share / Print */}
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={{ display:'flex', gap:'8px', flexWrap:'wrap' }}>
                 {[
                   { label: saved ? '✓ Saved!' : '💾 Save Results', onClick: handleSave,           active: saved      },
                   { label: shareMsg || '🔗 Share',                  onClick: handleShare,           active: !!shareMsg },
                   { label: '🖨 Print',                               onClick: () => window.print(), active: false      },
                 ].map(btn => (
                   <button key={btn.label} onClick={btn.onClick} style={{
-                    padding: '9px 18px', borderRadius: '6px', cursor: 'pointer',
-                    border: `1px solid ${btn.active ? C.borderGold : C.border}`,
-                    background: btn.active ? C.goldGlow2 : 'transparent',
-                    color: btn.active ? C.gold : C.textSecondary,
-                    fontSize: '13px', letterSpacing: '0.03em', transition: 'all 0.2s',
+                    padding:'9px 18px', borderRadius:'6px', cursor:'pointer',
+                    border:`1px solid ${btn.active ? '#2563eb' : C.border}`,
+                    background: btn.active ? C.blueGlow2 : 'transparent',
+                    color: btn.active ? '#2563eb' : C.textSecondary,
+                    fontSize:'14px', transition:'all 0.15s',
                   }}
-                    onMouseEnter={e => { if (!btn.active) { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold } }}
-                    onMouseLeave={e => { if (!btn.active) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary } }}
-                  >
-                    {btn.label}
-                  </button>
+                    onMouseEnter={e => { if (!btn.active) { e.currentTarget.style.borderColor='#2563eb'; e.currentTarget.style.color='#2563eb' } }}
+                    onMouseLeave={e => { if (!btn.active) { e.currentTarget.style.borderColor=C.border; e.currentTarget.style.color=C.textSecondary } }}
+                  >{btn.label}</button>
                 ))}
               </div>
 
-              {/* Encouragement card — the last thing they read */}
+              {/* Encouragement card — blue border, SERIF, warm text */}
               {result.encouragement && (
-                <div style={{
-                  background: C.bgCard, border: `2px solid ${C.borderGold}`,
-                  borderRadius: '14px', padding: '28px 30px',
-                  background: `linear-gradient(135deg, rgba(212,168,83,0.06) 0%, rgba(10,13,26,1) 100%)`,
-                }}>
-                  <p style={{ margin: '0 0 14px', fontFamily: SERIF, fontSize: '28px', color: C.gold, lineHeight: 1 }}>✦</p>
-                  <p style={{ margin: 0, fontFamily: SERIF, fontSize: '18px', color: C.textPrimary, lineHeight: '1.8', fontStyle: 'italic' }}>
+                <div style={{ background:C.bgCard, border:'2px solid rgba(37,99,235,0.35)', padding:'32px', position:'relative' }}>
+                  <p style={{ margin:'0 0 16px', fontFamily:SERIF, fontSize:'32px', color:'#2563eb', lineHeight:1 }}>✦</p>
+                  <p style={{ margin:0, fontFamily:SERIF, fontSize:'19px', color:'#fff', lineHeight:'1.8', fontStyle:'italic' }}>
                     {result.encouragement}
                   </p>
                 </div>
@@ -617,87 +558,84 @@ export default function ProSePage() {
           )
         })()}
 
-        {/* ── Soft upsell (not standard) ───────────────────────────────────── */}
-        <div style={{
-          marginTop: '40px', padding: '22px 24px', borderRadius: '12px',
-          background: C.bgCard, border: `1px solid ${C.border}`,
-          textAlign: 'center',
-        }}>
-          <p style={{ margin: '0 0 6px', fontSize: '14px', color: C.textSecondary, lineHeight: '1.6' }}>
+        {/* ── Soft upsell — always optional ───────────────────────────────────── */}
+        <div style={{ marginTop:'48px', padding:'28px 32px', background:C.bgCard, border:`1px solid ${C.border}`, textAlign:'center' }}>
+          <p style={{ margin:'0 0 8px', fontSize:'15px', color:C.textSecondary, lineHeight:'1.65' }}>
             If you found this helpful, consider sharing it with someone who needs it.
           </p>
-          <p style={{ margin: '0 0 14px', fontSize: '13px', color: C.textMuted, lineHeight: '1.5' }}>
-            Pro access (<span style={{ color: C.gold }}>$49/mo</span>) gives attorneys unlimited consultations — but this tool will always be free.
+          <p style={{ margin:'0 0 20px', fontSize:'13px', color:C.textMuted, lineHeight:'1.55', fontStyle:'italic' }}>
+            Pro features are always optional — this tool will always be free.
           </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap' }}>
             <button
-              onClick={() => { navigator.clipboard?.writeText(window.location.href); }}
-              style={{
-                padding: '9px 20px', borderRadius: '8px', cursor: 'pointer',
-                border: `1px solid rgba(34,197,94,0.3)`, background: 'rgba(34,197,94,0.08)',
-                color: C.verified, fontSize: '13px', fontWeight: '600', letterSpacing: '0.03em',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(34,197,94,0.14)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(34,197,94,0.08)' }}
+              onClick={() => { navigator.clipboard?.writeText(window.location.href) }}
+              style={{ padding:'10px 22px', borderRadius:'6px', cursor:'pointer', border:'1px solid rgba(34,197,94,0.3)', background:C.verifiedBg, color:C.verified, fontSize:'14px', fontWeight:'600', transition:'all 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.background='rgba(34,197,94,0.14)'}
+              onMouseLeave={e => e.currentTarget.style.background=C.verifiedBg}
             >
               Share This Tool
             </button>
-            <Link href="/request-access" style={{
-              display: 'inline-block', padding: '9px 20px', borderRadius: '8px',
-              border: `1px solid ${C.borderGold}`, background: C.goldGlow2,
-              color: C.gold, fontSize: '13px', textDecoration: 'none', fontWeight: '600',
-              letterSpacing: '0.03em', transition: 'all 0.2s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.background = C.goldGlow }}
-              onMouseLeave={e => { e.currentTarget.style.background = C.goldGlow2 }}
+            <Link href="/request-access" style={{ display:'inline-block', padding:'10px 22px', borderRadius:'6px', border:'1px solid rgba(37,99,235,0.3)', background:C.blueGlow2, color:'#2563eb', fontSize:'14px', textDecoration:'none', fontWeight:'600', transition:'all 0.15s' }}
+              onMouseEnter={e=>e.currentTarget.style.background=C.blueGlow}
+              onMouseLeave={e=>e.currentTarget.style.background=C.blueGlow2}
             >
               Learn About Pro Access
             </Link>
           </div>
         </div>
 
-        {/* ── Other Free Resources ─────────────────────────────────────────── */}
-        <div style={{ marginTop: '40px' }}>
-          <h2 style={{ margin: '0 0 6px', fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary }}>
+        {/* ── Other Free Resources — 4-card grid ──────────────────────────────── */}
+        <div style={{ marginTop:'56px' }}>
+          <h2 style={{ margin:'0 0 8px', fontFamily:SERIF, fontSize:'24px', fontWeight:'700', color:'#fff' }}>
             Other Free Resources For You
           </h2>
-          <p style={{ margin: '0 0 20px', fontSize: '14px', color: C.textSecondary }}>
+          <p style={{ margin:'0 0 24px', fontSize:'16px', color:C.textSecondary }}>
             These tools were built for attorneys, but they can help you too.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+          <div className="tl-2col" style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'16px' }}>
             {FREE_RESOURCES.map(({ tool, forProSe }) => (
-              <Link key={tool.id} href={tool.path} style={{
-                display: 'block', background: C.bgCard, border: `1px solid ${C.border}`,
-                borderRadius: '10px', padding: '18px 20px', textDecoration: 'none',
-                transition: 'border-color 0.2s',
-              }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = C.borderGold}
-                onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
+              <Link key={tool.id} href={tool.path} style={{ display:'block', background:C.bgCard, border:`1px solid ${C.border}`, padding:'20px 22px', textDecoration:'none', transition:'border-color 0.15s' }}
+                onMouseEnter={e => e.currentTarget.style.borderColor='#2563eb'}
+                onMouseLeave={e => e.currentTarget.style.borderColor=C.border}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '18px' }}>{tool.icon}</span>
-                  <span style={{ fontSize: '13px', fontWeight: '700', color: C.textPrimary }}>{tool.name}</span>
+                <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'10px' }}>
+                  <span style={{ fontSize:'20px' }}>{tool.icon}</span>
+                  <span style={{ fontSize:'14px', fontWeight:'700', color:'#fff' }}>{tool.name}</span>
                 </div>
-                <p style={{ margin: 0, fontSize: '13px', color: C.textSecondary, lineHeight: '1.6' }}>{forProSe}</p>
+                <p style={{ margin:0, fontSize:'14px', color:C.textSecondary, lineHeight:'1.65' }}>{forProSe}</p>
               </Link>
             ))}
           </div>
         </div>
+
       </div>
 
       <style>{`
-        @keyframes spin    { to { transform: rotate(360deg); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse   { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         * { box-sizing: border-box; }
-        body { margin: 0; background: ${C.bg}; }
-        textarea::placeholder { color: #3a3530; }
-        select option { background: #0a0d1a; color: #e8e0d0; }
-        ::-webkit-scrollbar { width: 7px; }
-        ::-webkit-scrollbar-track { background: ${C.bg}; }
-        ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 4px; }
+        @media (max-width: 768px) {
+          .tl-nav-links { display: none !important; }
+          .tl-hamburger { display: flex !important; align-items: center; }
+          .tl-2col { grid-template-columns: 1fr !important; }
+          .tl-3col { grid-template-columns: 1fr !important; }
+          .tl-section-pad { padding-left: 20px !important; padding-right: 20px !important; }
+          .tl-card-pad { padding: 20px !important; }
+          .tl-btn-full { width: 100% !important; }
+          .tl-nav { padding: 0 20px !important; }
+          .tl-hide-mobile { display: none !important; }
+          .tl-breadcrumb { padding: 12px 20px !important; }
+          .tl-hero { padding: 40px 20px 32px !important; }
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes spin { to { transform: rotate(360deg) } }
+        @keyframes pulse { 0%,100% { opacity:0.3 } 50% { opacity:0.7 } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+        ::selection { background: rgba(37,99,235,0.4); color: #fff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        body { margin: 0; background: #000; }
+        textarea::placeholder { color: #444; }
+        select option { background: #111; color: #fff; }
       `}</style>
     </div>
   )

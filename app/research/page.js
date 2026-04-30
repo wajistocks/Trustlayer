@@ -5,37 +5,38 @@ import Link from 'next/link'
 
 // ─── Design tokens ─────────────────────────────────────────────────────────────
 const C = {
-  bg:        '#05070d',
-  bgCard:    '#0a0d1a',
-  bgInput:   '#080b14',
-  border:    '#1a2035',
-  borderGold:'rgba(212,168,83,0.25)',
-  gold:      '#d4a853',
-  goldDim:   '#a07835',
-  goldGlow:  'rgba(212,168,83,0.12)',
-  goldGlow2: 'rgba(212,168,83,0.06)',
-  textPrimary:   '#e8e0d0',
-  textSecondary: '#8a8070',
-  textMuted:     '#3a3530',
-  verified:  '#22c55e',
-  caution:   '#f59e0b',
-  danger:    '#ef4444',
-  purple:    '#8b5cf6',
-  blue:      '#3b82f6',
+  bg:            '#000000',
+  bgCard:        '#111111',
+  bgSecondary:   '#0a0a0a',
+  border:        '#222222',
+  borderLight:   '#333333',
+  textPrimary:   '#ffffff',
+  textSecondary: '#888888',
+  textMuted:     '#444444',
+  blue:          '#2563eb',
+  blueHover:     '#1d4ed8',
+  blueGlow:      'rgba(37,99,235,0.15)',
+  blueGlow2:     'rgba(37,99,235,0.08)',
+  verified:      '#22c55e',
+  verifiedBg:    'rgba(34,197,94,0.08)',
+  error:         '#ef4444',
+  errorBg:       'rgba(239,68,68,0.08)',
+  warning:       '#f59e0b',
+  warningBg:     'rgba(245,158,11,0.08)',
 }
 
-const SERIF = '"Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif'
-const SANS  = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-const MONO  = '"SF Mono", "Fira Code", "Courier New", monospace'
+const SERIF = 'Georgia, "Times New Roman", serif'
+const SANS  = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+const MONO  = '"JetBrains Mono", "SF Mono", "Fira Code", "Courier New", monospace'
 
 const TOOLS_NAV = [
-  { path:'/tools/plain-english',         name:'Plain English Translator',  icon:'📖' },
-  { path:'/tools/deadlines',             name:'Deadline Calculator',        icon:'⏰' },
-  { path:'/tools/red-flags',             name:'Contract Red Flag Scanner',  icon:'🔍' },
-  { path:'/tools/letter-response',       name:'Letter Response Generator',  icon:'✉'  },
-  { path:'/tools/statute-of-limitations',name:'Statute of Limitations',     icon:'⏳' },
-  { path:'/tools/ethics',                name:'Ethics Checker',             icon:'⚖' },
-  { path:'/tools/pro-se',                name:'Pro Se Assistant',           icon:'🏛' },
+  { path: '/tools/plain-english',          name: 'Plain English Translator',  icon: '📖' },
+  { path: '/tools/deadlines',              name: 'Deadline Calculator',        icon: '⏰' },
+  { path: '/tools/red-flags',              name: 'Contract Red Flag Scanner',  icon: '🔍' },
+  { path: '/tools/letter-response',        name: 'Letter Response Generator',  icon: '✉'  },
+  { path: '/tools/statute-of-limitations', name: 'Statute of Limitations',     icon: '⏳' },
+  { path: '/tools/ethics',                 name: 'Ethics Checker',             icon: '⚖'  },
+  { path: '/tools/pro-se',                 name: 'Pro Se Assistant',           icon: '🏛'  },
 ]
 
 // ─── Research modes ────────────────────────────────────────────────────────────
@@ -45,7 +46,7 @@ const MODES = [
     label: 'Case Law',
     icon: '⚖',
     desc: 'Search real court decisions by topic, jurisdiction, and outcome',
-    color: C.gold,
+    color: C.blue,
     placeholder: 'e.g. fraudulent misrepresentation in securities offerings, 9th Circuit',
   },
   {
@@ -61,7 +62,7 @@ const MODES = [
     label: 'Precedent Analysis',
     icon: '🔗',
     desc: 'How courts have ruled on specific legal issues over time',
-    color: C.purple,
+    color: C.blue,
     placeholder: 'e.g. piercing the corporate veil alter ego liability, reasonable reliance standard',
   },
   {
@@ -69,41 +70,41 @@ const MODES = [
     label: 'Regulatory Research',
     icon: '🏛',
     desc: 'FTC, SEC, FDIC, EPA rules, releases, and guidance documents',
-    color: C.caution,
+    color: C.blue,
     placeholder: 'e.g. SEC Regulation D private placement exemptions, FTC endorsement guides',
   },
 ]
 
 const JURISDICTIONS = [
-  { value: 'all',        label: 'All Jurisdictions' },
-  { value: 'federal',    label: 'Federal' },
-  { value: '1st-cir',   label: '1st Circuit' },
-  { value: '2nd-cir',   label: '2nd Circuit' },
-  { value: '3rd-cir',   label: '3rd Circuit' },
-  { value: '4th-cir',   label: '4th Circuit' },
-  { value: '5th-cir',   label: '5th Circuit' },
-  { value: '6th-cir',   label: '6th Circuit' },
-  { value: '7th-cir',   label: '7th Circuit' },
-  { value: '8th-cir',   label: '8th Circuit' },
-  { value: '9th-cir',   label: '9th Circuit' },
-  { value: '10th-cir',  label: '10th Circuit' },
-  { value: '11th-cir',  label: '11th Circuit' },
-  { value: 'dc-cir',    label: 'D.C. Circuit' },
-  { value: 'california',label: 'California' },
-  { value: 'new-york',  label: 'New York' },
-  { value: 'texas',     label: 'Texas' },
-  { value: 'florida',   label: 'Florida' },
-  { value: 'illinois',  label: 'Illinois' },
+  { value: 'all',           label: 'All Jurisdictions' },
+  { value: 'federal',       label: 'Federal' },
+  { value: '1st-cir',      label: '1st Circuit' },
+  { value: '2nd-cir',      label: '2nd Circuit' },
+  { value: '3rd-cir',      label: '3rd Circuit' },
+  { value: '4th-cir',      label: '4th Circuit' },
+  { value: '5th-cir',      label: '5th Circuit' },
+  { value: '6th-cir',      label: '6th Circuit' },
+  { value: '7th-cir',      label: '7th Circuit' },
+  { value: '8th-cir',      label: '8th Circuit' },
+  { value: '9th-cir',      label: '9th Circuit' },
+  { value: '10th-cir',     label: '10th Circuit' },
+  { value: '11th-cir',     label: '11th Circuit' },
+  { value: 'dc-cir',       label: 'D.C. Circuit' },
+  { value: 'california',   label: 'California' },
+  { value: 'new-york',     label: 'New York' },
+  { value: 'texas',        label: 'Texas' },
+  { value: 'florida',      label: 'Florida' },
+  { value: 'illinois',     label: 'Illinois' },
   { value: 'pennsylvania', label: 'Pennsylvania' },
-  { value: 'ohio',      label: 'Ohio' },
-  { value: 'georgia',   label: 'Georgia' },
-  { value: 'washington',label: 'Washington' },
-  { value: 'massachusetts', label: 'Massachusetts' },
-  { value: 'virginia',  label: 'Virginia' },
-  { value: 'colorado',  label: 'Colorado' },
-  { value: 'arizona',   label: 'Arizona' },
-  { value: 'nevada',    label: 'Nevada' },
-  { value: 'delaware',  label: 'Delaware' },
+  { value: 'ohio',         label: 'Ohio' },
+  { value: 'georgia',      label: 'Georgia' },
+  { value: 'washington',   label: 'Washington' },
+  { value: 'massachusetts',label: 'Massachusetts' },
+  { value: 'virginia',     label: 'Virginia' },
+  { value: 'colorado',     label: 'Colorado' },
+  { value: 'arizona',      label: 'Arizona' },
+  { value: 'nevada',       label: 'Nevada' },
+  { value: 'delaware',     label: 'Delaware' },
 ]
 
 const SAMPLE_QUERIES = {
@@ -116,8 +117,8 @@ const SAMPLE_QUERIES = {
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function scoreColor(n) {
   if (n >= 80) return C.verified
-  if (n >= 55) return C.caution
-  return C.danger
+  if (n >= 55) return C.warning
+  return C.error
 }
 
 function confidenceLetter(n) {
@@ -128,20 +129,20 @@ function confidenceLetter(n) {
 }
 
 function typeColor(type) {
-  const map = { case: C.gold, statute: C.blue, regulation: C.caution, restatement: C.purple }
+  const map = { case: C.blue, statute: C.blue, regulation: C.warning, restatement: C.textSecondary }
   return map[type] ?? C.textSecondary
 }
 
 function statusColor(s) {
   if (!s) return C.textMuted
   if (s === 'Good law' || s === 'Current') return C.verified
-  if (s === 'Distinguished' || s === 'Superseded') return C.caution
-  return C.danger
+  if (s === 'Distinguished' || s === 'Superseded') return C.warning
+  return C.error
 }
 
 function outcomeColor(o) {
   if (!o) return C.textMuted
-  if (o === 'plaintiff-favorable') return C.caution
+  if (o === 'plaintiff-favorable') return C.warning
   if (o === 'defendant-favorable') return C.blue
   return C.textSecondary
 }
@@ -168,46 +169,49 @@ function ResultCard({ result, onSave, isSaved, index }) {
     <div style={{
       background: C.bgCard,
       border: `1px solid ${C.border}`,
-      borderRadius: '10px',
-      padding: '22px 24px',
-      animation: 'slideUp 0.35s ease both',
+      padding: '28px',
+      animation: 'slideUp 0.2s ease',
       animationDelay: `${index * 60}ms`,
+      animationFillMode: 'both',
+      marginBottom: '12px',
       transition: 'border-color 0.2s',
     }}
-      onMouseEnter={e => e.currentTarget.style.borderColor = C.borderGold}
+      onMouseEnter={e => e.currentTarget.style.borderColor = C.borderLight}
       onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
     >
       {/* Header row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', marginBottom: '14px' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Badges row */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
-            <span style={{
-              fontSize: '10px', fontWeight: '700', letterSpacing: '0.07em',
-              textTransform: 'uppercase', padding: '2px 7px', borderRadius: '4px',
-              background: `${typeColor(result.type)}18`, color: typeColor(result.type),
-              border: `1px solid ${typeColor(result.type)}30`,
-            }}>{result.type ?? 'source'}</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+            {result.type && (
+              <span style={{
+                fontSize: '11px', fontWeight: '700', letterSpacing: '0.06em',
+                textTransform: 'uppercase', padding: '3px 8px', borderRadius: '4px',
+                background: `${typeColor(result.type)}18`, color: typeColor(result.type),
+                border: `1px solid ${typeColor(result.type)}30`,
+              }}>{result.type}</span>
+            )}
 
             {result.jurisdiction && (
               <span style={{
-                fontSize: '10px', padding: '2px 7px', borderRadius: '4px',
-                background: 'rgba(212,168,83,0.07)', color: C.textSecondary,
+                fontSize: '11px', padding: '3px 8px', borderRadius: '4px',
+                background: C.bgSecondary, color: C.textSecondary,
                 border: `1px solid ${C.border}`,
-              }}>⚖ {result.jurisdiction}</span>
+              }}>{result.jurisdiction}</span>
             )}
 
             {result.practiceArea && (
               <span style={{
-                fontSize: '10px', padding: '2px 7px', borderRadius: '4px',
-                background: 'rgba(59,130,246,0.08)', color: C.blue,
-                border: `1px solid rgba(59,130,246,0.2)`,
+                fontSize: '11px', padding: '3px 8px', borderRadius: '4px',
+                background: C.blueGlow2, color: C.blue,
+                border: `1px solid rgba(37,99,235,0.2)`,
               }}>{result.practiceArea}</span>
             )}
 
             {result.status && result.status !== 'null' && (
               <span style={{
-                fontSize: '10px', padding: '2px 7px', borderRadius: '4px',
+                fontSize: '11px', padding: '3px 8px', borderRadius: '4px',
                 background: `${statusColor(result.status)}15`,
                 color: statusColor(result.status),
                 border: `1px solid ${statusColor(result.status)}30`,
@@ -216,7 +220,7 @@ function ResultCard({ result, onSave, isSaved, index }) {
 
             {result.outcome && result.outcome !== 'null' && (
               <span style={{
-                fontSize: '10px', padding: '2px 7px', borderRadius: '4px',
+                fontSize: '11px', padding: '3px 8px', borderRadius: '4px',
                 background: `${outcomeColor(result.outcome)}12`,
                 color: outcomeColor(result.outcome),
                 border: `1px solid ${outcomeColor(result.outcome)}30`,
@@ -225,8 +229,8 @@ function ResultCard({ result, onSave, isSaved, index }) {
 
             {result.source === 'CourtListener' && (
               <span style={{
-                fontSize: '10px', padding: '2px 7px', borderRadius: '4px',
-                background: 'rgba(34,197,94,0.08)', color: C.verified,
+                fontSize: '11px', padding: '3px 8px', borderRadius: '4px',
+                background: C.verifiedBg, color: C.verified,
                 border: `1px solid rgba(34,197,94,0.2)`,
               }}>✓ Live source</span>
             )}
@@ -234,84 +238,82 @@ function ResultCard({ result, onSave, isSaved, index }) {
 
           {/* Title */}
           <h3 style={{
-            margin: 0, fontSize: '15px', fontFamily: SERIF, fontWeight: '700',
-            color: C.textPrimary, lineHeight: '1.35',
+            margin: 0, fontSize: '18px', fontFamily: SERIF, fontWeight: '700',
+            color: C.textPrimary, lineHeight: '1.4',
           }}>{result.title}</h3>
 
           {/* Citation */}
           {result.citation && (
             <p style={{
-              margin: '4px 0 0', fontSize: '12px', fontFamily: MONO,
-              color: C.gold, opacity: 0.8,
+              margin: '6px 0 0', fontSize: '13px', fontFamily: MONO,
+              color: C.textSecondary,
             }}>{result.citation}</p>
           )}
         </div>
 
         {/* Score column */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-          {/* Relevance */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{
-              width: '48px', height: '48px', borderRadius: '50%',
-              border: `2px solid ${scoreColor(result.relevance ?? 0)}40`,
-              background: `${scoreColor(result.relevance ?? 0)}10`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexDirection: 'column',
-            }}>
-              <span style={{ fontSize: '13px', fontWeight: '700', color: scoreColor(result.relevance ?? 0), lineHeight: 1 }}>
-                {result.relevance ?? '?'}
-              </span>
-              <span style={{ fontSize: '8px', color: C.textMuted, lineHeight: 1 }}>REL</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          {/* Relevance bar */}
+          <div style={{ textAlign: 'center', minWidth: '52px' }}>
+            <div style={{ fontSize: '11px', color: C.textMuted, marginBottom: '4px', letterSpacing: '0.06em' }}>REL</div>
+            <div style={{ height: '4px', background: C.border, borderRadius: '2px', width: '52px' }}>
+              <div style={{
+                height: '4px', background: scoreColor(result.relevance ?? 0),
+                width: `${result.relevance ?? 0}%`, borderRadius: '2px',
+                transition: 'width 0.4s ease',
+              }} />
+            </div>
+            <div style={{ fontSize: '13px', fontWeight: '700', color: scoreColor(result.relevance ?? 0), marginTop: '4px' }}>
+              {result.relevance ?? '?'}
             </div>
           </div>
 
-          {/* Confidence letter */}
+          {/* Confidence letter badge */}
           <div style={{
-            width: '26px', height: '26px', borderRadius: '6px',
+            padding: '4px 8px', borderRadius: '4px',
             background: `${scoreColor(result.confidence ?? 0)}15`,
             border: `1px solid ${scoreColor(result.confidence ?? 0)}30`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <span style={{ fontSize: '11px', fontWeight: '700', color: scoreColor(result.confidence ?? 0) }}>
+            <span style={{ fontSize: '12px', fontWeight: '700', color: scoreColor(result.confidence ?? 0), fontFamily: MONO }}>
               {confidenceLetter(result.confidence ?? 0)}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Date bar */}
+      {/* Date */}
       {result.date && (
-        <div style={{ fontSize: '11px', color: C.textMuted, marginBottom: '10px' }}>
-          📅 {formatDate(result.date)}
+        <div style={{ fontSize: '12px', color: C.textMuted, marginBottom: '12px', fontFamily: MONO }}>
+          {formatDate(result.date)}
         </div>
       )}
 
       {/* Summary */}
       {result.summary && (
         <p style={{
-          margin: '0 0 12px', fontSize: '13px', color: C.textSecondary,
-          lineHeight: '1.65',
+          margin: '0 0 16px', fontSize: '16px', color: '#cccccc',
+          lineHeight: '1.7', fontFamily: SANS,
         }}>{result.summary}</p>
       )}
 
       {/* Key points */}
       {result.keyPoints?.length > 0 && (
-        <div style={{ marginBottom: '12px' }}>
+        <div style={{ marginBottom: '16px', borderTop: `1px solid ${C.border}`, paddingTop: '14px' }}>
           {result.keyPoints.slice(0, expanded ? undefined : 2).map((pt, i) => (
             <div key={i} style={{
-              display: 'flex', alignItems: 'flex-start', gap: '8px',
-              fontSize: '12px', color: C.textSecondary,
-              padding: '4px 0',
-              borderTop: i === 0 ? `1px solid ${C.border}` : 'none',
+              display: 'flex', alignItems: 'flex-start', gap: '10px',
+              fontSize: '14px', color: C.textSecondary,
+              padding: '5px 0',
+              lineHeight: '1.6',
             }}>
-              <span style={{ color: C.gold, fontSize: '9px', marginTop: '4px', flexShrink: 0 }}>✦</span>
+              <span style={{ color: C.blue, fontSize: '10px', marginTop: '5px', flexShrink: 0 }}>■</span>
               {pt}
             </div>
           ))}
           {result.keyPoints.length > 2 && (
             <button onClick={() => setExpanded(x => !x)} style={{
-              background: 'none', border: 'none', color: C.gold, fontSize: '11px',
-              cursor: 'pointer', padding: '4px 0', letterSpacing: '0.04em',
+              background: 'none', border: 'none', color: C.blue, fontSize: '13px',
+              cursor: 'pointer', padding: '6px 0', fontFamily: SANS,
             }}>
               {expanded ? '− Show less' : `+ ${result.keyPoints.length - 2} more points`}
             </button>
@@ -319,38 +321,39 @@ function ResultCard({ result, onSave, isSaved, index }) {
         </div>
       )}
 
-      {/* Footer actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '8px' }}>
+      {/* Footer */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px', flexWrap: 'wrap' }}>
         {result.url && (
           <a href={result.url} target="_blank" rel="noopener noreferrer" style={{
-            fontSize: '11px', color: C.gold, textDecoration: 'none',
-            padding: '5px 11px', borderRadius: '5px',
-            border: `1px solid ${C.borderGold}`,
-            background: C.goldGlow2, letterSpacing: '0.04em',
+            fontSize: '13px', color: C.blue, textDecoration: 'none',
+            padding: '6px 14px', borderRadius: '4px',
+            border: `1px solid rgba(37,99,235,0.3)`,
+            background: C.blueGlow2,
             transition: 'all 0.15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = C.goldGlow; e.currentTarget.style.borderColor = C.gold }}
-            onMouseLeave={e => { e.currentTarget.style.background = C.goldGlow2; e.currentTarget.style.borderColor = C.borderGold }}
+            onMouseEnter={e => { e.currentTarget.style.background = C.blueGlow; e.currentTarget.style.borderColor = C.blue }}
+            onMouseLeave={e => { e.currentTarget.style.background = C.blueGlow2; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.3)' }}
           >View Source →</a>
         )}
 
         <button onClick={() => onSave(result)} style={{
-          fontSize: '11px',
-          color: isSaved ? C.gold : C.textMuted,
-          background: isSaved ? C.goldGlow2 : 'transparent',
-          border: `1px solid ${isSaved ? C.borderGold : C.textMuted + '30'}`,
-          padding: '5px 11px', borderRadius: '5px',
-          cursor: 'pointer', letterSpacing: '0.04em',
+          fontSize: '13px',
+          color: isSaved ? C.verified : C.textMuted,
+          background: isSaved ? C.verifiedBg : 'transparent',
+          border: `1px solid ${isSaved ? 'rgba(34,197,94,0.3)' : C.border}`,
+          padding: '6px 14px', borderRadius: '4px',
+          cursor: 'pointer',
           transition: 'all 0.15s',
+          fontFamily: SANS,
         }}>
           {isSaved ? '★ Saved' : '☆ Save'}
         </button>
 
         <div style={{ flex: 1 }} />
 
-        <span style={{
-          fontSize: '10px', color: C.textMuted, fontFamily: MONO,
-        }}>Confidence: {result.confidence ?? '?'}%</span>
+        <span style={{ fontSize: '12px', color: C.textMuted, fontFamily: MONO }}>
+          {result.confidence ?? '?'}% confidence
+        </span>
       </div>
     </div>
   )
@@ -360,38 +363,34 @@ function ResultCard({ result, onSave, isSaved, index }) {
 function SkeletonCard() {
   return (
     <div style={{
-      background: C.bgCard, border: `1px solid ${C.border}`,
-      borderRadius: '10px', padding: '22px 24px',
-      animation: 'pulse 1.6s ease-in-out infinite',
+      background: C.bgCard,
+      border: `1px solid ${C.border}`,
+      padding: '28px',
+      marginBottom: '12px',
     }}>
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ height: '12px', width: '40%', background: C.border, borderRadius: '4px', marginBottom: '10px' }} />
-          <div style={{ height: '16px', width: '75%', background: C.border, borderRadius: '4px', marginBottom: '6px' }} />
-          <div style={{ height: '11px', width: '45%', background: C.border, borderRadius: '4px' }} />
-        </div>
-        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: C.border }} />
-      </div>
-      <div style={{ height: '13px', width: '100%', background: C.border, borderRadius: '4px', marginBottom: '6px' }} />
-      <div style={{ height: '13px', width: '85%', background: C.border, borderRadius: '4px', marginBottom: '6px' }} />
-      <div style={{ height: '13px', width: '60%', background: C.border, borderRadius: '4px' }} />
+      <div style={{ height: '20px', background: '#1a1a1a', borderRadius: '2px', marginBottom: '12px', width: '60%', animation: 'pulse 1.4s ease infinite' }} />
+      <div style={{ height: '16px', background: '#1a1a1a', borderRadius: '2px', marginBottom: '8px', width: '40%', animation: 'pulse 1.4s ease infinite', animationDelay: '0.1s' }} />
+      <div style={{ height: '16px', background: '#1a1a1a', borderRadius: '2px', marginBottom: '8px', width: '100%', animation: 'pulse 1.4s ease infinite', animationDelay: '0.2s' }} />
+      <div style={{ height: '16px', background: '#1a1a1a', borderRadius: '2px', marginBottom: '8px', width: '85%', animation: 'pulse 1.4s ease infinite', animationDelay: '0.3s' }} />
+      <div style={{ height: '16px', background: '#1a1a1a', borderRadius: '2px', width: '70%', animation: 'pulse 1.4s ease infinite', animationDelay: '0.4s' }} />
     </div>
   )
 }
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
 export default function ResearchPage() {
-  const [toolsOpen, setToolsOpen] = useState(false)
-  const [mode, setMode]           = useState('case_law')
-  const [query, setQuery]       = useState('')
-  const [jurisdiction, setJurisdiction] = useState('all')
-  const [loading, setLoading]   = useState(false)
-  const [results, setResults]   = useState(null)
-  const [error, setError]       = useState(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [toolsOpen, setToolsOpen]           = useState(false)
+  const [mode, setMode]                     = useState('case_law')
+  const [query, setQuery]                   = useState('')
+  const [jurisdiction, setJurisdiction]     = useState('all')
+  const [loading, setLoading]               = useState(false)
+  const [results, setResults]               = useState(null)
+  const [error, setError]                   = useState(null)
   const [recentSearches, setRecentSearches] = useState([])
   const [savedResults, setSavedResults]     = useState([])
-  const [savedTab, setSavedTab] = useState(false)
-  const [exportMsg, setExportMsg] = useState(null)
+  const [savedTab, setSavedTab]             = useState(false)
+  const [exportMsg, setExportMsg]           = useState(null)
   const inputRef = useRef(null)
 
   // Persist recent searches and saved results in localStorage
@@ -487,233 +486,192 @@ export default function ResearchPage() {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, fontFamily: SANS, color: C.textPrimary }}>
 
-      {/* ── Nav ─────────────────────────────────────────────────────────────── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 40px', height: '68px',
-        background: 'rgba(5,7,13,0.92)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: `1px solid ${C.border}`,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '8px',
-              background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: `0 0 16px ${C.goldGlow}`,
-            }}>
-              <span style={{ fontSize: '18px', fontFamily: SERIF, fontWeight: '700', color: '#0a0800' }}>T</span>
-            </div>
-            <span style={{ fontSize: '20px', fontFamily: SERIF, fontWeight: '700', letterSpacing: '0.02em', color: C.textPrimary }}>
-              Trust<span style={{ color: C.gold }}>Layer</span>
-            </span>
-          </Link>
-        </div>
+      <style>{`
+        * { box-sizing: border-box; }
+        @media (max-width: 768px) {
+          .tl-nav-links { display: none !important; }
+          .tl-hamburger { display: flex !important; align-items: center; }
+          .tl-2col { grid-template-columns: 1fr !important; }
+          .tl-3col { grid-template-columns: 1fr !important; }
+          .tl-section-pad { padding-left: 20px !important; padding-right: 20px !important; }
+          .tl-hide-mobile { display: none !important; }
+          .tl-mode-tabs { flex-wrap: wrap !important; }
+          .tl-nav { padding: 0 20px !important; }
+        }
+        @keyframes fadeIn  { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes spin    { to { transform: rotate(360deg) } }
+        @keyframes pulse   { 0%,100% { opacity:0.3 } 50% { opacity:0.7 } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+        ::selection { background: rgba(37,99,235,0.4); color: #fff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        body { margin: 0; background: #000; }
+        input::placeholder { color: #444; }
+        select option { background: #111; color: #fff; }
+      `}</style>
 
-        <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
-          <Link href="/" style={{
-            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-            letterSpacing: '0.04em', transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
+      {/* ── Nav ─────────────────────────────────────────────────────────────── */}
+      <nav className="tl-nav" style={{ position: 'sticky', top: 0, zIndex: 100, background: '#000', borderBottom: '1px solid #222', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 40px' }}>
+        <Link href="/" style={{ textDecoration: 'none', fontSize: '22px', fontFamily: SERIF, fontWeight: '700', color: '#fff', letterSpacing: '-0.02em' }}>TrustLayer</Link>
+
+        <div className="tl-nav-links" style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+          <Link href="/" style={{ fontSize: '14px', color: C.textSecondary, textDecoration: 'none' }}
+            onMouseEnter={e => e.currentTarget.style.color = C.blue}
+            onMouseLeave={e => e.currentTarget.style.color = C.textSecondary}
           >Verify</Link>
 
-          <Link href="/research" style={{
-            fontSize: '13px', color: C.gold, textDecoration: 'none',
-            letterSpacing: '0.04em', borderBottom: `1px solid ${C.gold}`,
-            paddingBottom: '2px',
-          }}>Research</Link>
+          <Link href="/research" style={{ fontSize: '14px', color: C.blue, textDecoration: 'none', borderBottom: '2px solid #2563eb', paddingBottom: '2px' }}>
+            Research
+          </Link>
 
+          {/* Tools dropdown */}
           <div style={{ position: 'relative' }}
             onMouseEnter={() => setToolsOpen(true)}
             onMouseLeave={() => setToolsOpen(false)}
           >
-            <Link href="/tools" style={{
-              fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-              letterSpacing: '0.04em', transition: 'color 0.2s',
-              display: 'flex', alignItems: 'center', gap: '3px',
-            }}
-              onMouseEnter={e => e.currentTarget.style.color = C.gold}
+            <Link href="/tools" style={{ fontSize: '14px', color: C.textSecondary, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+              onMouseEnter={e => e.currentTarget.style.color = C.blue}
               onMouseLeave={e => e.currentTarget.style.color = C.textSecondary}
-            >Tools <span style={{ fontSize: '9px', opacity: 0.7 }}>▾</span></Link>
+            >
+              Tools <span style={{ fontSize: '9px', opacity: 0.7 }}>▾</span>
+            </Link>
             {toolsOpen && (
-              <div style={{
-                position: 'absolute', top: 'calc(100% + 10px)', left: '-10px',
-                background: C.bgCard, border: `1px solid ${C.borderGold}`,
-                borderRadius: '10px', padding: '8px 6px', minWidth: '236px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.5)', zIndex: 200,
-                animation: 'fadeIn 0.15s ease',
-              }}>
+              <div style={{ position: 'absolute', top: 'calc(100% + 10px)', left: '-10px', background: '#111', border: '1px solid #222', borderRadius: '6px', padding: '8px 6px', minWidth: '240px', boxShadow: '0 8px 32px rgba(0,0,0,0.8)', zIndex: 200, animation: 'fadeIn 0.15s ease' }}>
                 {TOOLS_NAV.map(t => (
-                  <Link key={t.path} href={t.path} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '8px 10px', borderRadius: '6px', textDecoration: 'none',
-                    transition: 'background 0.15s',
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = C.goldGlow2}
+                  <Link key={t.path} href={t.path} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '4px', textDecoration: 'none' }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(37,99,235,0.1)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
                     <span style={{ fontSize: '14px', width: '20px', textAlign: 'center' }}>{t.icon}</span>
-                    <span style={{ fontSize: '12px', color: C.textSecondary }}>{t.name}</span>
+                    <span style={{ fontSize: '13px', color: '#888' }}>{t.name}</span>
                   </Link>
                 ))}
-                <div style={{ borderTop: `1px solid ${C.border}`, margin: '5px 4px' }} />
-                <Link href="/tools" style={{
-                  display: 'block', textAlign: 'center', padding: '7px 10px',
-                  borderRadius: '6px', textDecoration: 'none', fontSize: '11px',
-                  color: C.gold, fontWeight: '600', background: C.goldGlow2,
-                  border: `1px solid ${C.borderGold}`,
-                }}>View All Tools →</Link>
+                <div style={{ borderTop: '1px solid #222', margin: '5px 4px' }} />
+                <Link href="/tools" style={{ display: 'block', textAlign: 'center', padding: '8px 10px', borderRadius: '4px', fontSize: '12px', color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>View All Tools →</Link>
               </div>
             )}
           </div>
 
-          <Link href="/enterprise" style={{
-            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-            letterSpacing: '0.04em', transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
+          <Link href="/enterprise" style={{ fontSize: '14px', color: C.textSecondary, textDecoration: 'none' }}
+            onMouseEnter={e => e.currentTarget.style.color = C.blue}
+            onMouseLeave={e => e.currentTarget.style.color = C.textSecondary}
           >Enterprise</Link>
 
-          <Link href="/request-access" style={{
-            padding: '8px 20px', borderRadius: '6px',
-            border: `1px solid ${C.borderGold}`,
-            background: C.goldGlow2,
-            color: C.gold, fontSize: '13px',
-            textDecoration: 'none', display: 'inline-block',
-            letterSpacing: '0.04em', transition: 'all 0.2s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = C.goldGlow; e.currentTarget.style.borderColor = C.gold }}
-            onMouseLeave={e => { e.currentTarget.style.background = C.goldGlow2; e.currentTarget.style.borderColor = C.borderGold }}
+          <Link href="/request-access" style={{ background: '#2563eb', color: '#fff', padding: '9px 22px', borderRadius: '6px', fontSize: '14px', fontWeight: '600', textDecoration: 'none' }}
+            onMouseEnter={e => e.currentTarget.style.background = '#1d4ed8'}
+            onMouseLeave={e => e.currentTarget.style.background = '#2563eb'}
           >Request Access</Link>
         </div>
+
+        <button className="tl-hamburger" style={{ display: 'none', background: 'none', border: 'none', color: '#fff', fontSize: '22px', cursor: 'pointer', padding: '8px' }} onClick={() => setMobileMenuOpen(v => !v)}>
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
       </nav>
 
+      {/* Mobile overlay */}
+      {mobileMenuOpen && <div style={{ position: 'fixed', inset: 0, zIndex: 149, background: 'rgba(0,0,0,0.6)' }} onClick={() => setMobileMenuOpen(false)} />}
+
+      {/* Mobile drawer */}
+      <div style={{ position: 'fixed', top: 0, right: 0, width: '280px', height: '100vh', background: '#000', borderLeft: '1px solid #222', zIndex: 150, transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.25s ease', display: 'flex', flexDirection: 'column', padding: '72px 24px 40px', gap: '4px' }}>
+        {[['/', 'Verify'], ['/research', 'Research'], ['/enterprise', 'Enterprise']].map(([href, label]) => (
+          <Link key={href} href={href} style={{ display: 'block', padding: '12px 8px', fontSize: '16px', color: '#fff', textDecoration: 'none', borderBottom: '1px solid #111' }}>{label}</Link>
+        ))}
+        <div style={{ padding: '8px 0 4px', fontSize: '12px', color: '#444', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Tools</div>
+        {TOOLS_NAV.map(t => (
+          <Link key={t.path} href={t.path} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 8px', fontSize: '14px', color: '#888', textDecoration: 'none' }}>
+            <span>{t.icon}</span><span>{t.name}</span>
+          </Link>
+        ))}
+        <Link href="/request-access" style={{ marginTop: 'auto', background: '#2563eb', color: '#fff', padding: '14px 20px', borderRadius: '6px', textDecoration: 'none', fontSize: '15px', fontWeight: '600', textAlign: 'center', display: 'block' }}>Request Access</Link>
+      </div>
+
       {/* ── Hero + Search ───────────────────────────────────────────────────── */}
-      <div style={{
-        background: `linear-gradient(180deg, rgba(212,168,83,0.04) 0%, transparent 100%)`,
-        borderBottom: `1px solid ${C.border}`,
-        padding: '56px 40px 40px',
-      }}>
+      <div className="tl-section-pad" style={{ borderBottom: `1px solid ${C.border}`, padding: '64px 40px 48px' }}>
         <div style={{ maxWidth: '860px', margin: '0 auto' }}>
           {/* Eyebrow */}
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
-            background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
-            borderRadius: '20px', padding: '5px 14px',
-            marginBottom: '20px',
+            background: C.blueGlow2, border: `1px solid rgba(37,99,235,0.2)`,
+            borderRadius: '4px', padding: '5px 14px', marginBottom: '24px',
           }}>
-            <span style={{ color: C.gold, fontSize: '11px' }}>⚖</span>
-            <span style={{ fontSize: '11px', color: C.gold, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: '600' }}>
+            <span style={{ fontSize: '11px', color: C.blue, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: '600' }}>
               AI Legal Research
             </span>
           </div>
 
           <h1 style={{
-            fontFamily: SERIF, fontSize: 'clamp(30px, 4.5vw, 50px)',
+            fontFamily: SERIF, fontSize: 'clamp(32px, 4.5vw, 52px)',
             fontWeight: '700', letterSpacing: '-0.01em',
-            lineHeight: '1.15', margin: '0 0 12px', color: C.textPrimary,
+            lineHeight: '1.15', margin: '0 0 16px', color: C.textPrimary,
           }}>
-            Research Any Legal Question<br />
-            <span style={{ color: C.gold }}>With AI Precision</span>
+            Research Any Legal Question<br />With AI Precision
           </h1>
 
           <p style={{
-            fontSize: '15px', color: C.textSecondary, margin: '0 0 32px',
-            maxWidth: '580px', lineHeight: '1.6', fontFamily: SERIF, fontStyle: 'italic',
+            fontSize: '18px', color: C.textSecondary, margin: '0 0 40px',
+            maxWidth: '560px', lineHeight: '1.7', fontFamily: SANS,
           }}>
             Case law, statutes, precedent, and regulations — sourced in seconds, verified by AI.
           </p>
 
           {/* Mode tabs */}
-          <div style={{
-            display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px',
-          }}>
+          <div className="tl-mode-tabs" style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: '#111', border: '1px solid #222', borderRadius: '4px', padding: '4px' }}>
             {MODES.map(m => (
               <button key={m.id} onClick={() => { setMode(m.id); setResults(null) }} style={{
-                padding: '8px 16px', borderRadius: '8px', cursor: 'pointer',
-                border: `1px solid ${mode === m.id ? m.color + '50' : C.border}`,
-                background: mode === m.id ? `${m.color}12` : 'transparent',
-                color: mode === m.id ? m.color : C.textSecondary,
+                flex: 1, padding: '9px 16px', cursor: 'pointer',
+                border: 'none',
+                background: mode === m.id ? '#2563eb' : 'transparent',
+                color: mode === m.id ? '#fff' : C.textSecondary,
                 fontSize: '13px', fontWeight: mode === m.id ? '600' : '400',
-                letterSpacing: '0.02em', transition: 'all 0.2s',
-                display: 'flex', alignItems: 'center', gap: '6px',
-              }}
-                onMouseEnter={e => {
-                  if (mode !== m.id) {
-                    e.currentTarget.style.borderColor = m.color + '30'
-                    e.currentTarget.style.color = C.textPrimary
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (mode !== m.id) {
-                    e.currentTarget.style.borderColor = C.border
-                    e.currentTarget.style.color = C.textSecondary
-                  }
-                }}
-              >
+                borderRadius: '4px',
+                transition: 'all 0.15s',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                whiteSpace: 'nowrap',
+              }}>
                 <span>{m.icon}</span>
                 {m.label}
               </button>
             ))}
           </div>
 
-          {/* Search bar + jurisdiction */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'stretch' }}>
+          {/* Search bar */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'stretch', flexWrap: 'wrap' }}>
               {/* Query input */}
-              <div style={{
-                flex: 1, display: 'flex', alignItems: 'center',
-                background: C.bgInput, border: `1px solid ${C.border}`,
-                borderRadius: '10px', padding: '0 16px',
-                transition: 'border-color 0.2s',
-              }}
-                onFocusCapture={e => e.currentTarget.style.borderColor = C.borderGold}
-                onBlurCapture={e => e.currentTarget.style.borderColor = C.border}
-              >
-                <span style={{ color: C.textMuted, fontSize: '16px', marginRight: '10px', flexShrink: 0 }}>⚲</span>
-                <input
-                  ref={inputRef}
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                  placeholder={currentMode.placeholder}
-                  style={{
-                    flex: 1, background: 'none', border: 'none', outline: 'none',
-                    color: C.textPrimary, fontSize: '14px', padding: '16px 0',
-                    fontFamily: SANS,
-                  }}
-                />
-                {query && (
-                  <button onClick={() => setQuery('')} style={{
-                    background: 'none', border: 'none', color: C.textMuted,
-                    cursor: 'pointer', fontSize: '16px', padding: '0 4px',
-                  }}>×</button>
-                )}
-              </div>
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                placeholder={currentMode.placeholder}
+                style={{
+                  flex: '1 1 300px', background: C.bgSecondary, border: `1px solid ${C.borderLight}`,
+                  color: C.textPrimary, borderRadius: '4px',
+                  fontSize: '16px', padding: '14px 16px',
+                  outline: 'none', fontFamily: SANS,
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={e => e.target.style.borderColor = C.blue}
+                onBlur={e => e.target.style.borderColor = C.borderLight}
+              />
 
               {/* Jurisdiction selector */}
               <select
                 value={jurisdiction}
                 onChange={e => setJurisdiction(e.target.value)}
                 style={{
-                  background: C.bgInput, border: `1px solid ${C.border}`,
-                  borderRadius: '10px', color: C.textSecondary,
-                  fontSize: '13px', padding: '0 14px', cursor: 'pointer',
-                  outline: 'none', minWidth: '160px',
-                  transition: 'border-color 0.2s',
+                  background: C.bgSecondary, border: `1px solid ${C.borderLight}`,
+                  borderRadius: '4px', color: C.textSecondary,
+                  fontSize: '16px', padding: '14px 16px', cursor: 'pointer',
+                  outline: 'none', minWidth: '170px',
+                  transition: 'border-color 0.2s', fontFamily: SANS,
                 }}
-                onFocus={e => e.target.style.borderColor = C.borderGold}
-                onBlur={e => e.target.style.borderColor = C.border}
+                onFocus={e => e.target.style.borderColor = C.blue}
+                onBlur={e => e.target.style.borderColor = C.borderLight}
               >
                 {JURISDICTIONS.map(j => (
-                  <option key={j.value} value={j.value} style={{ background: C.bgCard }}>
-                    {j.label}
-                  </option>
+                  <option key={j.value} value={j.value}>{j.label}</option>
                 ))}
               </select>
 
@@ -722,22 +680,22 @@ export default function ResearchPage() {
                 onClick={() => handleSearch()}
                 disabled={loading || !query.trim()}
                 style={{
-                  padding: '0 28px', borderRadius: '10px', border: 'none',
-                  background: loading || !query.trim()
-                    ? C.border
-                    : `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-                  color: loading || !query.trim() ? C.textMuted : '#0a0800',
-                  fontSize: '14px', fontWeight: '700', letterSpacing: '0.04em',
+                  padding: '14px 32px', borderRadius: '6px', border: 'none',
+                  background: loading || !query.trim() ? C.border : '#2563eb',
+                  color: loading || !query.trim() ? C.textMuted : '#fff',
+                  fontSize: '16px', fontWeight: '600',
                   cursor: loading || !query.trim() ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s', whiteSpace: 'nowrap',
-                  boxShadow: loading || !query.trim() ? 'none' : `0 4px 16px rgba(212,168,83,0.25)`,
+                  transition: 'background 0.2s', whiteSpace: 'nowrap',
+                  fontFamily: SANS,
                 }}
+                onMouseEnter={e => { if (!loading && query.trim()) e.currentTarget.style.background = '#1d4ed8' }}
+                onMouseLeave={e => { if (!loading && query.trim()) e.currentTarget.style.background = '#2563eb' }}
               >
                 {loading ? (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '7px' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{
-                      width: '13px', height: '13px', border: `2px solid #0a0800`,
-                      borderTopColor: 'transparent', borderRadius: '50%',
+                      width: '14px', height: '14px', border: `2px solid rgba(255,255,255,0.3)`,
+                      borderTopColor: '#fff', borderRadius: '50%',
                       display: 'inline-block', animation: 'spin 0.7s linear infinite',
                     }} />
                     Searching
@@ -747,8 +705,8 @@ export default function ResearchPage() {
             </div>
 
             {/* Mode description */}
-            <p style={{ fontSize: '12px', color: C.textMuted, margin: 0, paddingLeft: '2px' }}>
-              <span style={{ color: currentMode.color }}>{currentMode.icon} {currentMode.label}</span>
+            <p style={{ fontSize: '14px', color: C.textMuted, margin: 0, lineHeight: '1.5' }}>
+              <span style={{ color: C.blue }}>{currentMode.icon} {currentMode.label}</span>
               {' — '}{currentMode.desc}
             </p>
           </div>
@@ -756,12 +714,12 @@ export default function ResearchPage() {
       </div>
 
       {/* ── Main content grid ────────────────────────────────────────────────── */}
-      <div style={{
+      <div className="tl-section-pad tl-2col" style={{
         maxWidth: '1200px', margin: '0 auto',
-        padding: '32px 40px',
+        padding: '40px 40px',
         display: 'grid',
-        gridTemplateColumns: '1fr 280px',
-        gap: '28px',
+        gridTemplateColumns: '1fr 300px',
+        gap: '32px',
         alignItems: 'start',
       }}>
 
@@ -770,25 +728,29 @@ export default function ResearchPage() {
           {/* Results toolbar */}
           {(results || savedResults.length > 0) && (
             <div style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              marginBottom: '20px', flexWrap: 'wrap',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              marginBottom: '24px', flexWrap: 'wrap',
             }}>
               <button onClick={() => setSavedTab(false)} style={{
-                padding: '6px 14px', borderRadius: '6px', cursor: 'pointer',
-                border: `1px solid ${!savedTab ? C.borderGold : C.border}`,
-                background: !savedTab ? C.goldGlow2 : 'transparent',
-                color: !savedTab ? C.gold : C.textSecondary,
-                fontSize: '12px', fontWeight: '600', transition: 'all 0.2s',
+                padding: '8px 16px', cursor: 'pointer',
+                border: `1px solid ${!savedTab ? C.blue : C.border}`,
+                background: !savedTab ? C.blueGlow2 : 'transparent',
+                color: !savedTab ? C.blue : C.textSecondary,
+                fontSize: '13px', fontWeight: '600',
+                borderRadius: '4px',
+                transition: 'all 0.15s', fontFamily: SANS,
               }}>
                 Results {results ? `(${results.results?.length ?? 0})` : ''}
               </button>
 
               <button onClick={() => setSavedTab(true)} style={{
-                padding: '6px 14px', borderRadius: '6px', cursor: 'pointer',
-                border: `1px solid ${savedTab ? C.borderGold : C.border}`,
-                background: savedTab ? C.goldGlow2 : 'transparent',
-                color: savedTab ? C.gold : C.textSecondary,
-                fontSize: '12px', fontWeight: '600', transition: 'all 0.2s',
+                padding: '8px 16px', cursor: 'pointer',
+                border: `1px solid ${savedTab ? C.blue : C.border}`,
+                background: savedTab ? C.blueGlow2 : 'transparent',
+                color: savedTab ? C.blue : C.textSecondary,
+                fontSize: '13px', fontWeight: '600',
+                borderRadius: '4px',
+                transition: 'all 0.15s', fontFamily: SANS,
               }}>
                 ★ Saved ({savedResults.length})
               </button>
@@ -797,13 +759,14 @@ export default function ResearchPage() {
 
               {displayResults.length > 0 && (
                 <button onClick={handleExport} style={{
-                  padding: '6px 14px', borderRadius: '6px', cursor: 'pointer',
+                  padding: '8px 16px', cursor: 'pointer',
                   border: `1px solid ${C.border}`,
                   background: 'transparent',
                   color: exportMsg ? C.verified : C.textSecondary,
-                  fontSize: '12px', transition: 'all 0.2s',
+                  fontSize: '13px', borderRadius: '4px',
+                  transition: 'all 0.15s', fontFamily: SANS,
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = exportMsg ? C.verified : C.textSecondary }}
                 >
                   {exportMsg ?? '↓ Export TXT'}
@@ -815,21 +778,21 @@ export default function ResearchPage() {
           {/* Research summary banner */}
           {!savedTab && results?.summary && (
             <div style={{
-              background: `${C.goldGlow2}`, border: `1px solid ${C.borderGold}`,
-              borderRadius: '8px', padding: '14px 18px', marginBottom: '18px',
+              background: C.bgSecondary, border: `1px solid ${C.border}`,
+              borderLeft: `3px solid ${C.blue}`, padding: '24px 28px', marginBottom: '28px',
               animation: 'fadeIn 0.4s ease',
             }}>
-              <div style={{ fontSize: '11px', color: C.gold, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '5px' }}>
+              <div style={{ fontSize: '11px', color: C.blue, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700' }}>
                 Research Summary
               </div>
-              <p style={{ margin: 0, fontSize: '13px', color: C.textSecondary, lineHeight: '1.6' }}>
+              <p style={{ margin: 0, fontSize: '16px', color: C.textSecondary, lineHeight: '1.7' }}>
                 {results.summary}
               </p>
               {results.researchNotes && (
                 <p style={{
-                  margin: '8px 0 0', fontSize: '12px',
-                  color: C.caution, lineHeight: '1.5',
-                  paddingTop: '8px', borderTop: `1px solid ${C.borderGold}`,
+                  margin: '12px 0 0', fontSize: '14px',
+                  color: C.warning, lineHeight: '1.6',
+                  paddingTop: '12px', borderTop: `1px solid ${C.border}`,
                 }}>
                   ⚠ Practitioner note: {results.researchNotes}
                 </p>
@@ -839,7 +802,7 @@ export default function ResearchPage() {
 
           {/* Loading skeletons */}
           {loading && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div>
               {[0, 1, 2, 3].map(i => <SkeletonCard key={i} />)}
             </div>
           )}
@@ -847,8 +810,9 @@ export default function ResearchPage() {
           {/* Error */}
           {error && (
             <div style={{
-              background: 'rgba(239,68,68,0.08)', border: `1px solid rgba(239,68,68,0.2)`,
-              borderRadius: '8px', padding: '16px 20px', color: C.danger, fontSize: '13px',
+              background: C.errorBg, border: `1px solid rgba(239,68,68,0.2)`,
+              padding: '20px 24px', color: C.error, fontSize: '15px',
+              lineHeight: '1.6',
             }}>
               {error}
             </div>
@@ -856,10 +820,10 @@ export default function ResearchPage() {
 
           {/* Saved empty state */}
           {savedTab && savedResults.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '60px 20px', color: C.textMuted }}>
-              <div style={{ fontSize: '32px', marginBottom: '14px', opacity: 0.4 }}>★</div>
-              <p style={{ fontSize: '14px', margin: 0 }}>No saved results yet.</p>
-              <p style={{ fontSize: '12px', margin: '6px 0 0', color: C.textMuted }}>
+            <div style={{ textAlign: 'center', padding: '80px 20px', color: C.textMuted }}>
+              <div style={{ fontSize: '40px', marginBottom: '16px', opacity: 0.3 }}>★</div>
+              <p style={{ fontSize: '16px', margin: '0 0 8px', color: C.textSecondary }}>No saved results yet.</p>
+              <p style={{ fontSize: '14px', margin: 0, color: C.textMuted }}>
                 Click ☆ Save on any result to bookmark it here.
               </p>
             </div>
@@ -867,35 +831,38 @@ export default function ResearchPage() {
 
           {/* Empty state — no query yet */}
           {!loading && !error && !results && !savedTab && (
-            <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <div style={{ textAlign: 'center', padding: '80px 20px' }}>
               <div style={{
-                width: '64px', height: '64px', borderRadius: '50%',
-                background: C.goldGlow, border: `1px solid ${C.borderGold}`,
+                width: '72px', height: '72px',
+                background: C.blueGlow2, border: `1px solid rgba(37,99,235,0.2)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto 20px', fontSize: '28px',
+                margin: '0 auto 24px', fontSize: '32px',
               }}>⚖</div>
               <h2 style={{
-                fontFamily: SERIF, fontSize: '22px', color: C.textPrimary,
-                margin: '0 0 8px', fontWeight: '600',
+                fontFamily: SERIF, fontSize: '26px', color: C.textPrimary,
+                margin: '0 0 12px', fontWeight: '700',
               }}>Ready to research</h2>
-              <p style={{ fontSize: '13px', color: C.textSecondary, margin: '0 0 24px' }}>
+              <p style={{ fontSize: '16px', color: C.textSecondary, margin: '0 0 28px', lineHeight: '1.7' }}>
                 Enter a legal question above to search {currentMode.label.toLowerCase()}.
               </p>
-              {/* Sample query */}
               <button onClick={() => { setQuery(SAMPLE_QUERIES[mode]); setTimeout(() => handleSearch(SAMPLE_QUERIES[mode]), 50) }}
                 style={{
-                  background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
-                  color: C.gold, borderRadius: '8px', padding: '10px 20px',
-                  cursor: 'pointer', fontSize: '13px', letterSpacing: '0.02em',
-                }}>
+                  background: C.blueGlow2, border: `1px solid rgba(37,99,235,0.3)`,
+                  color: C.blue, borderRadius: '6px', padding: '12px 24px',
+                  cursor: 'pointer', fontSize: '14px', fontWeight: '600',
+                  fontFamily: SANS, transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = C.blueGlow; e.currentTarget.style.borderColor = C.blue }}
+                onMouseLeave={e => { e.currentTarget.style.background = C.blueGlow2; e.currentTarget.style.borderColor = 'rgba(37,99,235,0.3)' }}
+              >
                 Try a sample query →
               </button>
             </div>
           )}
 
-          {/* Results */}
+          {/* Results list */}
           {!loading && displayResults.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div>
               {displayResults.map((r, i) => (
                 <ResultCard
                   key={r.id ?? i}
@@ -910,9 +877,9 @@ export default function ResearchPage() {
 
           {/* No results */}
           {!loading && !error && results && results.results?.length === 0 && !savedTab && (
-            <div style={{ textAlign: 'center', padding: '48px 20px', color: C.textMuted }}>
-              <p style={{ fontSize: '14px' }}>No results found for this query.</p>
-              <p style={{ fontSize: '12px', marginTop: '6px' }}>
+            <div style={{ textAlign: 'center', padding: '60px 20px', color: C.textMuted }}>
+              <p style={{ fontSize: '16px', marginBottom: '8px', color: C.textSecondary }}>No results found for this query.</p>
+              <p style={{ fontSize: '14px', marginTop: 0 }}>
                 Try broadening your search or switching research mode.
               </p>
             </div>
@@ -920,20 +887,17 @@ export default function ResearchPage() {
         </div>
 
         {/* ── Sidebar ──────────────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
           {/* Recent searches */}
-          <div style={{
-            background: C.bgCard, border: `1px solid ${C.border}`,
-            borderRadius: '10px', padding: '18px 20px',
-          }}>
+          <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, padding: '24px' }}>
             <h3 style={{
-              margin: '0 0 14px', fontSize: '12px', fontWeight: '700',
-              color: C.gold, letterSpacing: '0.08em', textTransform: 'uppercase',
+              margin: '0 0 16px', fontSize: '11px', fontWeight: '700',
+              color: C.textSecondary, letterSpacing: '0.1em', textTransform: 'uppercase',
             }}>Recent Searches</h3>
 
             {recentSearches.length === 0 ? (
-              <p style={{ fontSize: '12px', color: C.textMuted, margin: 0 }}>
+              <p style={{ fontSize: '14px', color: C.textMuted, margin: 0, lineHeight: '1.6' }}>
                 Your last 5 searches will appear here.
               </p>
             ) : (
@@ -948,23 +912,24 @@ export default function ResearchPage() {
                       setTimeout(() => handleSearch(rs.query), 50)
                     }} style={{
                       background: 'none', border: 'none', textAlign: 'left',
-                      cursor: 'pointer', padding: '8px 10px', borderRadius: '6px',
-                      transition: 'background 0.15s',
+                      cursor: 'pointer', padding: '10px 8px',
+                      transition: 'background 0.15s', borderRadius: '2px',
+                      fontFamily: SANS,
                     }}
-                      onMouseEnter={e => e.currentTarget.style.background = C.goldGlow2}
+                      onMouseEnter={e => e.currentTarget.style.background = C.blueGlow2}
                       onMouseLeave={e => e.currentTarget.style.background = 'none'}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                        <span style={{ fontSize: '10px', color: modeData?.color ?? C.gold }}>{modeData?.icon}</span>
-                        <span style={{ fontSize: '10px', color: C.textMuted, letterSpacing: '0.04em' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                        <span style={{ fontSize: '11px', color: C.blue }}>{modeData?.icon}</span>
+                        <span style={{ fontSize: '11px', color: C.textMuted, letterSpacing: '0.04em' }}>
                           {modeData?.label}
                         </span>
                       </div>
                       <p style={{
-                        margin: 0, fontSize: '12px', color: C.textSecondary,
+                        margin: 0, fontSize: '13px', color: C.textSecondary,
                         overflow: 'hidden', textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap', maxWidth: '220px',
-                        lineHeight: '1.3',
+                        whiteSpace: 'nowrap', maxWidth: '230px',
+                        lineHeight: '1.4',
                       }}>{rs.query}</p>
                     </button>
                   )
@@ -975,35 +940,33 @@ export default function ResearchPage() {
 
           {/* Saved research quick-view */}
           {savedResults.length > 0 && (
-            <div style={{
-              background: C.bgCard, border: `1px solid ${C.border}`,
-              borderRadius: '10px', padding: '18px 20px',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+            <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, padding: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                 <h3 style={{
-                  margin: 0, fontSize: '12px', fontWeight: '700',
-                  color: C.gold, letterSpacing: '0.08em', textTransform: 'uppercase',
+                  margin: 0, fontSize: '11px', fontWeight: '700',
+                  color: C.textSecondary, letterSpacing: '0.1em', textTransform: 'uppercase',
                 }}>Saved Research</h3>
                 <span style={{
-                  fontSize: '11px', color: C.textMuted,
-                  background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
-                  borderRadius: '10px', padding: '1px 7px',
+                  fontSize: '12px', color: C.blue,
+                  background: C.blueGlow2, border: `1px solid rgba(37,99,235,0.2)`,
+                  borderRadius: '4px', padding: '2px 8px', fontFamily: MONO,
                 }}>{savedResults.length}</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {savedResults.slice(0, 4).map((r, i) => (
                   <div key={i} style={{
-                    padding: '8px 0',
+                    padding: '10px 0',
                     borderBottom: i < Math.min(savedResults.length - 1, 3) ? `1px solid ${C.border}` : 'none',
                   }}>
                     <p style={{
-                      margin: '0 0 3px', fontSize: '12px', color: C.textPrimary,
+                      margin: '0 0 4px', fontSize: '13px', color: C.textPrimary,
                       overflow: 'hidden', textOverflow: 'ellipsis',
                       display: '-webkit-box', WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical', lineHeight: '1.3',
+                      WebkitBoxOrient: 'vertical', lineHeight: '1.4',
+                      fontFamily: SERIF,
                     }}>{r.title}</p>
-                    <p style={{ margin: 0, fontSize: '10px', color: C.textMuted, fontFamily: MONO }}>
+                    <p style={{ margin: 0, fontSize: '11px', color: C.textMuted, fontFamily: MONO }}>
                       {r.citation ?? r.jurisdiction ?? ''}
                     </p>
                   </div>
@@ -1012,22 +975,22 @@ export default function ResearchPage() {
 
               {savedResults.length > 4 && (
                 <button onClick={() => setSavedTab(true)} style={{
-                  background: 'none', border: 'none', color: C.gold,
-                  fontSize: '11px', cursor: 'pointer', padding: '8px 0 0',
-                  letterSpacing: '0.04em',
+                  background: 'none', border: 'none', color: C.blue,
+                  fontSize: '13px', cursor: 'pointer', padding: '10px 0 4px',
+                  fontFamily: SANS, fontWeight: '600',
                 }}>
                   View all {savedResults.length} saved →
                 </button>
               )}
 
               <button onClick={handleExport} style={{
-                marginTop: '10px', width: '100%', padding: '8px',
-                borderRadius: '6px', border: `1px solid ${C.border}`,
+                marginTop: '12px', width: '100%', padding: '10px',
+                border: `1px solid ${C.border}`,
                 background: 'transparent', color: C.textSecondary,
-                fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s',
-                letterSpacing: '0.04em',
+                fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s',
+                fontFamily: SANS, borderRadius: '4px',
               }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.color = C.blue }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary }}
               >
                 {exportMsg ?? '↓ Export Saved Research'}
@@ -1036,15 +999,12 @@ export default function ResearchPage() {
           )}
 
           {/* Research tips */}
-          <div style={{
-            background: C.bgCard, border: `1px solid ${C.border}`,
-            borderRadius: '10px', padding: '18px 20px',
-          }}>
+          <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, padding: '24px' }}>
             <h3 style={{
-              margin: '0 0 12px', fontSize: '12px', fontWeight: '700',
-              color: C.gold, letterSpacing: '0.08em', textTransform: 'uppercase',
+              margin: '0 0 16px', fontSize: '11px', fontWeight: '700',
+              color: C.textSecondary, letterSpacing: '0.1em', textTransform: 'uppercase',
             }}>Research Tips</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[
                 { icon: '⚖', tip: 'Use Case Law for binding precedent and circuit-specific authority.' },
                 { icon: '📜', tip: 'Statute Lookup returns exact code sections with effective dates.' },
@@ -1052,34 +1012,35 @@ export default function ResearchPage() {
                 { icon: '🏛', tip: 'Filter by jurisdiction to get controlling vs. persuasive authority.' },
               ].map((t, i) => (
                 <div key={i} style={{
-                  display: 'flex', gap: '8px', alignItems: 'flex-start',
-                  paddingBottom: '10px',
+                  display: 'flex', gap: '10px', alignItems: 'flex-start',
+                  paddingBottom: '12px',
                   borderBottom: i < 3 ? `1px solid ${C.border}` : 'none',
                 }}>
-                  <span style={{ fontSize: '13px', flexShrink: 0, marginTop: '1px' }}>{t.icon}</span>
-                  <p style={{ margin: 0, fontSize: '11px', color: C.textMuted, lineHeight: '1.5' }}>{t.tip}</p>
+                  <span style={{ fontSize: '14px', flexShrink: 0, marginTop: '2px' }}>{t.icon}</span>
+                  <p style={{ margin: 0, fontSize: '13px', color: C.textMuted, lineHeight: '1.6' }}>{t.tip}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* CourtListener badge */}
+          {/* CourtListener live badge */}
           <div style={{
-            background: 'rgba(34,197,94,0.05)', border: `1px solid rgba(34,197,94,0.15)`,
-            borderRadius: '10px', padding: '14px 16px',
-            display: 'flex', alignItems: 'center', gap: '10px',
+            background: C.verifiedBg, border: `1px solid rgba(34,197,94,0.15)`,
+            padding: '16px 20px',
+            display: 'flex', alignItems: 'center', gap: '12px',
           }}>
             <div style={{
-              width: '8px', height: '8px', borderRadius: '50%',
+              width: '8px', height: '8px',
               background: C.verified, flexShrink: 0,
               animation: 'pulse 2s ease-in-out infinite',
+              borderRadius: '50%',
             }} />
             <div>
-              <p style={{ margin: '0 0 2px', fontSize: '11px', fontWeight: '600', color: C.verified }}>
+              <p style={{ margin: '0 0 3px', fontSize: '12px', fontWeight: '700', color: C.verified }}>
                 Live CourtListener Data
               </p>
-              <p style={{ margin: 0, fontSize: '10px', color: C.textMuted, lineHeight: '1.4' }}>
-                Case law results cross-referenced with real court opinions in real time.
+              <p style={{ margin: 0, fontSize: '12px', color: C.textMuted, lineHeight: '1.5' }}>
+                Case law cross-referenced with real court opinions in real time.
               </p>
             </div>
           </div>
@@ -1087,19 +1048,6 @@ export default function ResearchPage() {
         </div>
       </div>
 
-      <style>{`
-        @keyframes spin    { to { transform: rotate(360deg); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse   { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        * { box-sizing: border-box; }
-        body { margin: 0; background: ${C.bg}; }
-        input::placeholder  { color: #3a3530; }
-        select option       { background: #0a0d1a; color: #e8e0d0; }
-        ::-webkit-scrollbar { width: 7px; }
-        ::-webkit-scrollbar-track  { background: ${C.bg}; }
-        ::-webkit-scrollbar-thumb  { background: ${C.border}; border-radius: 4px; }
-      `}</style>
     </div>
   )
 }

@@ -5,23 +5,29 @@ import Link from 'next/link'
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const C = {
-  bg:        '#05070d',
-  bgCard:    '#0a0d1a',
-  bgInput:   '#080b14',
-  border:    '#1a2035',
-  borderGold:'rgba(212,168,83,0.25)',
-  gold:      '#d4a853',
-  goldDim:   '#a07835',
-  goldGlow:  'rgba(212,168,83,0.12)',
-  goldGlow2: 'rgba(212,168,83,0.06)',
-  textPrimary:   '#e8e0d0',
-  textSecondary: '#8a8070',
-  textMuted:     '#3a3530',
+  bg:           '#000000',
+  bgCard:       '#111111',
+  bgSecondary:  '#0a0a0a',
+  border:       '#222222',
+  borderLight:  '#333333',
+  textPrimary:  '#ffffff',
+  textSecondary:'#888888',
+  textMuted:    '#444444',
+  blue:         '#2563eb',
+  blueHover:    '#1d4ed8',
+  blueGlow:     'rgba(37,99,235,0.15)',
+  blueGlow2:    'rgba(37,99,235,0.08)',
+  verified:     '#22c55e',
+  verifiedBg:   'rgba(34,197,94,0.08)',
+  error:        '#ef4444',
+  errorBg:      'rgba(239,68,68,0.08)',
+  warning:      '#f59e0b',
+  warningBg:    'rgba(245,158,11,0.08)',
 }
 
-const SERIF = '"Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif'
-const SANS  = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-const MONO  = '"SF Mono", "Fira Code", "Courier New", monospace'
+const SERIF = 'Georgia, "Times New Roman", serif'
+const SANS  = 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+const MONO  = '"JetBrains Mono", "SF Mono", "Fira Code", "Courier New", monospace'
 
 const TOOLS_NAV = [
   { path:'/tools/plain-english',          name:'Plain English Translator',  icon:'📖' },
@@ -49,7 +55,7 @@ const CONCERNS = [
   { id: 'regulations',  label: 'Fabricated regulations',       color: '#ef4444' },
   { id: 'jurisdiction', label: 'Jurisdiction errors',          color: '#f59e0b' },
   { id: 'clauses',      label: 'Dangerous contract clauses',   color: '#f59e0b' },
-  { id: 'all',          label: 'All of the above',             color: '#d4a853' },
+  { id: 'all',          label: 'All of the above',             color: '#2563eb' },
 ]
 
 // ─── Live feed data ───────────────────────────────────────────────────────────
@@ -101,30 +107,32 @@ function LiveFeed() {
     <div style={{ animation: 'feedScroll 50s linear infinite' }}>
       {items.map((item, i) => (
         <div key={i} style={{
-          padding: '13px 14px', borderRadius: '8px',
-          background: C.bg, border: `1px solid ${C.border}`,
-          marginBottom: '9px',
+          padding: '14px 16px',
+          background: C.bg,
+          border: `1px solid ${C.border}`,
+          marginBottom: '8px',
         }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ fontSize: '12.5px', fontWeight: '600', color: C.textPrimary, fontFamily: SERIF, lineHeight: '1.3' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '5px' }}>
+            <span style={{ fontSize: '13px', fontWeight: '600', color: C.textPrimary, fontFamily: SERIF, lineHeight: '1.3' }}>
               {item.doc}
             </span>
             <span style={{
               fontSize: '10px', fontWeight: '700',
               color: scoreColor(item.score),
-              padding: '2px 7px', borderRadius: '4px',
+              padding: '2px 7px',
               background: `${scoreColor(item.score)}18`,
               border: `1px solid ${scoreColor(item.score)}38`,
               flexShrink: 0,
+              fontFamily: MONO,
             }}>{item.score}/100</span>
           </div>
-          <p style={{ fontSize: '10.5px', color: C.textMuted, margin: '0 0 5px', fontFamily: MONO }}>
-            📍 {item.loc}
+          <p style={{ fontSize: '11px', color: C.textMuted, margin: '0 0 6px', fontFamily: MONO }}>
+            {item.loc}
           </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{
               width: '5px', height: '5px', borderRadius: '50%', flexShrink: 0,
-              background: item.noteColor, boxShadow: `0 0 4px ${item.noteColor}`,
+              background: item.noteColor,
             }} />
             <span style={{ fontSize: '11px', color: item.noteColor, fontWeight: '500' }}>{item.note}</span>
           </div>
@@ -136,53 +144,119 @@ function LiveFeed() {
 
 // ─── Selectable option button ─────────────────────────────────────────────────
 function OptionButton({ label, selected, onClick, accentColor }) {
-  const [hovered, setHovered] = useState(false)
-  const accent = accentColor || C.gold
+  const accent = accentColor || C.blue
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
-        padding: '14px 16px', borderRadius: '9px',
-        textAlign: 'left', width: '100%',
-        background: selected ? `${accent}14` : hovered ? 'rgba(255,255,255,0.02)' : C.bg,
-        border: `1px solid ${selected ? accent : hovered ? C.borderGold : C.border}`,
-        color: selected ? accent : hovered ? C.textPrimary : C.textSecondary,
-        fontSize: '13px', fontWeight: selected ? '600' : '400',
-        cursor: 'pointer', transition: 'all 0.15s',
-        display: 'flex', alignItems: 'center', gap: '10px',
-        boxShadow: selected ? `0 0 0 1px ${accent}28, inset 0 0 20px ${accent}08` : 'none',
+        padding: '12px 16px',
+        borderRadius: '4px',
+        textAlign: 'left',
+        width: '100%',
+        background: selected ? `rgba(37,99,235,0.08)` : C.bgCard,
+        border: `1px solid ${selected ? C.blue : C.borderLight}`,
+        color: selected ? C.textPrimary : C.textSecondary,
+        fontSize: '15px',
+        fontWeight: selected ? '600' : '400',
+        cursor: 'pointer',
+        transition: 'all 0.15s',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        fontFamily: SANS,
+      }}
+      onMouseEnter={e => {
+        if (!selected) {
+          e.currentTarget.style.borderColor = C.blue
+          e.currentTarget.style.color = C.textPrimary
+        }
+      }}
+      onMouseLeave={e => {
+        if (!selected) {
+          e.currentTarget.style.borderColor = C.borderLight
+          e.currentTarget.style.color = C.textSecondary
+        }
       }}
     >
       <span style={{
         width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0,
-        border: `1.5px solid ${selected ? accent : hovered ? C.borderGold : C.border}`,
+        border: `1.5px solid ${selected ? C.blue : C.borderLight}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: selected ? accent : 'transparent',
+        background: selected ? C.blue : 'transparent',
         transition: 'all 0.15s',
       }}>
-        {selected && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0a0800' }} />}
+        {selected && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#fff' }} />}
       </span>
       {label}
     </button>
   )
 }
 
+// ─── Primary button ───────────────────────────────────────────────────────────
+function PrimaryButton({ children, onClick, disabled, style = {} }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        padding: '14px 24px',
+        borderRadius: '6px',
+        border: 'none',
+        background: disabled ? C.textMuted : C.blue,
+        color: disabled ? C.textSecondary : '#fff',
+        fontSize: '16px',
+        fontWeight: '600',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transition: 'background 0.15s',
+        fontFamily: SANS,
+        ...style,
+      }}
+      onMouseEnter={e => { if (!disabled) e.currentTarget.style.background = C.blueHover }}
+      onMouseLeave={e => { if (!disabled) e.currentTarget.style.background = C.blue }}
+    >{children}</button>
+  )
+}
+
+// ─── Back button ──────────────────────────────────────────────────────────────
+function BackButton({ onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: '14px 18px',
+        borderRadius: '6px',
+        border: `1px solid ${C.borderLight}`,
+        background: 'transparent',
+        color: C.textSecondary,
+        fontSize: '16px',
+        cursor: 'pointer',
+        transition: 'all 0.15s',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: SANS,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = C.textSecondary; e.currentTarget.style.color = C.textPrimary }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = C.borderLight; e.currentTarget.style.color = C.textSecondary }}
+    >←</button>
+  )
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function RequestAccess() {
-  const [toolsOpen, setToolsOpen] = useState(false)
-  const [step, setStep]       = useState(1)          // 1 | 2 | 3 | 'confirmed'
-  const [role, setRole]       = useState('')
-  const [concern, setConcern] = useState('')
-  const [name, setName]       = useState('')
-  const [email, setEmail]     = useState('')
-  const [firm, setFirm]       = useState('')
-  const [position, setPosition]       = useState(0)
-  const [referralCode, setReferralCode] = useState('')
-  const [copied, setCopied]   = useState(false)
-  const [errors, setErrors]   = useState({})
-  const [count, setCount]     = useState(347)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [toolsOpen, setToolsOpen]           = useState(false)
+  const [step, setStep]                     = useState(1)   // 1 | 2 | 3 | 'confirmed'
+  const [role, setRole]                     = useState('')
+  const [concern, setConcern]               = useState('')
+  const [name, setName]                     = useState('')
+  const [email, setEmail]                   = useState('')
+  const [firm, setFirm]                     = useState('')
+  const [position, setPosition]             = useState(0)
+  const [referralCode, setReferralCode]     = useState('')
+  const [copied, setCopied]                 = useState(false)
+  const [errors, setErrors]                 = useState({})
+  const [count, setCount]                   = useState(347)
 
   useEffect(() => {
     const t = setInterval(() => setCount(n => n + 1), 42000 + Math.random() * 20000)
@@ -191,7 +265,7 @@ export default function RequestAccess() {
 
   function handleSubmit() {
     const e = {}
-    if (!name.trim())                        e.name  = 'Your name is required'
+    if (!name.trim())                         e.name  = 'Your name is required'
     if (!email.trim() || !email.includes('@')) e.email = 'A valid work email is required'
     if (Object.keys(e).length) { setErrors(e); return }
     const pos  = 347 + Math.floor(Math.random() * 6) + 1
@@ -218,86 +292,76 @@ export default function RequestAccess() {
     <div style={{ minHeight: '100vh', background: C.bg, color: C.textPrimary, fontFamily: SANS }}>
 
       {/* ── Nav ── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 40px', height: '64px',
-        background: 'rgba(5,7,13,0.94)',
-        backdropFilter: 'blur(18px)',
-        borderBottom: `1px solid ${C.border}`,
-      }}>
-        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '32px', height: '32px', borderRadius: '7px',
-            background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: `0 0 14px ${C.goldGlow}`,
-          }}>
-            <span style={{ fontFamily: SERIF, fontWeight: '700', fontSize: '16px', color: '#0a0800' }}>T</span>
-          </div>
-          <span style={{ fontFamily: SERIF, fontWeight: '700', fontSize: '18px', color: C.textPrimary }}>
-            Trust<span style={{ color: C.gold }}>Layer</span>
-          </span>
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link href="/" style={{
-            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-            letterSpacing: '0.04em', transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
-          >Verify</Link>
-          <Link href="/research" style={{
-            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-            letterSpacing: '0.04em', transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
-          >Research</Link>
+      <nav className="tl-nav" style={{ position:'sticky', top:0, zIndex:100, background:'#000', borderBottom:'1px solid #222', height:'64px', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 40px' }}>
+        <Link href="/" style={{ textDecoration:'none', fontSize:'22px', fontFamily:SERIF, fontWeight:'700', color:'#fff', letterSpacing:'-0.02em' }}>TrustLayer</Link>
+        <div className="tl-nav-links" style={{ display:'flex', gap:'32px', alignItems:'center' }}>
+          {[['/', 'Verify'],['/research','Research']].map(([href,label]) => (
+            <Link key={href} href={href} style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+              onMouseEnter={e=>e.currentTarget.style.color='#2563eb'}
+              onMouseLeave={e=>e.currentTarget.style.color='#fff'}
+            >{label}</Link>
+          ))}
           {/* Tools dropdown */}
-          <div style={{ position:'relative' }}
-            onMouseEnter={() => setToolsOpen(true)}
-            onMouseLeave={() => setToolsOpen(false)}
-          >
-            <Link href="/tools" style={{ fontSize:'13px', color:C.textSecondary, textDecoration:'none', letterSpacing:'0.04em', display:'flex', alignItems:'center', gap:'3px', transition:'color 0.2s' }}
-              onMouseEnter={e => e.currentTarget.style.color = C.gold}
-              onMouseLeave={e => e.currentTarget.style.color = C.textSecondary}
-            >
-              Tools <span style={{ fontSize:'9px', opacity:0.7 }}>▾</span>
-            </Link>
+          <div style={{ position:'relative' }} onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}>
+            <Link href="/tools" style={{ fontSize:'14px', color:'#fff', textDecoration:'none', display:'flex', alignItems:'center', gap:'3px', transition:'color 0.15s' }}
+              onMouseEnter={e=>e.currentTarget.style.color='#2563eb'}
+              onMouseLeave={e=>e.currentTarget.style.color='#fff'}
+            >Tools <span style={{ fontSize:'9px', opacity:0.6 }}>▾</span></Link>
             {toolsOpen && (
-              <div style={{ position:'absolute', top:'calc(100% + 10px)', left:'-10px', background:C.bgCard, border:`1px solid ${C.borderGold}`, borderRadius:'10px', padding:'8px 6px', minWidth:'236px', boxShadow:'0 8px 32px rgba(0,0,0,0.5)', zIndex:200, animation:'fadeIn 0.15s ease' }}>
+              <div style={{ position:'absolute', top:'calc(100% + 10px)', left:'-10px', background:'#111', border:'1px solid #222', borderRadius:'6px', padding:'8px 6px', minWidth:'240px', boxShadow:'0 8px 32px rgba(0,0,0,0.8)', zIndex:200, animation:'fadeIn 0.15s ease' }}>
                 {TOOLS_NAV.map(t => (
-                  <Link key={t.path} href={t.path} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'8px 10px', borderRadius:'6px', textDecoration:'none', transition:'background 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.background=C.goldGlow2}
+                  <Link key={t.path} href={t.path} style={{ display:'flex', alignItems:'center', gap:'10px', padding:'9px 10px', borderRadius:'4px', textDecoration:'none' }}
+                    onMouseEnter={e => e.currentTarget.style.background='rgba(37,99,235,0.1)'}
                     onMouseLeave={e => e.currentTarget.style.background='transparent'}
                   >
                     <span style={{ fontSize:'14px', width:'20px', textAlign:'center' }}>{t.icon}</span>
-                    <span style={{ fontSize:'12px', color:C.textSecondary }}>{t.name}</span>
+                    <span style={{ fontSize:'13px', color:'#888' }}>{t.name}</span>
                   </Link>
                 ))}
-                <div style={{ borderTop:`1px solid ${C.border}`, margin:'5px 4px' }} />
-                <Link href="/tools" style={{ display:'block', textAlign:'center', padding:'7px 10px', borderRadius:'6px', textDecoration:'none', fontSize:'11px', color:C.gold, fontWeight:'600', background:C.goldGlow2, border:`1px solid ${C.borderGold}` }}>View All Tools →</Link>
+                <div style={{ borderTop:'1px solid #222', margin:'5px 4px' }} />
+                <Link href="/tools" style={{ display:'block', textAlign:'center', padding:'8px 10px', borderRadius:'4px', fontSize:'12px', color:'#2563eb', fontWeight:'600', textDecoration:'none' }}>View All Tools →</Link>
               </div>
             )}
           </div>
-          <Link href="/enterprise" style={{
-            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-            letterSpacing: '0.04em', transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => e.target.style.color = C.gold}
-            onMouseLeave={e => e.target.style.color = C.textSecondary}
+          <Link href="/enterprise" style={{ fontSize:'14px', color:'#fff', textDecoration:'none', transition:'color 0.15s' }}
+            onMouseEnter={e=>e.currentTarget.style.color='#2563eb'}
+            onMouseLeave={e=>e.currentTarget.style.color='#fff'}
           >Enterprise</Link>
+          <Link href="/request-access" style={{ background:'#2563eb', color:'#fff', padding:'9px 22px', borderRadius:'6px', fontSize:'14px', fontWeight:'600', textDecoration:'none', transition:'background 0.15s' }}
+            onMouseEnter={e=>e.currentTarget.style.background='#1d4ed8'}
+            onMouseLeave={e=>e.currentTarget.style.background='#2563eb'}
+          >Request Access</Link>
         </div>
+        <button className="tl-hamburger" style={{ display:'none', background:'none', border:'none', color:'#fff', fontSize:'22px', cursor:'pointer', padding:'8px' }} onClick={() => setMobileMenuOpen(v => !v)}>
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
       </nav>
 
+      {/* Mobile overlay */}
+      {mobileMenuOpen && <div style={{ position:'fixed', inset:0, zIndex:149, background:'rgba(0,0,0,0.6)' }} onClick={() => setMobileMenuOpen(false)} />}
+
+      {/* Mobile drawer */}
+      <div style={{ position:'fixed', top:0, right:0, width:'280px', height:'100vh', background:'#000', borderLeft:'1px solid #222', zIndex:150, transform:mobileMenuOpen?'translateX(0)':'translateX(100%)', transition:'transform 0.25s ease', display:'flex', flexDirection:'column', padding:'72px 24px 40px', gap:'4px' }}>
+        {[['/', 'Verify'],['/research','Research'],['/enterprise','Enterprise']].map(([href,label]) => (
+          <Link key={href} href={href} style={{ display:'block', padding:'12px 8px', fontSize:'16px', color:'#fff', textDecoration:'none', borderBottom:'1px solid #111' }}>{label}</Link>
+        ))}
+        <div style={{ padding:'8px 0 4px', fontSize:'12px', color:'#444', letterSpacing:'0.08em', textTransform:'uppercase' }}>Tools</div>
+        {TOOLS_NAV.map(t => (
+          <Link key={t.path} href={t.path} style={{ display:'flex', gap:'10px', alignItems:'center', padding:'10px 8px', fontSize:'14px', color:'#888', textDecoration:'none' }}>
+            <span>{t.icon}</span><span>{t.name}</span>
+          </Link>
+        ))}
+        <Link href="/request-access" style={{ marginTop:'auto', background:'#2563eb', color:'#fff', padding:'14px 20px', borderRadius:'6px', textDecoration:'none', fontSize:'15px', fontWeight:'600', textAlign:'center', display:'block' }}>Request Access</Link>
+      </div>
+
       {/* ── Two-column layout ── */}
-      <div style={{
-        maxWidth: '1160px', margin: '0 auto',
-        padding: '64px 24px 96px',
+      <div className="tl-2col tl-section-pad" style={{
+        maxWidth: '1160px',
+        margin: '0 auto',
+        padding: '72px 40px 96px',
         display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1fr) 348px',
-        gap: '52px',
+        gridTemplateColumns: 'minmax(0, 1fr) 340px',
+        gap: '56px',
         alignItems: 'start',
       }}>
 
@@ -305,27 +369,22 @@ export default function RequestAccess() {
         <div>
 
           {/* Hero */}
-          <div style={{ marginBottom: '44px', position: 'relative' }}>
-            <div style={{
-              position: 'absolute', top: '-80px', left: '-60px',
-              width: '500px', height: '400px',
-              background: 'radial-gradient(ellipse at 30% 40%, rgba(212,168,83,0.07) 0%, transparent 60%)',
-              pointerEvents: 'none',
-            }} />
+          <div style={{ marginBottom: '48px' }}>
 
             {/* Badge */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
-              padding: '6px 14px', borderRadius: '999px',
-              background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
-              fontSize: '11px', color: C.gold, fontWeight: '700',
+              padding: '6px 14px',
+              background: C.blueGlow2,
+              border: `1px solid rgba(37,99,235,0.3)`,
+              fontSize: '11px', color: C.blue, fontWeight: '700',
               letterSpacing: '0.1em', textTransform: 'uppercase',
               marginBottom: '28px',
             }}>
               <span style={{
                 width: '5px', height: '5px', borderRadius: '50%',
-                background: C.gold, boxShadow: `0 0 6px ${C.gold}`,
-                animation: 'pulseGlow 1.8s ease-in-out infinite',
+                background: C.blue,
+                animation: 'pulse 1.8s ease-in-out infinite',
               }} />
               Early Access — Invitation Required
             </div>
@@ -333,23 +392,26 @@ export default function RequestAccess() {
             {/* Headline */}
             <h1 style={{
               fontFamily: SERIF,
-              fontSize: 'clamp(34px, 3.8vw, 54px)',
+              fontSize: 'clamp(32px, 3.8vw, 52px)',
               fontWeight: '700',
-              lineHeight: '1.09',
+              lineHeight: '1.1',
               letterSpacing: '-0.01em',
               color: C.textPrimary,
-              margin: '0 0 22px',
-              maxWidth: '600px',
+              margin: '0 0 20px',
+              maxWidth: '580px',
             }}>
               Join Legal Professionals<br />
               Who Never Trust<br />
-              <span style={{ color: C.gold }}>AI Blindly Again</span>
+              <span style={{ color: C.blue }}>AI Blindly Again</span>
             </h1>
 
             <p style={{
-              fontFamily: SERIF, fontStyle: 'italic',
-              fontSize: '17px', color: C.textSecondary,
-              lineHeight: '1.72', margin: '0 0 36px',
+              fontFamily: SERIF,
+              fontStyle: 'italic',
+              fontSize: '17px',
+              color: C.textSecondary,
+              lineHeight: '1.7',
+              margin: '0 0 36px',
               maxWidth: '500px',
             }}>
               TrustLayer catches fabricated citations, obsolete statutes, and impossible legal claims — before they reach a client or a courtroom.
@@ -358,32 +420,32 @@ export default function RequestAccess() {
             {/* Live counter */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '20px',
-              padding: '18px 26px', borderRadius: '12px',
-              background: C.bgCard, border: `1px solid ${C.border}`,
-              boxShadow: `0 0 0 1px rgba(212,168,83,0.06)`,
+              padding: '18px 24px',
+              background: C.bgCard,
+              border: `1px solid ${C.border}`,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{
-                  width: '9px', height: '9px', borderRadius: '50%',
-                  background: '#22c55e', boxShadow: '0 0 10px #22c55e',
-                  animation: 'pulseGlow 1.8s ease-in-out infinite',
+                  width: '8px', height: '8px', borderRadius: '50%',
+                  background: C.verified,
+                  animation: 'pulse 1.8s ease-in-out infinite',
                 }} />
                 <div>
                   <div style={{
-                    fontFamily: SERIF, fontSize: '28px', fontWeight: '700',
-                    color: C.gold, lineHeight: 1,
+                    fontFamily: SERIF, fontSize: '30px', fontWeight: '700',
+                    color: C.textPrimary, lineHeight: 1,
                   }}>
                     <AnimatedCounter target={count} />
                   </div>
-                  <div style={{ fontSize: '11.5px', color: C.textSecondary, marginTop: '2px', letterSpacing: '0.04em' }}>
+                  <div style={{ fontSize: '12px', color: C.textSecondary, marginTop: '3px', letterSpacing: '0.04em' }}>
                     attorneys on the waitlist
                   </div>
                 </div>
               </div>
               <div style={{ width: '1px', height: '40px', background: C.border }} />
-              <div style={{ fontSize: '12px', color: C.textSecondary, lineHeight: '1.65' }}>
+              <div style={{ fontSize: '13px', color: C.textSecondary, lineHeight: '1.65' }}>
                 <div><span style={{ color: C.textPrimary, fontWeight: '600' }}>Avg. wait:</span> 9 days</div>
-                <div><span style={{ color: C.gold, fontWeight: '600' }}>Priority access</span> via referral</div>
+                <div><span style={{ color: C.blue, fontWeight: '600' }}>Priority access</span> via referral</div>
               </div>
             </div>
           </div>
@@ -393,16 +455,14 @@ export default function RequestAccess() {
             <div style={{
               background: C.bgCard,
               border: `1px solid ${C.border}`,
-              borderRadius: '16px',
               overflow: 'hidden',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.3)',
             }}>
 
               {/* Step progress */}
               <div style={{
                 padding: '20px 28px',
                 borderBottom: `1px solid ${C.border}`,
-                background: 'rgba(212,168,83,0.03)',
+                background: C.bgSecondary,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   {STEP_META.map((s, i) => (
@@ -410,27 +470,27 @@ export default function RequestAccess() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <div style={{
                           width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0,
-                          background: step > s.n ? '#22c55e' : step === s.n ? C.gold : 'transparent',
-                          border: `1.5px solid ${step > s.n ? '#22c55e' : step === s.n ? C.gold : C.border}`,
-                          color: step >= s.n ? '#0a0800' : C.textMuted,
+                          background: step > s.n ? C.verified : step === s.n ? C.blue : '#222222',
+                          border: `1.5px solid ${step > s.n ? C.verified : step === s.n ? C.blue : '#333333'}`,
+                          color: step >= s.n ? '#fff' : C.textMuted,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: '11px', fontWeight: '700',
-                          transition: 'all 0.35s',
+                          transition: 'all 0.3s',
                         }}>
                           {step > s.n ? '✓' : s.n}
                         </div>
                         <span style={{
                           fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap',
-                          color: step === s.n ? C.gold : step > s.n ? C.textSecondary : C.textMuted,
-                          transition: 'color 0.35s',
+                          color: step === s.n ? C.textPrimary : step > s.n ? C.textSecondary : C.textMuted,
+                          transition: 'color 0.3s',
                         }}>{s.label}</span>
                       </div>
                       {i < 2 && (
                         <div style={{
                           flex: 1, height: '1px',
-                          background: step > s.n ? '#22c55e40' : C.border,
+                          background: step > s.n ? `${C.verified}40` : C.border,
                           margin: '0 12px',
-                          transition: 'background 0.35s',
+                          transition: 'background 0.3s',
                         }} />
                       )}
                     </div>
@@ -438,29 +498,28 @@ export default function RequestAccess() {
                 </div>
               </div>
 
-              <div style={{ padding: '36px 32px' }}>
+              <div className="tl-card-pad" style={{ padding: '36px 32px' }}>
 
                 {/* ── Step 1 ── */}
                 {step === 1 && (
                   <div>
-                    <h2 style={{ fontFamily: SERIF, fontSize: '23px', fontWeight: '600', color: C.textPrimary, margin: '0 0 8px' }}>
+                    <h2 style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary, margin: '0 0 8px' }}>
                       What type of legal professional are you?
                     </h2>
-                    <p style={{ fontSize: '14px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 28px' }}>
+                    <p style={{ fontSize: '15px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 28px' }}>
                       We tailor TrustLayer's analysis focus to your specific practice area and document types.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px', marginBottom: '28px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '28px' }}>
                       {ROLES.map(r => (
                         <OptionButton
                           key={r.id}
                           label={r.label}
                           selected={role === r.id}
                           onClick={() => setRole(r.id)}
-                          accentColor={C.gold}
                         />
                       ))}
                     </div>
-                    <PrimaryButton disabled={!role} onClick={() => role && setStep(2)}>
+                    <PrimaryButton className="tl-btn-full" disabled={!role} onClick={() => role && setStep(2)} style={{ width: '100%' }}>
                       Continue →
                     </PrimaryButton>
                   </div>
@@ -469,20 +528,19 @@ export default function RequestAccess() {
                 {/* ── Step 2 ── */}
                 {step === 2 && (
                   <div>
-                    <h2 style={{ fontFamily: SERIF, fontSize: '23px', fontWeight: '600', color: C.textPrimary, margin: '0 0 8px' }}>
+                    <h2 style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary, margin: '0 0 8px' }}>
                       What's your biggest AI concern?
                     </h2>
-                    <p style={{ fontSize: '14px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 28px' }}>
+                    <p style={{ fontSize: '15px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 28px' }}>
                       This will be highlighted first in every verification report you run.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px', marginBottom: '28px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '28px' }}>
                       {CONCERNS.map(c => (
                         <OptionButton
                           key={c.id}
                           label={c.label}
                           selected={concern === c.id}
                           onClick={() => setConcern(c.id)}
-                          accentColor={c.color}
                         />
                       ))}
                     </div>
@@ -498,17 +556,17 @@ export default function RequestAccess() {
                 {/* ── Step 3 ── */}
                 {step === 3 && (
                   <div>
-                    <h2 style={{ fontFamily: SERIF, fontSize: '23px', fontWeight: '600', color: C.textPrimary, margin: '0 0 8px' }}>
+                    <h2 style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary, margin: '0 0 8px' }}>
                       Secure your spot on the waitlist.
                     </h2>
-                    <p style={{ fontSize: '14px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 28px' }}>
+                    <p style={{ fontSize: '15px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.6', margin: '0 0 28px' }}>
                       We personally review each application to ensure TrustLayer stays built for serious practitioners.
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '28px' }}>
                       {[
-                        { key: 'name',  label: 'Full Name',           placeholder: 'Margaret Chen',          value: name,  set: setName,  type: 'text' },
-                        { key: 'email', label: 'Work Email',          placeholder: 'mchen@chenvoss.com',     value: email, set: setEmail, type: 'email' },
-                        { key: 'firm',  label: 'Firm / Organization', placeholder: 'Chen & Voss LLP',        value: firm,  set: setFirm,  type: 'text', optional: true },
+                        { key: 'name',  label: 'Full Name',           placeholder: 'Margaret Chen',      value: name,  set: setName,  type: 'text' },
+                        { key: 'email', label: 'Work Email',          placeholder: 'mchen@chenvoss.com', value: email, set: setEmail, type: 'email' },
+                        { key: 'firm',  label: 'Firm / Organization', placeholder: 'Chen & Voss LLP',    value: firm,  set: setFirm,  type: 'text', optional: true },
                       ].map(f => (
                         <div key={f.key}>
                           <label style={{
@@ -518,7 +576,7 @@ export default function RequestAccess() {
                             color: C.textSecondary,
                           }}>
                             {f.label}
-                            {!f.optional && <span style={{ color: '#ef4444', marginLeft: '3px' }}>*</span>}
+                            {!f.optional && <span style={{ color: C.error, marginLeft: '3px' }}>*</span>}
                             {f.optional && <span style={{ color: C.textMuted, fontWeight: '400', textTransform: 'none', letterSpacing: 0, marginLeft: '6px', fontSize: '11px' }}>optional</span>}
                           </label>
                           <input
@@ -530,18 +588,23 @@ export default function RequestAccess() {
                             }}
                             placeholder={f.placeholder}
                             style={{
-                              width: '100%', padding: '13px 16px', borderRadius: '8px',
-                              background: C.bgInput,
-                              border: `1px solid ${errors[f.key] ? '#ef4444' : C.border}`,
-                              color: C.textPrimary, fontSize: '14px',
-                              outline: 'none', fontFamily: SANS,
-                              boxSizing: 'border-box', transition: 'border-color 0.2s',
+                              width: '100%',
+                              padding: '12px 14px',
+                              borderRadius: '4px',
+                              background: C.bgSecondary,
+                              border: `1px solid ${errors[f.key] ? C.error : C.borderLight}`,
+                              color: C.textPrimary,
+                              fontSize: '16px',
+                              outline: 'none',
+                              fontFamily: SANS,
+                              boxSizing: 'border-box',
+                              transition: 'border-color 0.15s',
                             }}
-                            onFocus={e => e.target.style.borderColor = C.borderGold}
-                            onBlur={e => e.target.style.borderColor = errors[f.key] ? '#ef4444' : C.border}
+                            onFocus={e => e.target.style.borderColor = C.blue}
+                            onBlur={e => e.target.style.borderColor = errors[f.key] ? C.error : C.borderLight}
                           />
                           {errors[f.key] && (
-                            <p style={{ fontSize: '12px', color: '#ef4444', margin: '5px 0 0' }}>{errors[f.key]}</p>
+                            <p style={{ fontSize: '13px', color: C.error, margin: '5px 0 0' }}>{errors[f.key]}</p>
                           )}
                         </div>
                       ))}
@@ -552,7 +615,7 @@ export default function RequestAccess() {
                         Join the Waitlist
                       </PrimaryButton>
                     </div>
-                    <p style={{ fontSize: '12px', color: C.textMuted, textAlign: 'center', margin: '14px 0 0', lineHeight: '1.5' }}>
+                    <p style={{ fontSize: '13px', color: C.textMuted, textAlign: 'center', margin: '14px 0 0', lineHeight: '1.5' }}>
                       No payment required. We'll send your activation link within 48 hours.
                     </p>
                   </div>
@@ -564,26 +627,22 @@ export default function RequestAccess() {
 
           {/* ── Confirmation screen ── */}
           {step === 'confirmed' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'slideUp 0.4s ease' }}>
 
               {/* Position card */}
               <div style={{
-                background: C.bgCard, border: `1px solid ${C.borderGold}`,
-                borderRadius: '16px', padding: '44px 40px',
-                textAlign: 'center', position: 'relative', overflow: 'hidden',
-                boxShadow: '0 0 80px rgba(212,168,83,0.07), 0 24px 64px rgba(0,0,0,0.3)',
+                background: C.bgCard,
+                border: `1px solid rgba(34,197,94,0.4)`,
+                padding: '44px 40px',
+                textAlign: 'center',
+                position: 'relative',
+                overflow: 'hidden',
               }}>
                 <div style={{
-                  position: 'absolute', top: '-80px', left: '50%', transform: 'translateX(-50%)',
-                  width: '500px', height: '300px',
-                  background: 'radial-gradient(ellipse, rgba(212,168,83,0.12) 0%, transparent 65%)',
-                  pointerEvents: 'none',
-                }} />
-                <div style={{
                   width: '60px', height: '60px', borderRadius: '50%',
-                  background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
+                  background: C.verifiedBg, border: '1px solid rgba(34,197,94,0.3)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  margin: '0 auto 20px', fontSize: '26px', color: '#22c55e',
+                  margin: '0 auto 20px', fontSize: '26px', color: C.verified,
                 }}>✓</div>
                 <p style={{
                   fontSize: '11px', fontWeight: '700', letterSpacing: '0.14em',
@@ -591,11 +650,10 @@ export default function RequestAccess() {
                 }}>Your Waitlist Position</p>
                 <div style={{
                   fontFamily: SERIF, fontSize: '88px', fontWeight: '700',
-                  color: C.gold, lineHeight: 1, margin: '0 0 6px',
-                  textShadow: '0 0 60px rgba(212,168,83,0.25)',
+                  color: C.textPrimary, lineHeight: 1, margin: '0 0 6px',
                 }}>#{position}</div>
                 <p style={{
-                  fontSize: '15px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic',
+                  fontSize: '16px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic',
                   lineHeight: '1.7', margin: '0 0 28px', maxWidth: '420px', marginLeft: 'auto', marginRight: 'auto',
                 }}>
                   You're on the list, {name.split(' ')[0]}. We'll notify you at{' '}
@@ -609,7 +667,7 @@ export default function RequestAccess() {
                     { v: '50K+', l: 'Docs verified' },
                   ].map((s, i) => (
                     <div key={i} style={{ textAlign: 'center' }}>
-                      <div style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.gold }}>{s.v}</div>
+                      <div style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary }}>{s.v}</div>
                       <div style={{ fontSize: '11px', color: C.textMuted, marginTop: '2px' }}>{s.l}</div>
                     </div>
                   ))}
@@ -618,30 +676,34 @@ export default function RequestAccess() {
 
               {/* Skip the line */}
               <div style={{
-                background: C.bgCard, border: `1px solid ${C.border}`,
-                borderRadius: '12px', padding: '26px 28px',
+                background: C.bgCard,
+                border: `1px solid ${C.border}`,
+                padding: '26px 28px',
               }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '16px' }}>
                   <div style={{
-                    width: '38px', height: '38px', borderRadius: '8px', flexShrink: 0,
-                    background: C.goldGlow, border: `1px solid ${C.borderGold}`,
+                    width: '38px', height: '38px', flexShrink: 0,
+                    background: C.blueGlow2,
+                    border: `1px solid rgba(37,99,235,0.3)`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '18px',
                   }}>⚡</div>
                   <div>
-                    <h3 style={{ fontFamily: SERIF, fontSize: '18px', fontWeight: '600', color: C.textPrimary, margin: '0 0 5px' }}>
+                    <h3 style={{ fontFamily: SERIF, fontSize: '18px', fontWeight: '700', color: C.textPrimary, margin: '0 0 5px' }}>
                       Skip the line
                     </h3>
-                    <p style={{ fontSize: '13px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.6', margin: 0 }}>
-                      Share your referral link. Each signup moves you up <span style={{ color: C.gold, fontWeight: '600' }}>3 positions</span>.
+                    <p style={{ fontSize: '14px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.6', margin: 0 }}>
+                      Share your referral link. Each signup moves you up <span style={{ color: C.blue, fontWeight: '600' }}>3 positions</span>.
                     </p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <div style={{
-                    flex: 1, padding: '12px 14px', borderRadius: '7px',
-                    background: C.bgInput, border: `1px solid ${C.border}`,
-                    fontSize: '13px', color: C.gold, fontFamily: MONO,
+                    flex: 1,
+                    padding: '12px 14px',
+                    background: C.bgSecondary,
+                    border: `1px solid ${C.border}`,
+                    fontSize: '13px', color: C.blue, fontFamily: MONO,
                     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
                     userSelect: 'all',
                   }}>
@@ -650,13 +712,16 @@ export default function RequestAccess() {
                   <button
                     onClick={copyLink}
                     style={{
-                      padding: '12px 20px', borderRadius: '7px', cursor: 'pointer',
-                      background: copied ? 'rgba(34,197,94,0.1)' : C.goldGlow,
-                      border: `1px solid ${copied ? 'rgba(34,197,94,0.3)' : C.borderGold}`,
-                      color: copied ? '#22c55e' : C.gold,
+                      padding: '12px 20px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      background: copied ? C.verifiedBg : C.blueGlow2,
+                      border: `1px solid ${copied ? 'rgba(34,197,94,0.3)' : 'rgba(37,99,235,0.3)'}`,
+                      color: copied ? C.verified : C.blue,
                       fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em',
                       textTransform: 'uppercase', whiteSpace: 'nowrap',
                       transition: 'all 0.2s',
+                      fontFamily: SANS,
                     }}
                   >{copied ? '✓ Copied!' : 'Copy Link'}</button>
                 </div>
@@ -664,34 +729,32 @@ export default function RequestAccess() {
 
               {/* PDF download */}
               <div style={{
-                padding: '26px 28px', borderRadius: '12px',
-                background: 'linear-gradient(135deg, rgba(212,168,83,0.07) 0%, rgba(212,168,83,0.02) 100%)',
-                border: `1px solid ${C.gold}`,
+                padding: '26px 28px',
+                background: C.bgCard,
+                border: `1px solid ${C.blue}`,
                 display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap',
-                boxShadow: '0 0 40px rgba(212,168,83,0.06)',
               }}>
                 <div style={{
-                  width: '54px', height: '64px', borderRadius: '8px', flexShrink: 0,
-                  background: `linear-gradient(160deg, ${C.gold} 0%, ${C.goldDim} 100%)`,
+                  width: '54px', height: '64px', flexShrink: 0,
+                  background: C.blueGlow2,
+                  border: `1px solid rgba(37,99,235,0.3)`,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: `0 6px 24px rgba(212,168,83,0.3)`,
-                  position: 'relative',
                 }}>
                   <span style={{ fontSize: '22px', lineHeight: 1 }}>📄</span>
-                  <span style={{ fontSize: '9px', fontWeight: '800', color: '#0a0800', letterSpacing: '0.05em', marginTop: '2px' }}>PDF</span>
+                  <span style={{ fontSize: '9px', fontWeight: '800', color: C.blue, letterSpacing: '0.05em', marginTop: '2px' }}>PDF</span>
                 </div>
                 <div style={{ flex: 1, minWidth: '180px' }}>
                   <p style={{
                     fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em',
-                    textTransform: 'uppercase', color: C.gold, margin: '0 0 5px',
+                    textTransform: 'uppercase', color: C.blue, margin: '0 0 5px',
                   }}>Free Report — 24 Pages</p>
                   <h4 style={{
-                    fontFamily: SERIF, fontSize: '16px', fontWeight: '600',
+                    fontFamily: SERIF, fontSize: '16px', fontWeight: '700',
                     color: C.textPrimary, margin: '0 0 4px', lineHeight: '1.3',
                   }}>
                     The 10 Most Dangerous AI Hallucinations in Legal Documents
                   </h4>
-                  <p style={{ fontSize: '12px', color: C.textSecondary, margin: 0 }}>
+                  <p style={{ fontSize: '13px', color: C.textSecondary, margin: 0 }}>
                     Real case studies. Actual hallucinations caught by TrustLayer.
                   </p>
                 </div>
@@ -700,16 +763,17 @@ export default function RequestAccess() {
                   onClick={e => e.preventDefault()}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: '7px',
-                    padding: '13px 22px', borderRadius: '8px',
-                    background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
-                    color: '#0a0800', fontSize: '12px', fontWeight: '700',
-                    letterSpacing: '0.06em', textTransform: 'uppercase',
+                    padding: '13px 22px',
+                    borderRadius: '6px',
+                    background: C.blue,
+                    color: '#fff', fontSize: '13px', fontWeight: '700',
+                    letterSpacing: '0.05em', textTransform: 'uppercase',
                     textDecoration: 'none', whiteSpace: 'nowrap',
-                    boxShadow: '0 4px 22px rgba(212,168,83,0.32)',
-                    transition: 'transform 0.15s, box-shadow 0.15s',
+                    transition: 'background 0.15s',
+                    fontFamily: SANS,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 7px 30px rgba(212,168,83,0.48)' }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 22px rgba(212,168,83,0.32)' }}
+                  onMouseEnter={e => e.currentTarget.style.background = C.blueHover}
+                  onMouseLeave={e => e.currentTarget.style.background = C.blue}
                 >
                   ↓ Download Free
                 </a>
@@ -720,53 +784,54 @@ export default function RequestAccess() {
         </div>
 
         {/* ════════ RIGHT COLUMN — Live feed ════════ */}
-        <div style={{
+        <div className="tl-hide-mobile" style={{
           position: 'sticky', top: '80px',
-          background: C.bgCard, border: `1px solid ${C.border}`,
-          borderRadius: '16px', overflow: 'hidden',
-          height: 'calc(100vh - 112px)', maxHeight: '700px',
+          background: C.bgCard,
+          border: `1px solid ${C.border}`,
+          overflow: 'hidden',
+          height: 'calc(100vh - 112px)',
+          maxHeight: '700px',
           display: 'flex', flexDirection: 'column',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.25)',
         }}>
 
           {/* Feed header */}
           <div style={{
-            padding: '18px 20px',
+            padding: '16px 20px',
             borderBottom: `1px solid ${C.border}`,
-            background: 'rgba(212,168,83,0.03)',
+            background: C.bgSecondary,
             flexShrink: 0,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
               <div style={{
                 width: '7px', height: '7px', borderRadius: '50%',
-                background: '#22c55e', boxShadow: '0 0 8px #22c55e',
-                animation: 'pulseGlow 1.8s ease-in-out infinite',
+                background: C.verified,
+                animation: 'pulse 1.8s ease-in-out infinite',
               }} />
               <span style={{
                 fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em',
                 textTransform: 'uppercase', color: C.textPrimary,
               }}>Live Verifications</span>
             </div>
-            <p style={{ fontSize: '11px', color: C.textSecondary, margin: 0 }}>
+            <p style={{ fontSize: '12px', color: C.textSecondary, margin: 0 }}>
               Real-time analysis from attorneys worldwide
             </p>
           </div>
 
           {/* Top fade */}
           <div style={{
-            position: 'absolute', top: '64px', left: 0, right: 0, height: '28px',
+            position: 'absolute', top: '60px', left: 0, right: 0, height: '24px',
             background: `linear-gradient(to bottom, ${C.bgCard} 0%, transparent 100%)`,
             zIndex: 2, pointerEvents: 'none',
           }} />
 
           {/* Scrolling feed */}
-          <div style={{ flex: 1, overflow: 'hidden', padding: '8px 14px' }}>
+          <div style={{ flex: 1, overflow: 'hidden', padding: '8px 12px' }}>
             <LiveFeed />
           </div>
 
           {/* Bottom fade */}
           <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0, height: '44px',
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px',
             background: `linear-gradient(to top, ${C.bgCard} 0%, transparent 100%)`,
             zIndex: 2, pointerEvents: 'none',
           }} />
@@ -788,70 +853,38 @@ export default function RequestAccess() {
           '◉  SOC 2 Type II in progress',
           '✓  No data sold or shared',
         ].map((t, i) => (
-          <span key={i} style={{ fontSize: '12px', color: C.textSecondary }}>
+          <span key={i} style={{ fontSize: '13px', color: C.textSecondary }}>
             {t}
           </span>
         ))}
       </div>
 
       <style>{`
-        @keyframes pulseGlow { 0%, 100% { opacity: 1; box-shadow: 0 0 8px currentColor; } 50% { opacity: 0.55; box-shadow: 0 0 3px currentColor; } }
-        @keyframes feedScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         * { box-sizing: border-box; }
-        body { margin: 0; background: #05070d; }
-        input::placeholder { color: #3a3530; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #05070d; }
-        ::-webkit-scrollbar-thumb { background: #1a2035; border-radius: 4px; }
+        @media (max-width: 768px) {
+          .tl-nav-links { display: none !important; }
+          .tl-hamburger { display: flex !important; align-items: center; }
+          .tl-2col { grid-template-columns: 1fr !important; }
+          .tl-3col { grid-template-columns: 1fr !important; }
+          .tl-section-pad { padding-left: 20px !important; padding-right: 20px !important; padding-top: 56px !important; padding-bottom: 56px !important; }
+          .tl-card-pad { padding: 20px !important; }
+          .tl-btn-full { width: 100% !important; }
+          .tl-nav { padding: 0 20px !important; }
+          .tl-hide-mobile { display: none !important; }
+          .tl-tool-grid { grid-template-columns: 1fr !important; }
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes spin { to { transform: rotate(360deg) } }
+        @keyframes pulse { 0%,100% { opacity:0.3 } 50% { opacity:0.7 } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+        @keyframes feedScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        ::selection { background: rgba(37,99,235,0.4); color: #fff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        body { margin: 0; background: #000; }
+        input::placeholder { color: #444; }
       `}</style>
     </div>
-  )
-}
-
-// ─── Shared button components ─────────────────────────────────────────────────
-function PrimaryButton({ children, onClick, disabled, style = {} }) {
-  const [hovered, setHovered] = useState(false)
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      onMouseEnter={() => !disabled && setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        padding: '14px 24px', borderRadius: '8px', border: 'none',
-        background: disabled
-          ? '#1a2035'
-          : hovered
-          ? `linear-gradient(135deg, #e0b860, #b08840)`
-          : `linear-gradient(135deg, #d4a853, #a07835)`,
-        color: disabled ? '#3a3530' : '#0a0800',
-        fontSize: '14px', fontWeight: '700',
-        letterSpacing: '0.06em', textTransform: 'uppercase',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        transition: 'all 0.2s',
-        boxShadow: disabled ? 'none' : hovered ? '0 6px 28px rgba(212,168,83,0.45)' : '0 4px 20px rgba(212,168,83,0.28)',
-        transform: hovered && !disabled ? 'translateY(-1px)' : 'translateY(0)',
-        ...style,
-      }}
-    >{children}</button>
-  )
-}
-
-function BackButton({ onClick }) {
-  const [hovered, setHovered] = useState(false)
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        padding: '14px 18px', borderRadius: '8px',
-        border: `1px solid ${hovered ? 'rgba(212,168,83,0.25)' : '#1a2035'}`,
-        background: 'transparent',
-        color: hovered ? '#d4a853' : '#8a8070',
-        fontSize: '16px', cursor: 'pointer', transition: 'all 0.15s',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}
-    >←</button>
   )
 }
