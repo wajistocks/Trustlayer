@@ -207,6 +207,447 @@ function ClaimCard({ claim }) {
   )
 }
 
+// ─── Interactive demo modal ───────────────────────────────────────────────────
+const DEMO_DOC = `VENDOR DATA PROCESSING AGREEMENT — COMPLIANCE REVIEW
+Re: Preliminary Legal Analysis for Execution Approval
+
+The mandatory arbitration clause cites AT&T Mobility LLC v. Concepcion, 563 U.S. 333 (2011), and is grounded in the Federal Arbitration Act, 9 U.S.C. § 1 et seq. The consumer protection carve-out references California Business & Professions Code § 17200.
+
+The indemnification section limits liability by citing Wesbrook Enterprises v. National Data Corp., 847 F.3d 291 (9th Cir. 2021). The confidentiality clause imposes criminal liability under 18 U.S.C. § 2045. The data deletion provisions assert an absolute right to erasure under GDPR Article 17, superseding all commercial interests of the data controller.`
+
+const DEMO_STEPS = [
+  { label: 'Extracting claims',       detail: 'Found 6 legal assertions, 3 case citations, 3 statutory references' },
+  { label: 'Checking citations',      detail: 'Cross-referencing citations against federal and state reporters...' },
+  { label: 'Verifying statutes',      detail: 'Validating statutory references against current U.S.C. databases...' },
+  { label: 'Calculating trust score', detail: 'Weighing hallucination risk, severity, and confidence...' },
+]
+
+const DEMO_RESULTS = [
+  {
+    verdict: 'Hallucination',
+    icon: '✗', color: '#ef4444', bg: 'rgba(239,68,68,0.09)', border: 'rgba(239,68,68,0.22)',
+    label: 'HALLUCINATION',
+    text: 'Wesbrook Enterprises v. National Data Corp., 847 F.3d 291 (9th Cir. 2021)',
+    detail: 'No such case exists in any federal reporter. This citation was fabricated.',
+    sub: 'Closest real case: AT&T Mobility LLC v. Concepcion, 563 U.S. 333 (2011)',
+    subColor: '#f59e0b',
+    high: true,
+  },
+  {
+    verdict: 'Verified',
+    icon: '✓', color: '#22c55e', bg: 'rgba(34,197,94,0.09)', border: 'rgba(34,197,94,0.22)',
+    label: 'VERIFIED',
+    text: 'AT&T Mobility LLC v. Concepcion, 563 U.S. 333 (2011)',
+    detail: 'Accurately cited. Supreme Court held FAA preempts state rules barring class-action waivers.',
+  },
+  {
+    verdict: 'Hallucination',
+    icon: '✗', color: '#ef4444', bg: 'rgba(239,68,68,0.09)', border: 'rgba(239,68,68,0.22)',
+    label: 'HALLUCINATION',
+    text: '18 U.S.C. § 2045 — criminal liability for breach of confidentiality',
+    detail: '18 U.S.C. § 2045 does not exist. No federal statute criminalizes commercial confidentiality breaches.',
+    sub: 'Correction: Civil remedies under Defend Trade Secrets Act, 18 U.S.C. § 1836 (2016)',
+    subColor: '#22c55e',
+    high: true,
+  },
+  {
+    verdict: 'Outdated',
+    icon: '↻', color: '#8b5cf6', bg: 'rgba(139,92,246,0.09)', border: 'rgba(139,92,246,0.22)',
+    label: 'OUTDATED',
+    text: 'GDPR Article 17 grants an absolute right to erasure superseding all commercial interests',
+    detail: '2023 CJEU rulings clarified this right must be balanced against legitimate processing interests — not absolute.',
+  },
+  {
+    verdict: 'Verified',
+    icon: '✓', color: '#22c55e', bg: 'rgba(34,197,94,0.09)', border: 'rgba(34,197,94,0.22)',
+    label: 'VERIFIED',
+    text: 'Federal Arbitration Act, 9 U.S.C. § 1 et seq.',
+    detail: 'Accurate statement of FAA scope and its preemptive effect on state arbitration laws.',
+  },
+  {
+    verdict: 'Verified',
+    icon: '✓', color: '#22c55e', bg: 'rgba(34,197,94,0.09)', border: 'rgba(34,197,94,0.22)',
+    label: 'VERIFIED',
+    text: 'California Business & Professions Code § 17200 — private right of action',
+    detail: "Correct description of California's Unfair Competition Law and its broad private right of action.",
+  },
+]
+
+function DemoModal({ onClose }) {
+  // step 0 = idle, 1-4 = steps running, 5 = results shown
+  const [step, setStep]           = useState(0)
+  const [score, setScore]         = useState(0)
+  const [email, setEmail]         = useState('')
+  const [submitted, setSubmitted] = useState(false)
+
+  // Single effect drives the whole sequence — no cascading useEffects
+  useEffect(() => {
+    const t0 = setTimeout(() => setStep(1), 150)
+    const t1 = setTimeout(() => setStep(2), 1150)
+    const t2 = setTimeout(() => setStep(3), 2150)
+    const t3 = setTimeout(() => setStep(4), 3150)
+    const t4 = setTimeout(() => setStep(5), 4150)
+    return () => [t0, t1, t2, t3, t4].forEach(clearTimeout)
+  }, [])
+
+  // Animate score ring once results appear
+  useEffect(() => {
+    if (step !== 5) return
+    const start = performance.now()
+    let raf
+    const tick = (now) => {
+      const p = Math.min((now - start) / 1100, 1)
+      setScore(Math.round((1 - Math.pow(1 - p, 3)) * 67))
+      if (p < 1) { raf = requestAnimationFrame(tick) }
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [step])
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    if (email.trim()) setSubmitted(true)
+  }
+
+  const circ = 2 * Math.PI * 50
+  const offset = circ - (score / 100) * circ
+
+  return (
+    <div
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'rgba(2,4,10,0.92)',
+        backdropFilter: 'blur(14px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '20px',
+      }}
+    >
+      <div style={{
+        width: '100%', maxWidth: '740px',
+        maxHeight: '92vh',
+        background: C.bgCard,
+        border: `1px solid ${C.border}`,
+        borderRadius: '16px',
+        display: 'flex', flexDirection: 'column',
+        overflow: 'hidden',
+        boxShadow: '0 40px 100px rgba(0,0,0,0.75), 0 0 0 1px rgba(212,168,83,0.12)',
+      }}>
+
+        {/* ── Header ── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '16px 24px', borderBottom: `1px solid ${C.border}`,
+          background: 'rgba(212,168,83,0.03)', flexShrink: 0,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontFamily: SERIF, fontSize: '18px', fontWeight: '700', color: C.textPrimary }}>
+              Trust<span style={{ color: C.gold }}>Layer</span>
+            </span>
+            <span style={{
+              fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase',
+              color: C.gold, padding: '2px 9px', borderRadius: '999px',
+              background: C.goldGlow2, border: `1px solid ${C.borderGold}`,
+            }}>Live Demo</span>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              width: '30px', height: '30px', borderRadius: '6px',
+              background: 'transparent', border: `1px solid ${C.border}`,
+              color: C.textSecondary, fontSize: '20px', lineHeight: 1,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary }}
+          >×</button>
+        </div>
+
+        {/* ── Scrollable body ── */}
+        <div style={{ overflowY: 'auto', flex: 1, padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+          {/* Document preview */}
+          <div style={{
+            background: C.bgInput, border: `1px solid ${C.border}`, borderRadius: '10px', overflow: 'hidden',
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '10px 16px', borderBottom: `1px solid ${C.border}`,
+            }}>
+              {['#ff5f57','#febc2e','#28c840'].map(c => (
+                <div key={c} style={{ width: '9px', height: '9px', borderRadius: '50%', background: c }} />
+              ))}
+              <span style={{ marginLeft: '8px', fontSize: '11px', color: C.textMuted, fontFamily: '"SF Mono", monospace' }}>
+                compliance_review.txt
+              </span>
+            </div>
+            <p style={{
+              fontSize: '12.5px', fontFamily: '"SF Mono", "Fira Code", monospace',
+              color: C.textSecondary, lineHeight: '1.95', margin: 0,
+              padding: '16px 20px', whiteSpace: 'pre-wrap',
+            }}>{DEMO_DOC}</p>
+          </div>
+
+          {/* ── Progress steps ── */}
+          <div style={{
+            background: C.bg, border: `1px solid ${C.border}`,
+            borderRadius: '12px', padding: '20px 24px',
+            display: 'flex', flexDirection: 'column', gap: '16px',
+          }}>
+            <p style={{
+              fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em',
+              textTransform: 'uppercase', color: C.textMuted, margin: 0,
+            }}>Analysis Progress</p>
+            {DEMO_STEPS.map((s, i) => {
+              const id = i + 1
+              const done    = step > id
+              const active  = step === id
+              const pending = step < id
+              return (
+                <div key={id}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+                    {/* Status indicator */}
+                    <div style={{
+                      width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: done    ? 'rgba(34,197,94,0.15)'
+                                : active  ? C.goldGlow
+                                : 'transparent',
+                      border: done    ? '1px solid rgba(34,197,94,0.4)'
+                            : active  ? `1px solid ${C.borderGold}`
+                            : `1px solid ${C.border}`,
+                      transition: 'all 0.3s',
+                    }}>
+                      {done ? (
+                        <span style={{ fontSize: '11px', color: '#22c55e', fontWeight: '800' }}>✓</span>
+                      ) : active ? (
+                        <span style={{
+                          width: '9px', height: '9px', borderRadius: '50%',
+                          border: `2px solid ${C.gold}`, borderTopColor: 'transparent',
+                          display: 'block', animation: 'spin 0.6s linear infinite',
+                        }} />
+                      ) : (
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: C.border, display: 'block' }} />
+                      )}
+                    </div>
+                    {/* Label + detail */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        fontSize: '13px', fontWeight: '600',
+                        color: done ? C.textPrimary : active ? C.gold : C.textMuted,
+                        transition: 'color 0.3s',
+                      }}>{s.label}</span>
+                      {(done || active) && (
+                        <p style={{ fontSize: '11px', color: C.textSecondary, margin: '1px 0 0', lineHeight: 1.4 }}>
+                          {s.detail}
+                        </p>
+                      )}
+                    </div>
+                    {done && (
+                      <span style={{ fontSize: '11px', color: '#22c55e', fontWeight: '600', flexShrink: 0 }}>Done</span>
+                    )}
+                    {pending && (
+                      <span style={{ fontSize: '11px', color: C.textMuted, flexShrink: 0 }}>—</span>
+                    )}
+                  </div>
+                  {/* Progress bar */}
+                  <div style={{
+                    height: '3px', borderRadius: '2px',
+                    background: C.border, marginLeft: '34px', overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      height: '100%', borderRadius: '2px',
+                      background: done ? '#22c55e' : active ? C.gold : 'transparent',
+                      width: done ? '100%' : '0%',
+                      animation: active ? 'barFill 0.95s linear forwards' : 'none',
+                    }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* ── Results ── */}
+          {step >= 5 && (
+            <div style={{ animation: 'slideUp 0.4s ease-out' }}>
+
+              {/* Score + summary row */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '24px',
+                padding: '22px 24px', borderRadius: '12px',
+                background: 'rgba(212,168,83,0.04)', border: `1px solid ${C.borderGold}`,
+                marginBottom: '16px', flexWrap: 'wrap',
+              }}>
+                {/* Ring */}
+                <div style={{ position: 'relative', width: 104, height: 104, flexShrink: 0 }}>
+                  <svg width={104} height={104} style={{ transform: 'rotate(-90deg)' }}>
+                    <circle cx={52} cy={52} r={50} fill="none" stroke={C.border} strokeWidth={6} />
+                    <circle cx={52} cy={52} r={50} fill="none"
+                      stroke="#f59e0b" strokeWidth={6}
+                      strokeDasharray={circ} strokeDashoffset={offset}
+                      strokeLinecap="round"
+                      style={{ filter: 'drop-shadow(0 0 6px #f59e0b)', transition: 'stroke-dashoffset 0.05s' }}
+                    />
+                  </svg>
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <span style={{ fontSize: '26px', fontWeight: '700', color: '#f59e0b', lineHeight: 1, fontFamily: SANS }}>{score}</span>
+                    <span style={{ fontSize: '9px', color: C.textSecondary, marginTop: '2px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Uncertain</span>
+                  </div>
+                </div>
+                {/* Summary */}
+                <div style={{ flex: 1, minWidth: '200px' }}>
+                  <h3 style={{ fontFamily: SERIF, fontSize: '19px', fontWeight: '600', color: C.textPrimary, margin: '0 0 6px' }}>
+                    Analysis Complete
+                  </h3>
+                  <p style={{ fontSize: '13px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.65', margin: '0 0 14px' }}>
+                    This document contains 2 fabricated citations and 1 outdated legal standard. Do not execute without independent legal review.
+                  </p>
+                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                    {[
+                      { n: 3, label: 'Verified',        color: '#22c55e' },
+                      { n: 1, label: 'Outdated',        color: '#8b5cf6' },
+                      { n: 2, label: 'Hallucinations',  color: '#ef4444' },
+                    ].map(v => (
+                      <div key={v.label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: v.color, boxShadow: `0 0 5px ${v.color}` }} />
+                        <span style={{ fontSize: '11px', color: C.textSecondary }}>{v.n} {v.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Claim cards */}
+              <p style={{
+                fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em',
+                textTransform: 'uppercase', color: C.textMuted, margin: '0 0 10px',
+              }}>Claim-by-Claim Breakdown</p>
+              {DEMO_RESULTS.map((r, i) => (
+                <div key={i} style={{
+                  padding: '13px 16px', borderRadius: '9px',
+                  background: r.bg, border: `1px solid ${r.border}`,
+                  marginBottom: '8px',
+                  animation: `slideUp 0.3s ease-out ${i * 60}ms both`,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <span style={{
+                      width: '20px', height: '20px', borderRadius: '50%',
+                      background: r.color, color: '#fff',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '11px', fontWeight: '800', flexShrink: 0, marginTop: '1px',
+                    }}>{r.icon}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '5px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <span style={{
+                          fontSize: '9px', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase',
+                          color: r.color, padding: '1px 7px', borderRadius: '3px', background: r.border,
+                        }}>{r.label}</span>
+                        {r.high && (
+                          <span style={{
+                            fontSize: '9px', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase',
+                            color: '#ef4444', padding: '1px 5px', borderRadius: '3px',
+                            background: 'rgba(239,68,68,0.12)',
+                          }}>HIGH RISK</span>
+                        )}
+                      </div>
+                      <p style={{ fontSize: '12px', color: C.textPrimary, margin: '0 0 3px', fontStyle: 'italic', fontFamily: SERIF, lineHeight: '1.5' }}>
+                        "{r.text}"
+                      </p>
+                      <p style={{ fontSize: '11px', color: C.textSecondary, margin: 0, lineHeight: '1.5' }}>{r.detail}</p>
+                      {r.sub && (
+                        <p style={{ fontSize: '11px', color: r.subColor, margin: '4px 0 0', lineHeight: '1.45', fontWeight: '500' }}>{r.sub}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── Email capture ── */}
+          {step >= 5 && !submitted && (
+            <div style={{
+              padding: '28px', borderRadius: '12px',
+              background: 'linear-gradient(135deg, rgba(212,168,83,0.07) 0%, rgba(212,168,83,0.02) 100%)',
+              border: `1px solid ${C.gold}`,
+              boxShadow: '0 0 40px rgba(212,168,83,0.07)',
+              animation: 'slideUp 0.45s 0.2s ease-out both',
+            }}>
+              <p style={{
+                fontSize: '11px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: C.gold, margin: '0 0 10px',
+              }}>Limited Offer</p>
+              <h3 style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '700', color: C.textPrimary, margin: '0 0 8px' }}>
+                Get 3 free verifications — no credit card required
+              </h3>
+              <p style={{ fontSize: '14px', color: C.textSecondary, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.65', margin: '0 0 20px' }}>
+                What you just saw takes 28 seconds on your own documents. Enter your work email to claim instant access.
+              </p>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <input
+                  type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  placeholder="you@yourfirm.com" required
+                  style={{
+                    flex: 1, minWidth: '200px', padding: '13px 16px', borderRadius: '6px',
+                    background: C.bgInput, border: `1px solid ${C.border}`,
+                    color: C.textPrimary, fontSize: '14px', outline: 'none', fontFamily: SANS,
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocus={e => e.target.style.borderColor = C.borderGold}
+                  onBlur={e => e.target.style.borderColor = C.border}
+                />
+                <button type="submit" style={{
+                  padding: '13px 28px', borderRadius: '6px',
+                  background: `linear-gradient(135deg, ${C.gold}, ${C.goldDim})`,
+                  border: 'none', color: '#0a0800',
+                  fontSize: '13px', fontWeight: '700', letterSpacing: '0.06em', textTransform: 'uppercase',
+                  cursor: 'pointer', whiteSpace: 'nowrap',
+                  boxShadow: '0 4px 20px rgba(212,168,83,0.3)',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 28px rgba(212,168,83,0.45)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(212,168,83,0.3)' }}
+                >Claim Free Access</button>
+              </form>
+              <p style={{ fontSize: '11px', color: C.textMuted, margin: '10px 0 0' }}>
+                Work email only. No spam. Unsubscribe anytime.
+              </p>
+            </div>
+          )}
+
+          {/* ── Confirmed ── */}
+          {submitted && (
+            <div style={{
+              padding: '36px', borderRadius: '12px', textAlign: 'center',
+              background: 'rgba(34,197,94,0.05)', border: '1px solid rgba(34,197,94,0.22)',
+              animation: 'slideUp 0.3s ease-out',
+            }}>
+              <div style={{
+                width: '52px', height: '52px', borderRadius: '50%',
+                background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 16px', fontSize: '24px', color: '#22c55e',
+              }}>✓</div>
+              <h3 style={{ fontFamily: SERIF, fontSize: '22px', fontWeight: '600', color: C.textPrimary, margin: '0 0 8px' }}>
+                You're on the list.
+              </h3>
+              <p style={{ fontSize: '14px', color: C.textSecondary, margin: 0, fontFamily: SERIF, fontStyle: 'italic', lineHeight: '1.65' }}>
+                Check your inbox — your activation link and 3 free verifications are on their way.
+              </p>
+            </div>
+          )}
+
+          <div style={{ height: '4px' }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Sample documents (contain deliberate errors for demo) ────────────────────
 const SAMPLES = {
   Brief: `MEMORANDUM OF LAW IN SUPPORT OF PLAINTIFF'S MOTION FOR SPECIFIC PERFORMANCE
@@ -325,6 +766,7 @@ export default function Home() {
   const [error, setError] = useState(null)
   const [focused, setFocused] = useState(false)
   const [activeTab, setActiveTab] = useState('claims')
+  const [demoOpen, setDemoOpen] = useState(false)
   const resultsRef = useRef(null)
 
   async function handleVerify() {
@@ -471,18 +913,20 @@ export default function Home() {
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = `0 8px 32px rgba(212,168,83,0.4)` }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 4px 24px rgba(212,168,83,0.3)` }}
           >Analyze a Document</button>
-          <button style={{
-            padding: '16px 36px', borderRadius: '6px',
-            border: `1px solid ${C.border}`,
-            background: 'transparent',
-            color: C.textSecondary,
-            fontSize: '14px', letterSpacing: '0.06em', textTransform: 'uppercase',
-            cursor: 'pointer',
-            transition: 'border-color 0.2s, color 0.2s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary }}
-          >Book a Demo</button>
+          <button
+            onClick={() => setDemoOpen(true)}
+            style={{
+              padding: '16px 36px', borderRadius: '6px',
+              border: `1px solid ${C.border}`,
+              background: 'transparent',
+              color: C.textSecondary,
+              fontSize: '14px', letterSpacing: '0.06em', textTransform: 'uppercase',
+              cursor: 'pointer',
+              transition: 'border-color 0.2s, color 0.2s, background 0.2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = C.borderGold; e.currentTarget.style.color = C.gold; e.currentTarget.style.background = C.goldGlow2 }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSecondary; e.currentTarget.style.background = 'transparent' }}
+          >Watch Demo</button>
         </div>
       </section>
 
@@ -1095,8 +1539,14 @@ export default function Home() {
         </div>
       </footer>
 
+      {demoOpen && <DemoModal onClose={() => setDemoOpen(false)} />}
+
       <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin    { to { transform: rotate(360deg); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse   { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes barFill { from { width: 0%; } to { width: 100%; } }
         * { box-sizing: border-box; }
         body { margin: 0; background: ${C.bg}; }
         textarea::placeholder { color: #3a3530; }
