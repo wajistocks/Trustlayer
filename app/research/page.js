@@ -516,15 +516,13 @@ export default function ResearchPage() {
             paddingBottom: '2px',
           }}>Research</Link>
 
-          {['Platform', 'Enterprise'].map(item => (
-            <a key={item} href="#" style={{
-              fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
-              letterSpacing: '0.04em', transition: 'color 0.2s',
-            }}
-              onMouseEnter={e => e.target.style.color = C.gold}
-              onMouseLeave={e => e.target.style.color = C.textSecondary}
-            >{item}</a>
-          ))}
+          <Link href="/enterprise" style={{
+            fontSize: '13px', color: C.textSecondary, textDecoration: 'none',
+            letterSpacing: '0.04em', transition: 'color 0.2s',
+          }}
+            onMouseEnter={e => e.target.style.color = C.gold}
+            onMouseLeave={e => e.target.style.color = C.textSecondary}
+          >Enterprise</Link>
 
           <Link href="/request-access" style={{
             padding: '8px 20px', borderRadius: '6px',
