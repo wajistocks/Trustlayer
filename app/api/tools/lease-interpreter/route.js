@@ -2,18 +2,19 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const SYSTEM_PROMPT = `You are a tenant rights attorney with 20 years of experience protecting renters and commercial tenants. You always advocate for the tenant's interests, flag landlord-friendly traps, and arm tenants with the knowledge to negotiate fair terms or know when to walk away.
+function parseJSON(raw) {
+  const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').replace(/\\'/g, "'").trim()
+  const start = cleaned.indexOf('{')
+  const end   = cleaned.lastIndexOf('}')
+  if (start === -1 || end === -1) throw new Error('No JSON object in response')
+  return JSON.parse(cleaned.slice(start, end + 1))
+}
 
-When analyzing a lease, you:
-1. Summarize key terms in plain language
-2. Translate confusing clauses into plain English
-3. Identify tenant rights specific to the stated jurisdiction
-4. Flag red flags and dangerous clauses with severity levels
-5. Identify negotiation opportunities where tenants commonly win concessions
-6. Generate questions the tenant should ask before signing
-7. Score the lease for fairness from the tenant's perspective
+const SYSTEM_PROMPT = `You are a senior tenant rights attorney with 25 years of experience specializing in residential and commercial lease law across all 50 states. You have reviewed thousands of leases. You always advocate fiercely for the tenant's interests, identify every clause that harms tenants, know exactly which clauses are illegal or unenforceable in which states, and explain everything in plain English that a non-lawyer can immediately understand and act on. Your clients have avoided devastating lease traps because of your expertise.
 
-IMPORTANT: Return ONLY valid JSON in exactly this format — no prose, no markdown, no code fences:
+CRITICAL OUTPUT REQUIREMENT: You must respond with ONLY raw JSON. No markdown. No backticks. No code blocks. No explanation before or after. Start your response with { and end with }. Any text outside the JSON will break the application.
+
+Analyze this lease and return this exact JSON:
 
 {
   "summary": {
@@ -31,44 +32,45 @@ IMPORTANT: Return ONLY valid JSON in exactly this format — no prose, no markdo
   "clauses": [
     {
       "title": "<clause name>",
-      "originalLanguage": "<direct quote from lease or null if not found>",
-      "plainEnglish": "<what this means in simple language>",
+      "originalLanguage": "<direct quote from lease or null>",
+      "plainEnglish": "<what this means in simple language a non-lawyer can act on>",
       "impact": "<positive | neutral | negative>"
     }
   ],
   "tenantRights": {
     "state": "<state name>",
-    "depositReturn": "<days landlord has to return deposit + cite statute>",
-    "noticePeriod": "<required notice to raise rent or terminate + statute>",
-    "habitability": "<implied warranty of habitability rules>",
-    "retaliation": "<anti-retaliation protections>",
-    "earlyTermination": "<tenant's rights to break lease early>"
+    "depositReturn": "<days landlord has to return deposit + cite exact statute>",
+    "noticePeriod": "<required notice to raise rent or terminate + exact statute>",
+    "habitability": "<implied warranty of habitability rules in this state>",
+    "retaliation": "<anti-retaliation protections and what constitutes retaliation>",
+    "earlyTermination": "<tenant's rights to break lease early — domestic violence, military, job loss, etc.>"
   },
   "redFlags": [
     {
-      "clause": "<clause name or location>",
+      "clause": "<clause name or location in lease>",
       "issue": "<one-line description of the problem>",
       "severity": "<high | medium | low>",
-      "explanation": "<2-3 sentences explaining why this is a problem and what it could cost the tenant>"
+      "explanation": "<2-3 sentences explaining why this is a problem, what it could cost the tenant, and whether it may be unenforceable>"
     }
   ],
   "negotiationOpportunities": [
     {
       "clause": "<clause name>",
       "currentLanguage": "<what the lease currently says>",
-      "suggested": "<suggested replacement or addition>",
-      "rationale": "<why landlords often agree to this change>"
+      "suggested": "<specific replacement language to propose>",
+      "rationale": "<why landlords often agree to this change and how to ask for it>"
     }
   ],
   "questionsToAsk": [
-    "<specific question the tenant should ask the landlord before signing>"
+    "<specific question the tenant should ask the landlord or property manager before signing>"
   ],
   "fairnessScore": {
-    "score": <0-100 integer — 100 is maximally tenant-favorable, 0 is maximally landlord-favorable>,
+    "score": <integer 0-100; 100 = maximally tenant-favorable, 0 = maximally landlord-favorable>,
     "rating": "<Excellent | Good | Fair | Concerning | Dangerous>",
     "explanation": "<2-3 sentences explaining the score>",
-    "keyReasons": ["<reason score is what it is>", "<another reason>"]
-  }
+    "keyReasons": ["<specific reason>", "<another reason>"]
+  },
+  "overallVerdict": "<2-3 sentences: should the tenant sign as-is, negotiate specific terms, or walk away — be direct and specific about what to do>"
 }`
 
 export async function POST(request) {
@@ -87,34 +89,36 @@ export async function POST(request) {
 
     const leaseTypeLabel = leaseType === 'commercial' ? 'Commercial' : 'Residential'
     const stateNote = `\n\nJURISDICTION: ${state}. Apply ${state}-specific tenant rights laws, rent control rules, security deposit statutes, and habitability standards throughout your analysis.`
-    const typeNote = `\n\nLEASE TYPE: ${leaseTypeLabel}. ${leaseType === 'commercial' ? 'Apply commercial lease standards. Note that commercial tenants have fewer statutory protections than residential tenants — flag this throughout.' : 'Apply residential tenant protections fully.'}`
+    const typeNote  = `\n\nLEASE TYPE: ${leaseTypeLabel}. ${leaseType === 'commercial' ? 'Apply commercial lease standards. Commercial tenants have fewer statutory protections than residential tenants — flag this throughout and note where statutory protections do not apply.' : 'Apply full residential tenant protections.'}`
 
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4096,
-      system: [
-        {
-          type: 'text',
-          text: `${SYSTEM_PROMPT}${stateNote}${typeNote}`,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: [
-        {
-          role: 'user',
-          content: `Analyze this ${leaseTypeLabel.toLowerCase()} lease agreement and return your complete analysis as JSON.\n\nLease:\n---\n${lease}\n---`,
-        },
-      ],
+      system: [{ type: 'text', text: `${SYSTEM_PROMPT}${stateNote}${typeNote}`, cache_control: { type: 'ephemeral' } }],
+      messages: [{
+        role: 'user',
+        content: `Analyze this ${leaseTypeLabel.toLowerCase()} lease agreement and return your complete analysis as JSON.\n\nLease:\n---\n${lease}\n---`,
+      }],
     })
 
     const raw = response.content[0]?.text ?? ''
-
     let parsed
+
     try {
-      const m = raw.match(/\{[\s\S]*\}/)
-      parsed = JSON.parse(m ? m[0] : raw)
+      parsed = parseJSON(raw)
     } catch {
-      return Response.json({ error: 'Failed to parse AI response', raw }, { status: 502 })
+      return Response.json({
+        summary: {},
+        clauses: [],
+        tenantRights: {},
+        redFlags: [],
+        negotiationOpportunities: [],
+        questionsToAsk: [],
+        fairnessScore: { score: 0, rating: 'Unknown', explanation: 'Analysis failed — please try again.', keyReasons: [] },
+        overallVerdict: 'Analysis could not be completed. Please try again or consult a local tenant rights attorney.',
+        parseError: true,
+        raw: raw.slice(0, 500),
+      })
     }
 
     return Response.json({

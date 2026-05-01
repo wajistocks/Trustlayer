@@ -144,12 +144,12 @@ export default function RedFlagsPage() {
     setTimeout(() => setSaved(false), 2000)
   }
 
-  const foundFlags    = result?.flags?.filter(f => f.found) ?? []
-  const notFoundFlags = result?.flags?.filter(f => !f.found) ?? []
-  const highCount     = foundFlags.filter(f => f.severity?.toLowerCase() === 'high').length
-  const medCount      = foundFlags.filter(f => f.severity?.toLowerCase() === 'medium').length
-  const lowCount      = foundFlags.filter(f => f.severity?.toLowerCase() === 'low').length
-  const vs = verdictStyle(result?.verdict)
+  const foundFlags    = result?.redFlags ?? []
+  const notFoundFlags = result?.positiveTerms?.map(t => ({ label: t })) ?? []
+  const highCount     = foundFlags.filter(f => f.severity?.toLowerCase() === 'critical').length
+  const medCount      = foundFlags.filter(f => f.severity?.toLowerCase() === 'warning').length
+  const lowCount      = foundFlags.filter(f => f.severity?.toLowerCase() === 'ok').length
+  const vs = verdictStyle(result?.overallVerdict)
 
   return (
     <div style={{ minHeight:'100vh', background:C.bg, fontFamily:SANS, color:C.textPrimary }}>
@@ -331,18 +331,18 @@ export default function RedFlagsPage() {
               {/* Score + verdict banner */}
               <div style={{ background:'#111', border:'1px solid #222', padding:'28px', marginBottom:'12px', animation:'slideUp 0.2s ease' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'28px', flexWrap:'wrap' }}>
-                  <ScoreCircle target={result.safetyScore ?? 0} />
+                  <ScoreCircle target={result.overallSafetyScore ?? 0} />
                   <div style={{ flex:1 }}>
                     <div style={{ fontSize:'11px', color:'#444', letterSpacing:'0.1em', textTransform:'uppercase', fontWeight:'600', marginBottom:'10px' }}>Safety Score</div>
                     {/* Verdict banner */}
                     <div style={{ display:'inline-flex', alignItems:'center', padding:'8px 20px', background:vs.bg, border:`1px solid ${vs.border}`, borderRadius:'4px', marginBottom:'12px' }}>
-                      <span style={{ fontSize:'15px', fontWeight:'700', color:vs.color, letterSpacing:'0.04em' }}>{result.verdict ?? 'Unknown'}</span>
+                      <span style={{ fontSize:'15px', fontWeight:'700', color:vs.color, letterSpacing:'0.04em' }}>{result.overallVerdict ? result.overallVerdict.split(' ').slice(0,1).join('') : 'Analyzed'}</span>
                     </div>
                     <div style={{ display:'flex', gap:'16px', flexWrap:'wrap' }}>
-                      <span style={{ fontSize:'13px', color:'#444' }}><span style={{ color:'#fff', fontWeight:'700' }}>{foundFlags.length}</span> of {result.flags?.length ?? 0} clauses detected</span>
-                      {highCount > 0 && <span style={{ fontSize:'13px', color:C.error }}>● {highCount} High</span>}
-                      {medCount > 0 && <span style={{ fontSize:'13px', color:C.warning }}>● {medCount} Medium</span>}
-                      {lowCount > 0 && <span style={{ fontSize:'13px', color:C.blue }}>● {lowCount} Low</span>}
+                      <span style={{ fontSize:'13px', color:'#444' }}><span style={{ color:'#fff', fontWeight:'700' }}>{foundFlags.length}</span> issues found</span>
+                      {highCount > 0 && <span style={{ fontSize:'13px', color:C.error }}>● {highCount} Critical</span>}
+                      {medCount > 0 && <span style={{ fontSize:'13px', color:C.warning }}>● {medCount} Warning</span>}
+                      {lowCount > 0 && <span style={{ fontSize:'13px', color:C.blue }}>● {lowCount} Minor</span>}
                     </div>
                   </div>
                 </div>
@@ -376,13 +376,13 @@ export default function RedFlagsPage() {
                         >
                           <div style={{ padding:'18px 20px', display:'flex', alignItems:'flex-start', gap:'12px' }}>
                             <span style={{ padding:'3px 8px', fontSize:'11px', fontWeight:'700', letterSpacing:'0.06em', textTransform:'uppercase', background:`${col}15`, color:col, border:`1px solid ${col}30`, borderRadius:'4px', whiteSpace:'nowrap', flexShrink:0, marginTop:'2px' }}>
-                              {flag.severity ?? 'Low'}
+                              {flag.severity ?? 'warning'}
                             </span>
                             <div style={{ flex:1, minWidth:0 }}>
-                              <div style={{ fontSize:'15px', fontWeight:'700', color:'#fff', marginBottom:'4px' }}>{flag.label}</div>
-                              {flag.excerptHint && (
+                              <div style={{ fontSize:'15px', fontWeight:'700', color:'#fff', marginBottom:'4px' }}>{flag.clauseName ?? flag.label}</div>
+                              {(flag.originalText ?? flag.excerptHint) && (
                                 <p style={{ margin:0, fontSize:'13px', color:'#444', fontStyle:'italic', overflow:'hidden', textOverflow:'ellipsis', whiteSpace: isOpen ? 'normal' : 'nowrap' }}>
-                                  &ldquo;{flag.excerptHint}&rdquo;
+                                  &ldquo;{flag.originalText ?? flag.excerptHint}&rdquo;
                                 </p>
                               )}
                             </div>
@@ -391,22 +391,22 @@ export default function RedFlagsPage() {
 
                           {isOpen && (
                             <div style={{ padding:'0 20px 20px', borderTop:'1px solid #222', paddingTop:'18px', animation:'fadeIn 0.2s ease' }}>
-                              {flag.plainEnglish && (
+                              {(flag.issue ?? flag.plainEnglish) && (
                                 <div style={{ marginBottom:'16px' }}>
-                                  <div style={{ fontSize:'11px', color:'#444', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:'700', marginBottom:'8px' }}>Plain English</div>
-                                  <p style={{ margin:0, fontSize:'14px', color:'#888', lineHeight:1.7 }}>{flag.plainEnglish}</p>
+                                  <div style={{ fontSize:'11px', color:'#444', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:'700', marginBottom:'8px' }}>Why This Is a Problem</div>
+                                  <p style={{ margin:0, fontSize:'14px', color:'#888', lineHeight:1.7 }}>{flag.issue ?? flag.plainEnglish}</p>
                                 </div>
                               )}
-                              {flag.whatItMeansForYou && (
+                              {(flag.recommendation ?? flag.whatItMeansForYou) && (
                                 <div style={{ marginBottom:'16px' }}>
-                                  <div style={{ fontSize:'11px', color:'#444', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:'700', marginBottom:'8px' }}>What This Means For You</div>
-                                  <p style={{ margin:0, fontSize:'14px', color:'#888', lineHeight:1.7 }}>{flag.whatItMeansForYou}</p>
+                                  <div style={{ fontSize:'11px', color:'#444', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:'700', marginBottom:'8px' }}>What To Do</div>
+                                  <p style={{ margin:0, fontSize:'14px', color:'#888', lineHeight:1.7 }}>{flag.recommendation ?? flag.whatItMeansForYou}</p>
                                 </div>
                               )}
-                              {flag.negotiationLanguage && (
+                              {(flag.suggestedLanguage ?? flag.negotiationLanguage) && (
                                 <div style={{ background:'rgba(34,197,94,0.06)', border:'1px solid rgba(34,197,94,0.2)', padding:'16px' }}>
-                                  <div style={{ fontSize:'11px', color:'#22c55e', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:'700', marginBottom:'8px' }}>💬 Suggested Negotiation Language</div>
-                                  <p style={{ margin:0, fontSize:'14px', color:'#888', lineHeight:1.7, fontStyle:'italic' }}>{flag.negotiationLanguage}</p>
+                                  <div style={{ fontSize:'11px', color:'#22c55e', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:'700', marginBottom:'8px' }}>💬 Suggested Language</div>
+                                  <p style={{ margin:0, fontSize:'14px', color:'#888', lineHeight:1.7, fontStyle:'italic' }}>{flag.suggestedLanguage ?? flag.negotiationLanguage}</p>
                                 </div>
                               )}
                             </div>

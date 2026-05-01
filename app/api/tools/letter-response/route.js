@@ -2,29 +2,46 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const SYSTEM_PROMPT = `You are a legal defense specialist helping an individual respond to a legal letter. Return ONLY valid JSON:
+function parseJSON(raw) {
+  const cleaned = raw.replace(/```json/g, '').replace(/```/g, '').replace(/\\'/g, "'").trim()
+  const start = cleaned.indexOf('{')
+  const end   = cleaned.lastIndexOf('}')
+  if (start === -1 || end === -1) throw new Error('No JSON object in response')
+  return JSON.parse(cleaned.slice(start, end + 1))
+}
+
+const SYSTEM_PROMPT = `You are a senior attorney specializing in consumer rights, employment law, debt defense, landlord-tenant disputes, and business disputes with 25 years of experience. You have helped thousands of individuals assert their rights against threatening letters from debt collectors, employers, landlords, opposing counsel, and government agencies. You know exactly which federal and state laws protect recipients and how to assert those protections firmly and professionally. Your response letters have stopped harassment, prevented illegal collection, protected jobs, and saved homes.
+
+CRITICAL OUTPUT REQUIREMENT: You must respond with ONLY raw JSON. No markdown. No backticks. No code blocks. No explanation before or after. Start your response with { and end with }. Any text outside the JSON will break the application.
+
+Analyze this legal letter and return this exact JSON:
+
 {
   "urgency": "<high | medium | low>",
-  "senderAnalysis": "<2-3 sentences analyzing who sent this and their legal standing>",
+  "senderAnalysis": "<2-3 sentences analyzing who sent this, their legal standing, and what they can actually do vs. what they are threatening>",
   "claims": ["<each specific claim or demand the sender is making>"],
-  "legalAccuracy": "<assessment of whether their claims are legally accurate, with specific notes on any overreach or errors>",
-  "yourRights": ["<specific legal right the recipient has in this situation>"],
+  "legalAccuracy": "<assessment of whether their claims are legally accurate, with specific notes on any overreach, empty threats, or legal errors in their letter>",
+  "yourRights": ["<specific legal right the recipient has in this situation, cited to a specific law>"],
   "protectiveLaws": [
-    { "name": "<law name>", "citation": "<exact citation>", "howItHelps": "<specific protection this law provides>" }
+    {
+      "name": "<law name>",
+      "citation": "<exact legal citation>",
+      "howItHelps": "<specific protection this law provides the recipient in this exact situation>"
+    }
   ],
-  "responseLetter": "<Complete professionally drafted response letter, ready to send. Use formal letter format with [DATE], [YOUR NAME], [YOUR ADDRESS] placeholders. The letter should be firm, legally accurate, and professional. Reference specific laws that protect the recipient.>",
-  "deadlines": ["<any time-sensitive actions the recipient must take>"],
-  "warnings": ["<anything the recipient should NOT do>"],
+  "responseLetter": "<Complete professionally drafted response letter, ready to send. Use formal letter format with [DATE], [YOUR NAME], [YOUR ADDRESS] placeholders. The letter should be firm, legally accurate, assertive without being hostile, and reference specific laws that protect the recipient. This letter should make the sender reconsider their position.>",
+  "deadlines": ["<any time-sensitive actions the recipient must take, with specific dates or timeframes>"],
+  "warnings": ["<specific thing the recipient must NOT do — e.g. do not make a payment, do not sign anything, do not communicate by phone>"],
   "disclaimer": "This response letter is for informational purposes only. For legal matters involving significant money, employment, housing, or your liberty, please have a licensed attorney review before sending."
 }
 
 Sender-type guidance:
-- Debt Collector: Apply FDCPA protections (15 U.S.C. § 1692), 30-day dispute rights, cease-and-desist options
-- Landlord: Apply state-specific tenant protections, security deposit rules, habitability rights
-- Employer: Apply NLRA, FLSA, ADA, Title VII, state labor laws as relevant
-- Opposing Counsel: More formal tone, focus on procedural rights and preservation of claims
-- Government Agency: Identify which agency, apply relevant administrative law and due process rights
-- Business Partner: Focus on contract terms, good faith obligations, UCC Article 1-203`
+- Debt Collector: Apply FDCPA (15 U.S.C. § 1692) — 30-day written dispute right, cease-and-desist options, validation of debt requirements, prohibition on false/misleading statements
+- Landlord: Apply state-specific tenant protections, security deposit rules, habitability rights, anti-retaliation laws, proper notice requirements
+- Employer: Apply NLRA, FLSA, ADA, Title VII, FMLA, state labor laws, whistleblower protections as relevant
+- Opposing Counsel: Formal professional tone, focus on procedural rights, preservation of claims, statutes of limitations
+- Government Agency: Identify agency, apply administrative law, due process rights, right to hearing, FOIA rights
+- Business Partner: Contract terms, good faith obligations, UCC Article 1-203, specific performance options`
 
 export async function POST(request) {
   try {
@@ -40,35 +57,39 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid input: state field is required' }, { status: 400 })
     }
     if (letter.length > 50000) {
-      return Response.json({ error: 'Letter too long: maximum 50,000 characters allowed' }, { status: 400 })
+      return Response.json({ error: 'Letter too long — maximum 50,000 characters allowed' }, { status: 400 })
     }
 
     const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4096,
-      system: [
-        {
-          type: 'text',
-          text: SYSTEM_PROMPT,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: [
-        {
-          role: 'user',
-          content: `Analyze this legal letter and generate a response.\nSender type: ${senderType}\nRecipient's state: ${state}\n\nLetter:\n---\n${letter}\n---`,
-        },
-      ],
+      system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+      messages: [{
+        role: 'user',
+        content: `Analyze this legal letter and generate a response.\nSender type: ${senderType}\nRecipient's state: ${state}\n\nLetter:\n---\n${letter}\n---`,
+      }],
     })
 
     const raw = response.content[0]?.text ?? ''
-
     let parsed
+
     try {
-      const m = raw.match(/\{[\s\S]*\}/)
-      parsed = JSON.parse(m ? m[0] : raw)
+      parsed = parseJSON(raw)
     } catch {
-      return Response.json({ error: 'Failed to parse AI response', raw }, { status: 502 })
+      return Response.json({
+        urgency: 'medium',
+        senderAnalysis: 'Analysis could not be completed — please try again.',
+        claims: [],
+        legalAccuracy: 'Unable to assess.',
+        yourRights: [],
+        protectiveLaws: [],
+        responseLetter: 'Analysis failed. Please try again or consult an attorney.',
+        deadlines: [],
+        warnings: ['Do not take any action based on this letter until you get a successful analysis or consult an attorney.'],
+        disclaimer: 'Analysis failed. Consult a licensed attorney for matters involving significant money, housing, or employment.',
+        parseError: true,
+        raw: raw.slice(0, 500),
+      })
     }
 
     return Response.json({
