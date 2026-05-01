@@ -37,6 +37,7 @@ const TOOLS_NAV = [
   { path:'/tools/statute-of-limitations', name:'Statute of Limitations',     icon:'⏳' },
   { path:'/tools/ethics',                 name:'Ethics Checker',             icon:'⚖' },
   { path:'/tools/pro-se',                 name:'Pro Se Assistant',           icon:'🏛' },
+  { path:'/tools/lease-interpreter',     name:'Lease Interpreter',           icon:'🏠' },
 ]
 
 // ─── Form data ────────────────────────────────────────────────────────────────

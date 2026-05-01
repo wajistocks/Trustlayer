@@ -38,6 +38,7 @@ const TOOLS_NAV = [
   { path:'/tools/statute-of-limitations', name:'Statute of Limitations',     icon:'⏳' },
   { path:'/tools/ethics',                 name:'Ethics Checker',             icon:'⚖' },
   { path:'/tools/pro-se',                 name:'Pro Se Assistant',           icon:'🏛' },
+  { path:'/tools/lease-interpreter',     name:'Lease Interpreter',          icon:'🏠' },
 ]
 
 const TOOLS = [
@@ -48,6 +49,7 @@ const TOOLS = [
   { id:'statute-of-limitations', path:'/tools/statute-of-limitations', name:'Statute of Limitations',     icon:'⏳', color:'#34d399', desc:'Know exactly how long you have to file. Get the exact deadline, statute citation, tolling exceptions.',            free:false, category:'Litigation' },
   { id:'ethics',                 path:'/tools/ethics',                 name:'Ethics Checker',              icon:'⚖', color:'#a78bfa', desc:'Instant answers to attorney ethics questions. ABA Model Rules + state-specific bar opinions.',                     free:false, category:'Attorneys'  },
   { id:'pro-se',                 path:'/tools/pro-se',                 name:'Pro Se Legal Assistant',     icon:'🏛', color:'#22c55e', desc:'Navigate the legal system without an attorney. Step-by-step guidance, documents, hearing prep.',                   free:true,  category:'Self-Help'  },
+  { id:'lease-interpreter',     path:'/tools/lease-interpreter',     name:'Lease Interpreter',           icon:'🏠', color:'#38bdf8', desc:'Understand any residential or commercial lease before signing. Plain English clauses, red flags, tenant rights, and a fairness score.', free:false, category:'Housing'    },
 ]
 
 // ─── Category color map ───────────────────────────────────────────────────────
@@ -58,6 +60,7 @@ const CAT_COLORS = {
   Disputes:   '#c084fc',
   Attorneys:  '#a78bfa',
   'Self-Help':'#22c55e',
+  Housing:    '#38bdf8',
 }
 
 // ─── Tool Card ────────────────────────────────────────────────────────────────
@@ -335,7 +338,7 @@ export default function ToolsHub() {
           lineHeight: '1.7',
           animation:  'slideUp 0.6s 0.1s ease-out both',
         }}>
-          Seven AI-powered tools built for solo attorneys, small firms, and pro se
+          Eight AI-powered tools built for solo attorneys, small firms, and pro se
           individuals — free to try, world-class results.
         </p>
 
@@ -349,7 +352,7 @@ export default function ToolsHub() {
           animation:    'slideUp 0.65s 0.15s ease-out both',
         }}>
           {[
-            { value:'7 Tools',         label:'Available Now'  },
+            { value:'8 Tools',         label:'Available Now'  },
             { value:'Free to Start',   label:'No Credit Card' },
             { value:'50 States',       label:'Full Coverage'  },
             { value:'No Subscription', label:'Required'       },

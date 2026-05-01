@@ -35,6 +35,7 @@ const TOOLS = [
   { id:'statute-of-limitations', path:'/tools/statute-of-limitations', name:'Statute of Limitations', icon:'⏳' },
   { id:'ethics', path:'/tools/ethics', name:'Ethics Checker', icon:'⚖' },
   { id:'pro-se', path:'/tools/pro-se', name:'Pro Se Assistant', icon:'🏛', free:true },
+  { id:'lease-interpreter', path:'/tools/lease-interpreter', name:'Lease Interpreter', icon:'🏠' },
 ]
 
 const CURRENT_TOOL_ID = 'plain-english'
