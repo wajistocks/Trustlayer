@@ -114,6 +114,165 @@ const SAMPLE_QUERIES = {
   regulatory: 'SEC Regulation Crowdfunding investment limits disclosure',
 }
 
+// ─── Live-source card components ───────────────────────────────────────────────
+function SectionHeader({ icon, label, count, color = '#2563eb', badge }) {
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'16px', paddingBottom:'12px', borderBottom:'1px solid #222' }}>
+      <span style={{ fontSize:'16px' }}>{icon}</span>
+      <span style={{ fontFamily:SERIF, fontSize:'17px', fontWeight:'700', color:'#fff' }}>{label}</span>
+      {count > 0 && (
+        <span style={{ fontSize:'11px', color, background:`${color}15`, border:`1px solid ${color}30`, borderRadius:'4px', padding:'2px 8px', fontFamily:MONO, fontWeight:'700' }}>
+          {count} result{count !== 1 ? 's' : ''}
+        </span>
+      )}
+      {badge && (
+        <span style={{ marginLeft:'auto', fontSize:'11px', color:'#22c55e', background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.2)', borderRadius:'4px', padding:'2px 8px', fontFamily:MONO }}>
+          {badge}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function CongressCard({ bill, index }) {
+  return (
+    <div style={{ background:'#111', border:'1px solid #222', padding:'20px 24px', marginBottom:'10px', animation:'slideUp 0.2s ease', animationDelay:`${index*50}ms`, animationFillMode:'both', transition:'border-color 0.15s' }}
+      onMouseEnter={e=>e.currentTarget.style.borderColor='#333'}
+      onMouseLeave={e=>e.currentTarget.style.borderColor='#222'}
+    >
+      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:'12px', marginBottom:'10px' }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'8px' }}>
+            <span style={{ fontSize:'11px', fontWeight:'700', fontFamily:MONO, color:'#2563eb', background:'rgba(37,99,235,0.1)', border:'1px solid rgba(37,99,235,0.25)', borderRadius:'4px', padding:'2px 8px' }}>
+              {bill.billNumber}
+            </span>
+            {bill.congress && (
+              <span style={{ fontSize:'11px', color:'#888', background:'#0a0a0a', border:'1px solid #222', borderRadius:'4px', padding:'2px 8px' }}>
+                {bill.congress}
+              </span>
+            )}
+            {bill.chamber && (
+              <span style={{ fontSize:'11px', color:'#888', background:'#0a0a0a', border:'1px solid #222', borderRadius:'4px', padding:'2px 8px' }}>
+                {bill.chamber}
+              </span>
+            )}
+          </div>
+          <h4 style={{ margin:0, fontSize:'15px', fontFamily:SERIF, fontWeight:'700', color:'#fff', lineHeight:1.4 }}>{bill.title}</h4>
+        </div>
+        {bill.url && (
+          <a href={bill.url} target="_blank" rel="noopener noreferrer"
+            style={{ fontSize:'12px', color:'#2563eb', textDecoration:'none', border:'1px solid rgba(37,99,235,0.3)', background:'rgba(37,99,235,0.06)', borderRadius:'4px', padding:'5px 12px', whiteSpace:'nowrap', flexShrink:0, transition:'all 0.15s' }}
+            onMouseEnter={e=>{e.currentTarget.style.background='rgba(37,99,235,0.12)';e.currentTarget.style.borderColor='#2563eb'}}
+            onMouseLeave={e=>{e.currentTarget.style.background='rgba(37,99,235,0.06)';e.currentTarget.style.borderColor='rgba(37,99,235,0.3)'}}
+          >Congress.gov →</a>
+        )}
+      </div>
+      {bill.latestAction && (
+        <div style={{ display:'flex', gap:'8px', alignItems:'flex-start', marginTop:'10px', paddingTop:'10px', borderTop:'1px solid #1a1a1a' }}>
+          <span style={{ fontSize:'11px', color:'#444', flexShrink:0, fontWeight:'600', letterSpacing:'0.06em', textTransform:'uppercase', marginTop:'1px' }}>Latest Action</span>
+          <p style={{ margin:0, fontSize:'13px', color:'#888', lineHeight:1.6, flex:1 }}>{bill.latestAction}</p>
+          {bill.actionDate && (
+            <span style={{ fontSize:'11px', color:'#444', fontFamily:MONO, flexShrink:0 }}>{bill.actionDate}</span>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function OpenStatesCard({ bill, index }) {
+  return (
+    <div style={{ background:'#111', border:'1px solid #222', padding:'20px 24px', marginBottom:'10px', animation:'slideUp 0.2s ease', animationDelay:`${index*50}ms`, animationFillMode:'both', transition:'border-color 0.15s' }}
+      onMouseEnter={e=>e.currentTarget.style.borderColor='#333'}
+      onMouseLeave={e=>e.currentTarget.style.borderColor='#222'}
+    >
+      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:'12px', marginBottom:'10px' }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'8px' }}>
+            <span style={{ fontSize:'11px', fontWeight:'700', fontFamily:MONO, color:'#f59e0b', background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.25)', borderRadius:'4px', padding:'2px 8px' }}>
+              {bill.identifier}
+            </span>
+            {bill.state && (
+              <span style={{ fontSize:'11px', color:'#888', background:'#0a0a0a', border:'1px solid #222', borderRadius:'4px', padding:'2px 8px' }}>
+                {bill.state}
+              </span>
+            )}
+            {bill.session && (
+              <span style={{ fontSize:'11px', color:'#888', background:'#0a0a0a', border:'1px solid #222', borderRadius:'4px', padding:'2px 8px' }}>
+                Session {bill.session}
+              </span>
+            )}
+          </div>
+          <h4 style={{ margin:0, fontSize:'15px', fontFamily:SERIF, fontWeight:'700', color:'#fff', lineHeight:1.4 }}>{bill.title}</h4>
+        </div>
+        {bill.url && (
+          <a href={bill.url} target="_blank" rel="noopener noreferrer"
+            style={{ fontSize:'12px', color:'#f59e0b', textDecoration:'none', border:'1px solid rgba(245,158,11,0.3)', background:'rgba(245,158,11,0.06)', borderRadius:'4px', padding:'5px 12px', whiteSpace:'nowrap', flexShrink:0, transition:'all 0.15s' }}
+            onMouseEnter={e=>{e.currentTarget.style.background='rgba(245,158,11,0.12)';e.currentTarget.style.borderColor='#f59e0b'}}
+            onMouseLeave={e=>{e.currentTarget.style.background='rgba(245,158,11,0.06)';e.currentTarget.style.borderColor='rgba(245,158,11,0.3)'}}
+          >OpenStates →</a>
+        )}
+      </div>
+      {bill.status && (
+        <div style={{ display:'flex', gap:'8px', alignItems:'center', marginTop:'10px', paddingTop:'10px', borderTop:'1px solid #1a1a1a' }}>
+          <span style={{ fontSize:'11px', color:'#444', flexShrink:0, fontWeight:'600', letterSpacing:'0.06em', textTransform:'uppercase' }}>Status</span>
+          <p style={{ margin:0, fontSize:'13px', color:'#888', lineHeight:1.5, flex:1 }}>{bill.status}</p>
+          {bill.updatedAt && (
+            <span style={{ fontSize:'11px', color:'#444', fontFamily:MONO, flexShrink:0 }}>Updated {bill.updatedAt}</span>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function FedRegCard({ doc, index }) {
+  return (
+    <div style={{ background:'#111', border:'1px solid #222', padding:'20px 24px', marginBottom:'10px', animation:'slideUp 0.2s ease', animationDelay:`${index*50}ms`, animationFillMode:'both', transition:'border-color 0.15s' }}
+      onMouseEnter={e=>e.currentTarget.style.borderColor='#333'}
+      onMouseLeave={e=>e.currentTarget.style.borderColor='#222'}
+    >
+      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:'12px', marginBottom:'10px' }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:'flex', gap:'6px', flexWrap:'wrap', marginBottom:'8px' }}>
+            {doc.documentType && (
+              <span style={{ fontSize:'11px', fontWeight:'700', color:'#22c55e', background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.25)', borderRadius:'4px', padding:'2px 8px' }}>
+                {doc.documentType}
+              </span>
+            )}
+            {doc.documentNumber && (
+              <span style={{ fontSize:'11px', color:'#888', fontFamily:MONO, background:'#0a0a0a', border:'1px solid #222', borderRadius:'4px', padding:'2px 8px' }}>
+                {doc.documentNumber}
+              </span>
+            )}
+            {doc.publicationDate && (
+              <span style={{ fontSize:'11px', color:'#888', background:'#0a0a0a', border:'1px solid #222', borderRadius:'4px', padding:'2px 8px' }}>
+                {doc.publicationDate}
+              </span>
+            )}
+          </div>
+          <h4 style={{ margin:0, fontSize:'15px', fontFamily:SERIF, fontWeight:'700', color:'#fff', lineHeight:1.4 }}>{doc.title}</h4>
+          {doc.agencies?.length > 0 && (
+            <p style={{ margin:'6px 0 0', fontSize:'12px', color:'#888' }}>{doc.agencies.join(' · ')}</p>
+          )}
+        </div>
+        {doc.url && (
+          <a href={doc.url} target="_blank" rel="noopener noreferrer"
+            style={{ fontSize:'12px', color:'#22c55e', textDecoration:'none', border:'1px solid rgba(34,197,94,0.3)', background:'rgba(34,197,94,0.06)', borderRadius:'4px', padding:'5px 12px', whiteSpace:'nowrap', flexShrink:0, transition:'all 0.15s' }}
+            onMouseEnter={e=>{e.currentTarget.style.background='rgba(34,197,94,0.12)';e.currentTarget.style.borderColor='#22c55e'}}
+            onMouseLeave={e=>{e.currentTarget.style.background='rgba(34,197,94,0.06)';e.currentTarget.style.borderColor='rgba(34,197,94,0.3)'}}
+          >Federal Register →</a>
+        )}
+      </div>
+      {doc.abstract && (
+        <p style={{ margin:'10px 0 0', paddingTop:'10px', borderTop:'1px solid #1a1a1a', fontSize:'13px', color:'#888', lineHeight:1.6 }}>
+          {doc.abstract.length > 240 ? doc.abstract.slice(0, 240) + '…' : doc.abstract}
+        </p>
+      )}
+    </div>
+  )
+}
+
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 function scoreColor(n) {
   if (n >= 80) return C.verified
@@ -884,6 +1043,76 @@ export default function ResearchPage() {
               </p>
             </div>
           )}
+
+          {/* ── Live Legislative & Regulatory Sources ────────────────────────── */}
+          {!loading && !savedTab && results && (
+            <div style={{ marginTop: displayResults.length > 0 ? '48px' : '0' }}>
+
+              {/* Federal Legislation — Congress.gov */}
+              {results.federalLegislation?.length > 0 && (
+                <div style={{ marginBottom: '40px' }}>
+                  <SectionHeader
+                    icon="🏛"
+                    label="Federal Legislation"
+                    count={results.federalLegislation.length}
+                    color="#2563eb"
+                    badge="Congress.gov · Live"
+                  />
+                  {results.federalLegislation.map((bill, i) => (
+                    <CongressCard key={bill.billNumber + i} bill={bill} index={i} />
+                  ))}
+                </div>
+              )}
+
+              {/* State Legislation — OpenStates */}
+              {results.stateLegislation?.length > 0 && (
+                <div style={{ marginBottom: '40px' }}>
+                  <SectionHeader
+                    icon="🗺"
+                    label="State Legislation"
+                    count={results.stateLegislation.length}
+                    color="#f59e0b"
+                    badge="OpenStates · Live"
+                  />
+                  {results.stateLegislation.map((bill, i) => (
+                    <OpenStatesCard key={bill.identifier + i} bill={bill} index={i} />
+                  ))}
+                </div>
+              )}
+
+              {/* Federal Regulations — Federal Register */}
+              {results.federalRegulations?.length > 0 && (
+                <div style={{ marginBottom: '40px' }}>
+                  <SectionHeader
+                    icon="📋"
+                    label="Federal Regulations"
+                    count={results.federalRegulations.length}
+                    color="#22c55e"
+                    badge="Federal Register · Live"
+                  />
+                  {results.federalRegulations.map((doc, i) => (
+                    <FedRegCard key={doc.documentNumber ?? i} doc={doc} index={i} />
+                  ))}
+                </div>
+              )}
+
+              {/* Show data-source strip when all live sources returned results */}
+              {(results.federalLegislation?.length > 0 || results.stateLegislation?.length > 0 || results.federalRegulations?.length > 0) && (
+                <div style={{ display:'flex', gap:'8px', flexWrap:'wrap', padding:'16px 0', borderTop:'1px solid #222', marginTop:'8px' }}>
+                  <span style={{ fontSize:'11px', color:'#444', letterSpacing:'0.06em', textTransform:'uppercase', fontWeight:'600', alignSelf:'center' }}>Live sources:</span>
+                  {results.federalLegislation?.length > 0 && (
+                    <a href="https://www.congress.gov" target="_blank" rel="noopener noreferrer" style={{ fontSize:'11px', color:'#2563eb', textDecoration:'none', border:'1px solid rgba(37,99,235,0.2)', borderRadius:'4px', padding:'3px 10px', background:'rgba(37,99,235,0.06)' }}>Congress.gov</a>
+                  )}
+                  {results.stateLegislation?.length > 0 && (
+                    <a href="https://openstates.org" target="_blank" rel="noopener noreferrer" style={{ fontSize:'11px', color:'#f59e0b', textDecoration:'none', border:'1px solid rgba(245,158,11,0.2)', borderRadius:'4px', padding:'3px 10px', background:'rgba(245,158,11,0.06)' }}>OpenStates</a>
+                  )}
+                  {results.federalRegulations?.length > 0 && (
+                    <a href="https://www.federalregister.gov" target="_blank" rel="noopener noreferrer" style={{ fontSize:'11px', color:'#22c55e', textDecoration:'none', border:'1px solid rgba(34,197,94,0.2)', borderRadius:'4px', padding:'3px 10px', background:'rgba(34,197,94,0.06)' }}>Federal Register</a>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* ── Sidebar ──────────────────────────────────────────────────────── */}
@@ -1023,26 +1252,23 @@ export default function ResearchPage() {
             </div>
           </div>
 
-          {/* CourtListener live badge */}
-          <div style={{
-            background: C.verifiedBg, border: `1px solid rgba(34,197,94,0.15)`,
-            padding: '16px 20px',
-            display: 'flex', alignItems: 'center', gap: '12px',
-          }}>
-            <div style={{
-              width: '8px', height: '8px',
-              background: C.verified, flexShrink: 0,
-              animation: 'pulse 2s ease-in-out infinite',
-              borderRadius: '50%',
-            }} />
-            <div>
-              <p style={{ margin: '0 0 3px', fontSize: '12px', fontWeight: '700', color: C.verified }}>
-                Live CourtListener Data
-              </p>
-              <p style={{ margin: 0, fontSize: '12px', color: C.textMuted, lineHeight: '1.5' }}>
-                Case law cross-referenced with real court opinions in real time.
-              </p>
-            </div>
+          {/* Live data sources badge */}
+          <div style={{ background: C.bgCard, border: `1px solid ${C.border}`, padding: '20px 24px' }}>
+            <div style={{ fontSize: '11px', color: C.textMuted, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: '600', marginBottom: '14px' }}>Live Data Sources</div>
+            {[
+              { dot: C.verified, name: 'CourtListener', desc: 'Real federal and state court opinions' },
+              { dot: C.blue, name: 'Congress.gov', desc: 'Federal bills and legislative activity' },
+              { dot: C.warning, name: 'OpenStates', desc: 'State legislature bills nationwide' },
+              { dot: C.verified, name: 'Federal Register', desc: 'Agency rules and proposed regulations' },
+            ].map((s, i) => (
+              <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', paddingBottom: '12px', borderBottom: i < 3 ? `1px solid #1a1a1a` : 'none', marginBottom: i < 3 ? '12px' : 0 }}>
+                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: s.dot, flexShrink: 0, marginTop: '5px', animation: 'pulse 2.5s ease-in-out infinite' }} />
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: '700', color: '#fff', marginBottom: '2px' }}>{s.name}</div>
+                  <div style={{ fontSize: '11px', color: C.textMuted, lineHeight: '1.5' }}>{s.desc}</div>
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>

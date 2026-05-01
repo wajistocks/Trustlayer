@@ -44,6 +44,7 @@ const MODE_INSTRUCTIONS = {
   regulatory: `You are in REGULATORY RESEARCH mode. Return 4-6 real regulatory provisions, agency rules, guidance documents, or administrative decisions relevant to the query. Include CFR sections, agency release numbers, and effective dates. Note if regulations are currently under rulemaking or have been recently amended.`,
 }
 
+// ── CourtListener ────────────────────────────────────────────────────────────
 async function searchCourtListener(query, jurisdiction) {
   const encoded = encodeURIComponent(query)
   const jurisdictionParam = jurisdiction && jurisdiction !== 'all'
@@ -56,10 +57,7 @@ async function searchCourtListener(query, jurisdiction) {
   try {
     const res = await fetch(
       `https://www.courtlistener.com/api/rest/v4/search/?type=o&q=${encoded}${jurisdictionParam}&format=json&page_size=8`,
-      {
-        signal: controller.signal,
-        headers: { 'User-Agent': 'TrustLayer/1.0' },
-      }
+      { signal: controller.signal, headers: { 'User-Agent': 'TrustLayer/1.0' } }
     )
     clearTimeout(timeout)
     if (!res.ok) return []
@@ -68,9 +66,7 @@ async function searchCourtListener(query, jurisdiction) {
       id: `cl-${hit.id ?? Math.random().toString(36).slice(2)}`,
       title: hit.caseName ?? hit.case_name ?? 'Unknown Case',
       citation: hit.citation ?? (hit.citations?.[0]?.cite ?? null),
-      url: hit.absolute_url
-        ? `https://www.courtlistener.com${hit.absolute_url}`
-        : null,
+      url: hit.absolute_url ? `https://www.courtlistener.com${hit.absolute_url}` : null,
       summary: hit.snippet ?? hit.text ?? null,
       jurisdiction: hit.court ?? hit.court_id ?? 'Federal',
       date: hit.dateFiled ?? hit.date_filed ?? null,
@@ -89,6 +85,138 @@ async function searchCourtListener(query, jurisdiction) {
   }
 }
 
+// ── Congress.gov ─────────────────────────────────────────────────────────────
+async function searchCongress(query) {
+  const apiKey = process.env.CONGRESS_API_KEY
+  if (!apiKey) return []
+
+  const encoded = encodeURIComponent(query)
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
+
+  try {
+    const res = await fetch(
+      `https://api.congress.gov/v3/bill?api_key=${apiKey}&format=json&limit=5&query=${encoded}`,
+      { signal: controller.signal, headers: { 'User-Agent': 'TrustLayer/1.0' } }
+    )
+    clearTimeout(timeout)
+    if (!res.ok) return []
+    const data = await res.json()
+
+    return (data.bills ?? []).map(bill => {
+      const type = bill.type ?? ''
+      const num  = bill.number ?? ''
+      const cong = bill.congress ?? ''
+
+      // Build human-readable Congress.gov URL
+      const chamberSlug =
+        type === 'HR'   ? 'house-bill'
+        : type === 'S'  ? 'senate-bill'
+        : type === 'HJRES' ? 'house-joint-resolution'
+        : type === 'SJRES' ? 'senate-joint-resolution'
+        : type === 'HRES'  ? 'house-resolution'
+        : type === 'SRES'  ? 'senate-resolution'
+        : type.toLowerCase() + '-bill'
+
+      const humanUrl = cong && type && num
+        ? `https://www.congress.gov/bill/${cong}th-congress/${chamberSlug}/${num}`
+        : null
+
+      return {
+        billNumber:   `${type}${num}`,
+        title:        bill.title ?? 'Untitled Bill',
+        congress:     cong ? `${cong}th Congress` : null,
+        latestAction: bill.latestAction?.text ?? null,
+        actionDate:   bill.latestAction?.actionDate ?? null,
+        chamber:      bill.originChamber ?? null,
+        updateDate:   bill.updateDate ?? null,
+        url:          humanUrl,
+      }
+    })
+  } catch {
+    clearTimeout(timeout)
+    return []
+  }
+}
+
+// ── OpenStates ───────────────────────────────────────────────────────────────
+async function searchOpenStates(query, jurisdiction) {
+  const apiKey = process.env.OPENSTATES_API_KEY
+  if (!apiKey) return []
+
+  const encoded = encodeURIComponent(query)
+
+  // Map TrustLayer jurisdiction values to OpenStates jurisdiction param
+  const stateMap = {
+    california: 'California', 'new-york': 'New York', texas: 'Texas',
+    florida: 'Florida', illinois: 'Illinois', pennsylvania: 'Pennsylvania',
+    ohio: 'Ohio', georgia: 'Georgia', washington: 'Washington',
+    massachusetts: 'Massachusetts', virginia: 'Virginia', colorado: 'Colorado',
+    arizona: 'Arizona', nevada: 'Nevada', delaware: 'Delaware',
+  }
+  const stateJuris = stateMap[jurisdiction]
+  const jurisdParam = stateJuris
+    ? `&jurisdiction=${encodeURIComponent(stateJuris)}`
+    : '&jurisdiction=us'
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
+
+  try {
+    const res = await fetch(
+      `https://v3.openstates.org/bills?apikey=${apiKey}&q=${encoded}${jurisdParam}&per_page=5`,
+      { signal: controller.signal, headers: { 'User-Agent': 'TrustLayer/1.0' } }
+    )
+    clearTimeout(timeout)
+    if (!res.ok) return []
+    const data = await res.json()
+
+    return (data.results ?? []).map(bill => ({
+      identifier:    bill.identifier ?? 'Unknown',
+      title:         bill.title ?? 'Untitled Bill',
+      state:         bill.jurisdiction?.name ?? null,
+      status:        bill.latest_action_description ?? null,
+      updatedAt:     bill.updated_at ? bill.updated_at.slice(0, 10) : null,
+      session:       bill.session ?? null,
+      url:           bill.openstates_url ?? null,
+    }))
+  } catch {
+    clearTimeout(timeout)
+    return []
+  }
+}
+
+// ── Federal Register ─────────────────────────────────────────────────────────
+async function searchFederalRegister(query) {
+  const encoded = encodeURIComponent(query)
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
+
+  try {
+    const res = await fetch(
+      `https://www.federalregister.gov/api/v1/documents.json?conditions[term]=${encoded}&per_page=5`,
+      { signal: controller.signal, headers: { 'User-Agent': 'TrustLayer/1.0' } }
+    )
+    clearTimeout(timeout)
+    if (!res.ok) return []
+    const data = await res.json()
+
+    return (data.results ?? []).map(doc => ({
+      title:           doc.title ?? 'Untitled Document',
+      agencies:        doc.agency_names ?? [],
+      publicationDate: doc.publication_date ?? null,
+      documentType:    doc.type ?? null,
+      documentNumber:  doc.document_number ?? null,
+      abstract:        doc.abstract ?? null,
+      url:             doc.html_url ?? null,
+    }))
+  } catch {
+    clearTimeout(timeout)
+    return []
+  }
+}
+
+// ── POST handler ─────────────────────────────────────────────────────────────
 export async function POST(request) {
   try {
     const { query, mode, jurisdiction } = await request.json()
@@ -109,7 +237,14 @@ export async function POST(request) {
 
     const modeInstruction = MODE_INSTRUCTIONS[researchMode]
 
-    const [claudeResponse, courtListenerResults] = await Promise.allSettled([
+    // Run all five sources in parallel — none can block the others
+    const [
+      claudeResponse,
+      courtListenerResults,
+      congressResults,
+      openStatesResults,
+      fedRegResults,
+    ] = await Promise.allSettled([
       client.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 4096,
@@ -128,8 +263,12 @@ export async function POST(request) {
         ],
       }),
       researchMode === 'case_law' ? searchCourtListener(query, jurisdiction) : Promise.resolve([]),
+      searchCongress(query),
+      searchOpenStates(query, jurisdiction),
+      searchFederalRegister(query),
     ])
 
+    // ── Parse Claude response ────────────────────────────────────────────────
     let aiResults = []
     let summary = ''
     let researchNotes = ''
@@ -145,16 +284,15 @@ export async function POST(request) {
         researchNotes = parsed.researchNotes ?? ''
         totalFound = parsed.totalFound ?? aiResults.length
       } catch {
-        // fall through to CourtListener-only results
+        // fall through
       }
     }
 
-    // Merge CourtListener real cases, deduplicating by title similarity
+    // ── Merge CourtListener results ──────────────────────────────────────────
     let clResults = courtListenerResults.status === 'fulfilled' ? courtListenerResults.value : []
     if (clResults.length > 0) {
       const aiTitles = new Set(aiResults.map(r => r.title.toLowerCase().slice(0, 20)))
       const novel = clResults.filter(r => !aiTitles.has(r.title.toLowerCase().slice(0, 20)))
-      // Enrich AI results that match CourtListener hits with real URLs
       aiResults = aiResults.map(r => {
         const match = clResults.find(cl =>
           cl.title.toLowerCase().includes(r.title.toLowerCase().split(' v.')[0]?.trim().toLowerCase() ?? '')
@@ -168,18 +306,22 @@ export async function POST(request) {
       .sort((a, b) => (b.relevance ?? 0) - (a.relevance ?? 0))
 
     return Response.json({
-      results: allResults,
-      totalFound: totalFound + clResults.length,
+      results:            allResults,
+      totalFound:         totalFound + clResults.length,
       summary,
       researchNotes,
-      mode: researchMode,
+      mode:               researchMode,
       query,
-      jurisdiction: jurisdiction ?? 'all',
+      jurisdiction:       jurisdiction ?? 'all',
+      // New live data sources
+      federalLegislation: congressResults.status === 'fulfilled' ? congressResults.value : [],
+      stateLegislation:   openStatesResults.status === 'fulfilled' ? openStatesResults.value : [],
+      federalRegulations: fedRegResults.status === 'fulfilled' ? fedRegResults.value : [],
       usage: claudeResponse.status === 'fulfilled' ? {
-        inputTokens: claudeResponse.value.usage.input_tokens,
-        outputTokens: claudeResponse.value.usage.output_tokens,
-        cacheReadTokens: claudeResponse.value.usage.cache_read_input_tokens ?? 0,
-        cacheCreationTokens: claudeResponse.value.usage.cache_creation_input_tokens ?? 0,
+        inputTokens:        claudeResponse.value.usage.input_tokens,
+        outputTokens:       claudeResponse.value.usage.output_tokens,
+        cacheReadTokens:    claudeResponse.value.usage.cache_read_input_tokens ?? 0,
+        cacheCreationTokens:claudeResponse.value.usage.cache_creation_input_tokens ?? 0,
       } : null,
     })
   } catch (error) {
